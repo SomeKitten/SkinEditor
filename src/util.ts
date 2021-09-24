@@ -1,10 +1,13 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
+import { textureCanvas } from './render'
 
 export const camOrbit = new Vector3()
 
 export const targetS = new Spherical()
 
 export const raycaster = new Raycaster()
+
+const link = document.getElementById('link')
 
 export function rotateSpherical(spherical: Spherical, angleX: number, angleY: number) {
   spherical.theta -= angleY
@@ -92,4 +95,10 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
   }
 
   return new BufferAttribute(new Float32Array(uvs_all), 2)
+}
+
+export function download() {
+  link!.setAttribute('download', 'skin.png')
+  link!.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+  link!.click()
 }

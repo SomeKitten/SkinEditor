@@ -5,8 +5,11 @@ import { camOrbit, lookAt, rotateSpherical, targetS } from './util'
 export const mouse = new Vector2()
 export let mouseDrag = false
 export let mouseDown = false
+export let painting = false
 export let mouseButton = -1
 export const sensitivity = 0.007
+
+export let shift = false
 
 export function setMouseDrag(value: boolean) {
   mouseDrag = value
@@ -14,8 +17,14 @@ export function setMouseDrag(value: boolean) {
 export function setMouseDown(value: boolean) {
   mouseDown = value
 }
+export function setPainting(value: boolean) {
+  painting = value
+}
 export function setMouseButton(value: number) {
   mouseButton = value
+}
+export function setShift(value: boolean) {
+  shift = value
 }
 
 export function cameraControls(movementX: number, movementY: number) {
