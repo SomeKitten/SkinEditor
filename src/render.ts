@@ -68,7 +68,7 @@ export function setHeight(value: number) {
 
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
 camera.rotation.order = 'ZYX'
-camera.position.set(1, 1, 1)
+camera.position.set(1.1, 1.1, 1.1)
 
 export const renderer = new WebGLRenderer()
 renderer.setSize(width, height)
