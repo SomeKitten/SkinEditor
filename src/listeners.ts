@@ -37,11 +37,17 @@ function onMouseMove(event: MouseEvent) {
 
   if (mouseDown && mouseButton == 0) {
     if (picking === 'h') {
-      onPickH(Math.min(Math.max(0, event.clientX), 255))
+      onPickH(Math.min(Math.max(0, event.clientX), 256))
     } else if (picking === 's') {
-      onPickS(Math.min(Math.max(0, event.clientX), 255))
+      onPickS(Math.min(Math.max(0, event.clientX), 256))
     } else if (picking === 'l') {
-      onPickL(Math.min(Math.max(0, event.clientX), 255))
+      onPickL(Math.min(Math.max(0, event.clientX), 256))
+    } else if (picking === 'r') {
+      onPickR(Math.min(Math.max(0, event.clientX), 256))
+    } else if (picking === 'g') {
+      onPickG(Math.min(Math.max(0, event.clientX), 256))
+    } else if (picking === 'b') {
+      onPickB(Math.min(Math.max(0, event.clientX), 256))
     } else {
       if (painting) {
         raycaster.setFromCamera(mouse, camera)
@@ -135,12 +141,18 @@ function onWindowResize() {
 colorPicker.addEventListener('mousedown', onPick)
 function onPick(event: MouseEvent) {
   if (event.y > 32) {
-    if (event.y < 64) {
+    if (event.y < 32 * 2) {
       onPickH(event.x)
-    } else if (event.y < 96) {
+    } else if (event.y < 32 * 3) {
       onPickS(event.x)
-    } else if (event.y < 128) {
+    } else if (event.y < 32 * 4) {
       onPickL(event.x)
+    } else if (event.y < 32 * 5) {
+      onPickR(event.x)
+    } else if (event.y < 32 * 6) {
+      onPickG(event.x)
+    } else if (event.y < 32 * 7) {
+      onPickB(event.x)
     }
   }
 }
@@ -150,15 +162,26 @@ function onPickH(value: number) {
   pickColor.getHSL(targetC)
   updateColor('hsl', (value * 360) / 256, targetC.s * 100, targetC.l * 100)
 }
-
 function onPickS(value: number) {
   setPicking('s')
   pickColor.getHSL(targetC)
   updateColor('hsl', targetC.h * 360, (value * 100) / 256, targetC.l * 100)
 }
-
 function onPickL(value: number) {
   setPicking('l')
   pickColor.getHSL(targetC)
   updateColor('hsl', targetC.h * 360, targetC.s * 100, (value * 100) / 256)
+}
+
+function onPickR(value: number) {
+  setPicking('r')
+  updateColor('rgb', (value * 255) / 256, pickColor.g * 255, pickColor.b * 255)
+}
+function onPickG(value: number) {
+  setPicking('g')
+  updateColor('rgb', pickColor.r * 255, (value * 255) / 256, pickColor.b * 255)
+}
+function onPickB(value: number) {
+  setPicking('b')
+  updateColor('rgb', pickColor.r * 255, pickColor.g * 255, (value * 255) / 256)
 }

@@ -10,7 +10,7 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three'
-import { genBlockUVs } from './util'
+import { genBlockUVs, targetC } from './util'
 
 const layer1ToLayer2 = 9 / 8
 
@@ -95,18 +95,29 @@ export function updateColor(type: string, rh: number, gs: number, bl: number) {
   bl = Math.floor(bl)
   if (type === 'hsl') {
     pickColor.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
-
-    cpCTX!.fillStyle = `hsl(${rh}, ${gs}%, ${bl}%)`
-    cpCTX!.fillRect(0, 0, 256, 32)
-
-    updateHSL(rh, gs, bl)
   }
+  if (type === 'rgb') {
+    pickColor.set(`rgb(${rh}, ${gs}, ${bl})`)
+  }
+
+  cpCTX!.fillStyle = pickColor.getStyle()
+  cpCTX!.fillRect(0, 0, 256, 32)
+
+  updateHSL()
+  updateRGB()
 }
 
-function updateHSL(h: number, s: number, l: number) {
-  updateH(s, l)
-  updateS(h, l)
-  updateL(h, s)
+function updateHSL() {
+  pickColor.getHSL(targetC)
+
+  updateH(targetC.s * 100, targetC.l * 100)
+  updateS(targetC.h * 360, targetC.l * 100)
+  updateL(targetC.h * 360, targetC.s * 100)
+}
+function updateRGB() {
+  updateR(pickColor.g * 255, pickColor.b * 255)
+  updateG(pickColor.r * 255, pickColor.b * 255)
+  updateB(pickColor.r * 255, pickColor.g * 255)
 }
 
 function updateH(s: number, l: number) {
@@ -121,35 +132,52 @@ function updateH(s: number, l: number) {
   hGradient.addColorStop(1, `hsl(360, ${s}%, ${l}%)`)
 
   cpCTX!.fillStyle = hGradient
-  cpCTX!.fillRect(0, 32, 256, 32)
+  cpCTX!.fillRect(0, 32 * 1, 256, 32)
 }
-
 function updateS(h: number, l: number) {
   const sGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
 
   sGradient.addColorStop(0, `hsl(${h}, 0%, ${l}%)`)
-  sGradient.addColorStop(0.15, `hsl(${h}, 15%, ${l}%)`)
-  sGradient.addColorStop(0.33, `hsl(${h}, 33%, ${l}%)`)
-  sGradient.addColorStop(0.49, `hsl(${h}, 49%, ${l}%)`)
-  sGradient.addColorStop(0.67, `hsl(${h}, 67%, ${l}%)`)
-  sGradient.addColorStop(0.84, `hsl(${h}, 84%, ${l}%)`)
   sGradient.addColorStop(1, `hsl(${h}, 100%, ${l}%)`)
 
   cpCTX!.fillStyle = sGradient
-  cpCTX!.fillRect(0, 64, 256, 32)
+  cpCTX!.fillRect(0, 32 * 2, 256, 32)
+}
+function updateL(h: number, s: number) {
+  const lGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  lGradient.addColorStop(0, `hsl(${h}, ${s}%, 0%)`)
+  lGradient.addColorStop(0.5, `hsl(${h}, ${s}%, 50%)`)
+  lGradient.addColorStop(1, `hsl(${h}, ${s}%, 100%)`)
+
+  cpCTX!.fillStyle = lGradient
+  cpCTX!.fillRect(0, 32 * 3, 256, 32)
 }
 
-function updateL(h: number, s: number) {
-  const sGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateR(g: number, b: number) {
+  const rGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
 
-  sGradient.addColorStop(0, `hsl(${h}, ${s}%, 0%)`)
-  sGradient.addColorStop(0.15, `hsl(${h}, ${s}%, 15%)`)
-  sGradient.addColorStop(0.33, `hsl(${h}, ${s}%, 33%)`)
-  sGradient.addColorStop(0.49, `hsl(${h}, ${s}%, 49%)`)
-  sGradient.addColorStop(0.67, `hsl(${h}, ${s}%, 67%)`)
-  sGradient.addColorStop(0.84, `hsl(${h}, ${s}%, 84%)`)
-  sGradient.addColorStop(1, `hsl(${h}, ${s}%, 100%)`)
+  rGradient.addColorStop(0, `rgb(0, ${g}, ${b})`)
+  rGradient.addColorStop(1, `rgb(255, ${g}, ${b})`)
 
-  cpCTX!.fillStyle = sGradient
-  cpCTX!.fillRect(0, 96, 256, 32)
+  cpCTX!.fillStyle = rGradient
+  cpCTX!.fillRect(0, 32 * 4, 256, 32)
+}
+function updateG(r: number, b: number) {
+  const gGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  gGradient.addColorStop(0, `rgb(${r}, 0, ${b})`)
+  gGradient.addColorStop(1, `rgb(${r}, 255, ${b})`)
+
+  cpCTX!.fillStyle = gGradient
+  cpCTX!.fillRect(0, 32 * 5, 256, 32)
+}
+function updateB(r: number, g: number) {
+  const bGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  bGradient.addColorStop(0, `rgb(${r}, ${g}, 0)`)
+  bGradient.addColorStop(1, `rgb(${r}, ${g}, 255)`)
+
+  cpCTX!.fillStyle = bGradient
+  cpCTX!.fillRect(0, 32 * 6, 256, 32)
 }
