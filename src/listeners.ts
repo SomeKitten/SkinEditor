@@ -1,41 +1,48 @@
 import {
   cameraControls,
   mouse,
+  mouseButton,
   mouseDown,
   painting,
-  pick,
   picking,
   setMouseButton,
   setMouseDown,
   setMouseDrag,
   setPainting,
-  setPick,
   setPicking,
   setShift,
   shift,
 } from './input'
 import {
   camera,
-  colorpicker,
+  colorPicker,
   ctx,
   height,
   layer2,
+  pickColor,
   renderer,
   scene,
   setHeight,
   setWidth,
+  updateColor,
   updateTexture,
   width,
 } from './render'
-import { download, raycaster } from './util'
+import { download, raycaster, targetC } from './util'
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
   mouse.y = -(event.clientY / height) * 2 + 1
 
-  if (mouseDown) {
-    if (!picking) {
+  if (mouseDown && mouseButton == 0) {
+    if (picking === 'h') {
+      onPickH(Math.min(Math.max(0, event.clientX), 255))
+    } else if (picking === 's') {
+      onPickS(Math.min(Math.max(0, event.clientX), 255))
+    } else if (picking === 'l') {
+      onPickL(Math.min(Math.max(0, event.clientX), 255))
+    } else {
       if (painting) {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(scene.children)
@@ -50,7 +57,7 @@ function onMouseMove(event: MouseEvent) {
           const x = Math.floor(intersect.uv!.x * 64)
           const y = Math.floor(intersect.uv!.y * 64)
 
-          ctx!.fillStyle = pick
+          ctx!.fillStyle = pickColor.getStyle()
           ctx?.fillRect(x, 64 - y - 1, 1, 1)
           updateTexture()
         }
@@ -85,7 +92,7 @@ function onMouseUp(event: MouseEvent) {
 
   setMouseDown(false)
   setPainting(false)
-  setPicking(false)
+  setPicking('')
 }
 
 document.addEventListener('keydown', onKeyDown)
@@ -125,8 +132,33 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
 }
 
-colorpicker.addEventListener('mousedown', onPick)
+colorPicker.addEventListener('mousedown', onPick)
 function onPick(event: MouseEvent) {
-  setPicking(true)
-  setPick(`hsl(${(event.x * 360) / 256}, 100%, 50%)`)
+  if (event.y > 32) {
+    if (event.y < 64) {
+      onPickH(event.x)
+    } else if (event.y < 96) {
+      onPickS(event.x)
+    } else if (event.y < 128) {
+      onPickL(event.x)
+    }
+  }
+}
+
+function onPickH(value: number) {
+  setPicking('h')
+  pickColor.getHSL(targetC)
+  updateColor('hsl', (value * 360) / 256, targetC.s * 100, targetC.l * 100)
+}
+
+function onPickS(value: number) {
+  setPicking('s')
+  pickColor.getHSL(targetC)
+  updateColor('hsl', targetC.h * 360, (value * 100) / 256, targetC.l * 100)
+}
+
+function onPickL(value: number) {
+  setPicking('l')
+  pickColor.getHSL(targetC)
+  updateColor('hsl', targetC.h * 360, targetC.s * 100, (value * 100) / 256)
 }

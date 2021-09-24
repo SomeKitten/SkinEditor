@@ -4,6 +4,7 @@ import { textureCanvas } from './render'
 export const camOrbit = new Vector3()
 
 export const targetS = new Spherical()
+export const targetC = { h: 0, s: 0, l: 0 }
 
 export const raycaster = new Raycaster()
 

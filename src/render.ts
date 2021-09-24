@@ -66,25 +66,12 @@ export const renderer = new WebGLRenderer()
 renderer.setSize(width, height)
 document.body.appendChild(renderer.domElement)
 
-export const colorpicker = <HTMLCanvasElement>document.getElementById('color-palette')
-const cpctx = colorpicker.getContext('2d')
-const gradient = cpctx!.createLinearGradient(0, 0, colorpicker.width, 0)
-gradient.addColorStop(0, 'rgb(255,   0,   0)')
-gradient.addColorStop(0.15, 'rgb(255, 255,   0)')
-gradient.addColorStop(0.33, 'rgb(0,   255,   0)')
-gradient.addColorStop(0.49, 'rgb(0,   255, 255)')
-gradient.addColorStop(0.67, 'rgb(0,     0, 255)')
-gradient.addColorStop(0.84, 'rgb(255,   0, 255)')
-gradient.addColorStop(1, 'rgb(255,   0,   0)')
+export const colorPicker = <HTMLCanvasElement>document.getElementById('color-palette')
+const cpCTX = colorPicker.getContext('2d')
 
-// gradient.addColorStop(0, 'rgb(255,   0,   0)')
-// gradient.addColorStop(0.25, 'rgb(255, 255,   0)')
-// gradient.addColorStop(0.5, 'rgb(0,   255,   0)')
-// gradient.addColorStop(0.75, 'rgb(0,   255, 255)')
-// gradient.addColorStop(1, 'rgb(0,     0, 255)')
+export const pickColor = new Color()
 
-cpctx!.fillStyle = gradient
-cpctx!.fillRect(0, 0, cpctx!.canvas.width, cpctx!.canvas.height)
+updateColor('hsl', 0, 100, 50)
 
 export function setWidth(value: number) {
   width = value
@@ -100,4 +87,69 @@ export function setTexture() {
 
 export function updateTexture() {
   material.map!.needsUpdate = true
+}
+
+export function updateColor(type: string, rh: number, gs: number, bl: number) {
+  rh = Math.floor(rh)
+  gs = Math.floor(gs)
+  bl = Math.floor(bl)
+  if (type === 'hsl') {
+    pickColor.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
+
+    cpCTX!.fillStyle = `hsl(${rh}, ${gs}%, ${bl}%)`
+    cpCTX!.fillRect(0, 0, 256, 32)
+
+    updateHSL(rh, gs, bl)
+  }
+}
+
+function updateHSL(h: number, s: number, l: number) {
+  updateH(s, l)
+  updateS(h, l)
+  updateL(h, s)
+}
+
+function updateH(s: number, l: number) {
+  const hGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  hGradient.addColorStop(0, `hsl(0, ${s}%, ${l}%)`)
+  hGradient.addColorStop(0.15, `hsl(60, ${s}%, ${l}%)`)
+  hGradient.addColorStop(0.33, `hsl(120, ${s}%, ${l}%)`)
+  hGradient.addColorStop(0.49, `hsl(180, ${s}%, ${l}%)`)
+  hGradient.addColorStop(0.67, `hsl(240, ${s}%, ${l}%)`)
+  hGradient.addColorStop(0.84, `hsl(300, ${s}%, ${l}%)`)
+  hGradient.addColorStop(1, `hsl(360, ${s}%, ${l}%)`)
+
+  cpCTX!.fillStyle = hGradient
+  cpCTX!.fillRect(0, 32, 256, 32)
+}
+
+function updateS(h: number, l: number) {
+  const sGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  sGradient.addColorStop(0, `hsl(${h}, 0%, ${l}%)`)
+  sGradient.addColorStop(0.15, `hsl(${h}, 15%, ${l}%)`)
+  sGradient.addColorStop(0.33, `hsl(${h}, 33%, ${l}%)`)
+  sGradient.addColorStop(0.49, `hsl(${h}, 49%, ${l}%)`)
+  sGradient.addColorStop(0.67, `hsl(${h}, 67%, ${l}%)`)
+  sGradient.addColorStop(0.84, `hsl(${h}, 84%, ${l}%)`)
+  sGradient.addColorStop(1, `hsl(${h}, 100%, ${l}%)`)
+
+  cpCTX!.fillStyle = sGradient
+  cpCTX!.fillRect(0, 64, 256, 32)
+}
+
+function updateL(h: number, s: number) {
+  const sGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+
+  sGradient.addColorStop(0, `hsl(${h}, ${s}%, 0%)`)
+  sGradient.addColorStop(0.15, `hsl(${h}, ${s}%, 15%)`)
+  sGradient.addColorStop(0.33, `hsl(${h}, ${s}%, 33%)`)
+  sGradient.addColorStop(0.49, `hsl(${h}, ${s}%, 49%)`)
+  sGradient.addColorStop(0.67, `hsl(${h}, ${s}%, 67%)`)
+  sGradient.addColorStop(0.84, `hsl(${h}, ${s}%, 84%)`)
+  sGradient.addColorStop(1, `hsl(${h}, ${s}%, 100%)`)
+
+  cpCTX!.fillStyle = sGradient
+  cpCTX!.fillRect(0, 96, 256, 32)
 }
