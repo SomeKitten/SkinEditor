@@ -6,6 +6,8 @@ export const mouse = new Vector2()
 export let mouseDrag = false
 export let mouseDown = false
 export let painting = false
+export let picking = false
+export let pick = 'hsl(0, 100%, 50%)'
 export let mouseButton = -1
 export const sensitivity = 0.007
 
@@ -19,6 +21,12 @@ export function setMouseDown(value: boolean) {
 }
 export function setPainting(value: boolean) {
   painting = value
+}
+export function setPicking(value: boolean) {
+  picking = value
+}
+export function setPick(value: string) {
+  pick = value
 }
 export function setMouseButton(value: number) {
   mouseButton = value

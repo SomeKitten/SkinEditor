@@ -3,14 +3,30 @@ import {
   mouse,
   mouseDown,
   painting,
+  pick,
+  picking,
   setMouseButton,
   setMouseDown,
   setMouseDrag,
   setPainting,
+  setPick,
+  setPicking,
   setShift,
   shift,
 } from './input'
-import { camera, ctx, height, layer2, renderer, scene, setHeight, setWidth, updateTexture, width } from './render'
+import {
+  camera,
+  colorpicker,
+  ctx,
+  height,
+  layer2,
+  renderer,
+  scene,
+  setHeight,
+  setWidth,
+  updateTexture,
+  width,
+} from './render'
 import { download, raycaster } from './util'
 
 document.addEventListener('mousemove', onMouseMove)
@@ -19,25 +35,28 @@ function onMouseMove(event: MouseEvent) {
   mouse.y = -(event.clientY / height) * 2 + 1
 
   if (mouseDown) {
-    if (painting) {
-      raycaster.setFromCamera(mouse, camera)
-      const intersects = raycaster.intersectObjects(scene.children)
+    if (!picking) {
+      if (painting) {
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(scene.children)
 
-      if (intersects.length > 0) {
-        let intersect
-        if (!shift && layer2.visible) {
-          intersect = intersects[0]
-        } else {
-          intersect = intersects[1]
+        if (intersects.length > 0) {
+          let intersect
+          if (!shift && layer2.visible) {
+            intersect = intersects[0]
+          } else {
+            intersect = intersects[1]
+          }
+          const x = Math.floor(intersect.uv!.x * 64)
+          const y = Math.floor(intersect.uv!.y * 64)
+
+          ctx!.fillStyle = pick
+          ctx?.fillRect(x, 64 - y - 1, 1, 1)
+          updateTexture()
         }
-        const x = Math.floor(intersect.uv!.x * 64)
-        const y = Math.floor(intersect.uv!.y * 64)
-
-        ctx?.fillRect(x, 64 - y - 1, 1, 1)
-        updateTexture()
+      } else {
+        cameraControls(event.movementX, event.movementY)
       }
-    } else {
-      cameraControls(event.movementX, event.movementY)
     }
   }
 
@@ -64,8 +83,9 @@ document.addEventListener('mouseup', onMouseUp)
 function onMouseUp(event: MouseEvent) {
   event.preventDefault()
 
-  setPainting(false)
   setMouseDown(false)
+  setPainting(false)
+  setPicking(false)
 }
 
 document.addEventListener('keydown', onKeyDown)
@@ -103,4 +123,10 @@ function onWindowResize() {
 
   camera.aspect = width / height
   camera.updateProjectionMatrix()
+}
+
+colorpicker.addEventListener('mousedown', onPick)
+function onPick(event: MouseEvent) {
+  setPicking(true)
+  setPick(`hsl(${(event.x * 360) / 256}, 100%, 50%)`)
 }
