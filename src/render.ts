@@ -10,7 +10,7 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three'
-import { genBlockUVs, targetC } from './util'
+import { genBlockUVs } from './util'
 
 const layer1ToLayer2 = 9 / 8
 
@@ -66,10 +66,30 @@ export const renderer = new WebGLRenderer()
 renderer.setSize(width, height)
 document.body.appendChild(renderer.domElement)
 
-export const colorPicker = <HTMLCanvasElement>document.getElementById('color-palette')
-const cpCTX = colorPicker.getContext('2d')
+export const resultCanvas = <HTMLCanvasElement>document.getElementById('color-result')
+const resultCTX = resultCanvas.getContext('2d')
 
-export const pickColor = new Color()
+export const hCanvas = <HTMLCanvasElement>document.getElementById('color-h')
+const hCTX = hCanvas.getContext('2d')
+
+export const sCanvas = <HTMLCanvasElement>document.getElementById('color-s')
+const sCTX = sCanvas.getContext('2d')
+
+export const lCanvas = <HTMLCanvasElement>document.getElementById('color-l')
+const lCTX = lCanvas.getContext('2d')
+
+export const rCanvas = <HTMLCanvasElement>document.getElementById('color-r')
+const rCTX = rCanvas.getContext('2d')
+
+export const gCanvas = <HTMLCanvasElement>document.getElementById('color-g')
+const gCTX = gCanvas.getContext('2d')
+
+export const bCanvas = <HTMLCanvasElement>document.getElementById('color-b')
+const bCTX = bCanvas.getContext('2d')
+
+export const hsl = { h: 0, s: 0, l: 0 }
+export const rgb = { r: 0, g: 0, b: 0 }
+export const color = new Color()
 
 updateColor('hsl', 0, 100, 50)
 
@@ -94,34 +114,47 @@ export function updateColor(type: string, rh: number, gs: number, bl: number) {
   gs = Math.floor(gs)
   bl = Math.floor(bl)
   if (type === 'hsl') {
-    pickColor.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
+    hsl.h = rh
+    hsl.s = gs
+    hsl.l = bl
+
+    color.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
+    rgb.r = color.r * 255
+    rgb.g = color.g * 255
+    rgb.b = color.b * 255
   }
   if (type === 'rgb') {
-    pickColor.set(`rgb(${rh}, ${gs}, ${bl})`)
+    rgb.r = rh
+    rgb.g = gs
+    rgb.b = bl
+
+    color.set(`rgb(${rh}, ${gs}, ${bl})`)
+    color.getHSL(hsl)
+    hsl.h *= 360
+    hsl.s *= 100
+    hsl.l *= 100
   }
 
-  cpCTX!.fillStyle = pickColor.getStyle()
-  cpCTX!.fillRect(0, 0, 256, 32)
+  resultCTX!.fillStyle = color.getStyle()
+  resultCTX!.fillRect(0, 0, 256, 32)
 
   updateHSL()
   updateRGB()
 }
 
 function updateHSL() {
-  pickColor.getHSL(targetC)
-
-  updateH(targetC.s * 100, targetC.l * 100)
-  updateS(targetC.h * 360, targetC.l * 100)
-  updateL(targetC.h * 360, targetC.s * 100)
+  updateH(hsl.h, hsl.s, hsl.l)
+  updateS(hsl.h, hsl.s, hsl.l)
+  updateL(hsl.h, hsl.s, hsl.l)
 }
 function updateRGB() {
-  updateR(pickColor.g * 255, pickColor.b * 255)
-  updateG(pickColor.r * 255, pickColor.b * 255)
-  updateB(pickColor.r * 255, pickColor.g * 255)
+  updateR(rgb.r, rgb.g, rgb.b)
+  updateG(rgb.r, rgb.g, rgb.b)
+  updateB(rgb.r, rgb.g, rgb.b)
 }
 
-function updateH(s: number, l: number) {
-  const hGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateH(h: number, s: number, l: number) {
+  const hGradient = hCTX!.createLinearGradient(0, 0, hCanvas.width, 0)
 
   hGradient.addColorStop(0, `hsl(0, ${s}%, ${l}%)`)
   hGradient.addColorStop(0.15, `hsl(60, ${s}%, ${l}%)`)
@@ -131,53 +164,83 @@ function updateH(s: number, l: number) {
   hGradient.addColorStop(0.84, `hsl(300, ${s}%, ${l}%)`)
   hGradient.addColorStop(1, `hsl(360, ${s}%, ${l}%)`)
 
-  cpCTX!.fillStyle = hGradient
-  cpCTX!.fillRect(0, 32 * 1, 256, 32)
+  hCTX!.fillStyle = hGradient
+  hCTX!.fillRect(0, 0, 256, 32)
+
+  hCTX!.beginPath()
+  hCTX!.moveTo((h * 256) / 360, 0)
+  hCTX!.lineTo((h * 256) / 360, 32)
+  hCTX!.stroke()
 }
-function updateS(h: number, l: number) {
-  const sGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateS(h: number, s: number, l: number) {
+  const sGradient = sCTX!.createLinearGradient(0, 0, sCanvas.width, 0)
 
   sGradient.addColorStop(0, `hsl(${h}, 0%, ${l}%)`)
   sGradient.addColorStop(1, `hsl(${h}, 100%, ${l}%)`)
 
-  cpCTX!.fillStyle = sGradient
-  cpCTX!.fillRect(0, 32 * 2, 256, 32)
+  sCTX!.fillStyle = sGradient
+  sCTX!.fillRect(0, 0, 256, 32)
+
+  sCTX!.beginPath()
+  sCTX!.moveTo((s * 256) / 100, 0)
+  sCTX!.lineTo((s * 256) / 100, 32)
+  sCTX!.stroke()
 }
-function updateL(h: number, s: number) {
-  const lGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateL(h: number, s: number, l: number) {
+  const lGradient = lCTX!.createLinearGradient(0, 0, lCanvas.width, 0)
 
   lGradient.addColorStop(0, `hsl(${h}, ${s}%, 0%)`)
   lGradient.addColorStop(0.5, `hsl(${h}, ${s}%, 50%)`)
   lGradient.addColorStop(1, `hsl(${h}, ${s}%, 100%)`)
 
-  cpCTX!.fillStyle = lGradient
-  cpCTX!.fillRect(0, 32 * 3, 256, 32)
+  lCTX!.fillStyle = lGradient
+  lCTX!.fillRect(0, 0, 256, 32)
+
+  lCTX!.beginPath()
+  lCTX!.moveTo((l * 256) / 100, 0)
+  lCTX!.lineTo((l * 256) / 100, 32)
+  lCTX!.stroke()
 }
 
-function updateR(g: number, b: number) {
-  const rGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateR(r: number, g: number, b: number) {
+  const rGradient = rCTX!.createLinearGradient(0, 0, rCanvas.width, 0)
 
   rGradient.addColorStop(0, `rgb(0, ${g}, ${b})`)
   rGradient.addColorStop(1, `rgb(255, ${g}, ${b})`)
 
-  cpCTX!.fillStyle = rGradient
-  cpCTX!.fillRect(0, 32 * 4, 256, 32)
+  rCTX!.fillStyle = rGradient
+  rCTX!.fillRect(0, 0, 256, 32)
+
+  rCTX!.beginPath()
+  rCTX!.moveTo(r, 0)
+  rCTX!.lineTo(r, 32)
+  rCTX!.stroke()
 }
-function updateG(r: number, b: number) {
-  const gGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateG(r: number, g: number, b: number) {
+  const gGradient = gCTX!.createLinearGradient(0, 0, gCanvas.width, 0)
 
   gGradient.addColorStop(0, `rgb(${r}, 0, ${b})`)
   gGradient.addColorStop(1, `rgb(${r}, 255, ${b})`)
 
-  cpCTX!.fillStyle = gGradient
-  cpCTX!.fillRect(0, 32 * 5, 256, 32)
+  gCTX!.fillStyle = gGradient
+  gCTX!.fillRect(0, 0, 256, 32)
+
+  gCTX!.beginPath()
+  gCTX!.moveTo(g, 0)
+  gCTX!.lineTo(g, 32)
+  gCTX!.stroke()
 }
-function updateB(r: number, g: number) {
-  const bGradient = cpCTX!.createLinearGradient(0, 0, colorPicker.width, 0)
+function updateB(r: number, g: number, b: number) {
+  const bGradient = bCTX!.createLinearGradient(0, 0, bCanvas.width, 0)
 
   bGradient.addColorStop(0, `rgb(${r}, ${g}, 0)`)
   bGradient.addColorStop(1, `rgb(${r}, ${g}, 255)`)
 
-  cpCTX!.fillStyle = bGradient
-  cpCTX!.fillRect(0, 32 * 6, 256, 32)
+  bCTX!.fillStyle = bGradient
+  bCTX!.fillRect(0, 0, 256, 32)
+
+  bCTX!.beginPath()
+  bCTX!.moveTo(b, 0)
+  bCTX!.lineTo(b, 32)
+  bCTX!.stroke()
 }

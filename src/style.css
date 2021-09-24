@@ -5,3 +5,8 @@ body {
 div {
   position: absolute;
 }
+
+canvas {
+  display: block;
+  margin-bottom: 3px;
+}

@@ -14,13 +14,20 @@ import {
   shift,
 } from './input'
 import {
+  bCanvas,
   camera,
-  colorPicker,
+  color,
   ctx,
+  gCanvas,
+  hCanvas,
   height,
+  hsl,
   layer2,
-  pickColor,
+  lCanvas,
+  rCanvas,
   renderer,
+  rgb,
+  sCanvas,
   scene,
   setHeight,
   setWidth,
@@ -28,7 +35,7 @@ import {
   updateTexture,
   width,
 } from './render'
-import { download, raycaster, targetC } from './util'
+import { download, raycaster } from './util'
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
@@ -63,7 +70,7 @@ function onMouseMove(event: MouseEvent) {
           const x = Math.floor(intersect.uv!.x * 64)
           const y = Math.floor(intersect.uv!.y * 64)
 
-          ctx!.fillStyle = pickColor.getStyle()
+          ctx!.fillStyle = color.getStyle()
           ctx?.fillRect(x, 64 - y - 1, 1, 1)
           updateTexture()
         }
@@ -138,50 +145,36 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
 }
 
-colorPicker.addEventListener('mousedown', onPick)
-function onPick(event: MouseEvent) {
-  if (event.y > 32) {
-    if (event.y < 32 * 2) {
-      onPickH(event.x)
-    } else if (event.y < 32 * 3) {
-      onPickS(event.x)
-    } else if (event.y < 32 * 4) {
-      onPickL(event.x)
-    } else if (event.y < 32 * 5) {
-      onPickR(event.x)
-    } else if (event.y < 32 * 6) {
-      onPickG(event.x)
-    } else if (event.y < 32 * 7) {
-      onPickB(event.x)
-    }
-  }
-}
+hCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickH(event.x))
+sCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickS(event.x))
+lCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickL(event.x))
+
+rCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickR(event.x))
+gCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickG(event.x))
+bCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickB(event.x))
 
 function onPickH(value: number) {
   setPicking('h')
-  pickColor.getHSL(targetC)
-  updateColor('hsl', (value * 360) / 256, targetC.s * 100, targetC.l * 100)
+  updateColor('hsl', (value * 360) / 256, hsl.s, hsl.l)
 }
 function onPickS(value: number) {
   setPicking('s')
-  pickColor.getHSL(targetC)
-  updateColor('hsl', targetC.h * 360, (value * 100) / 256, targetC.l * 100)
+  updateColor('hsl', hsl.h, (value * 100) / 256, hsl.l)
 }
 function onPickL(value: number) {
   setPicking('l')
-  pickColor.getHSL(targetC)
-  updateColor('hsl', targetC.h * 360, targetC.s * 100, (value * 100) / 256)
+  updateColor('hsl', hsl.h, hsl.s, (value * 100) / 256)
 }
 
 function onPickR(value: number) {
   setPicking('r')
-  updateColor('rgb', (value * 255) / 256, pickColor.g * 255, pickColor.b * 255)
+  updateColor('rgb', (value / 256) * 255, rgb.g, rgb.b)
 }
 function onPickG(value: number) {
   setPicking('g')
-  updateColor('rgb', pickColor.r * 255, (value * 255) / 256, pickColor.b * 255)
+  updateColor('rgb', rgb.r, (value / 256) * 255, rgb.b)
 }
 function onPickB(value: number) {
   setPicking('b')
-  updateColor('rgb', pickColor.r * 255, pickColor.g * 255, (value * 255) / 256)
+  updateColor('rgb', rgb.r, rgb.g, (value / 256) * 255)
 }
