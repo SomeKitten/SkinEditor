@@ -37,6 +37,12 @@ import {
 } from './render'
 import { download, raycaster } from './util'
 
+import upURL from '../res/up_arrow.png'
+import upSelectedURL from '../res/up_arrow_selected.png'
+import downURL from '../res/down_arrow.png'
+import downSelectedURL from '../res/down_arrow_selected.png'
+import { clamp } from 'three/src/math/MathUtils'
+
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
@@ -44,17 +50,17 @@ function onMouseMove(event: MouseEvent) {
 
   if (mouseDown && mouseButton == 0) {
     if (picking === 'h') {
-      onPickH(Math.min(Math.max(0, event.clientX), 256))
+      onPickH(clamp(event.clientX, 0, 256))
     } else if (picking === 's') {
-      onPickS(Math.min(Math.max(0, event.clientX), 256))
+      onPickS(clamp(event.clientX, 0, 256))
     } else if (picking === 'l') {
-      onPickL(Math.min(Math.max(0, event.clientX), 256))
+      onPickL(clamp(event.clientX, 0, 256))
     } else if (picking === 'r') {
-      onPickR(Math.min(Math.max(0, event.clientX), 256))
+      onPickR(clamp(event.clientX, 0, 256))
     } else if (picking === 'g') {
-      onPickG(Math.min(Math.max(0, event.clientX), 256))
+      onPickG(clamp(event.clientX, 0, 256))
     } else if (picking === 'b') {
-      onPickB(Math.min(Math.max(0, event.clientX), 256))
+      onPickB(clamp(event.clientX, 0, 256))
     } else {
       if (painting) {
         raycaster.setFromCamera(mouse, camera)
@@ -85,8 +91,6 @@ function onMouseMove(event: MouseEvent) {
 
 document.addEventListener('mousedown', onMouseDown)
 function onMouseDown(event: MouseEvent) {
-  event.preventDefault()
-
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
@@ -100,9 +104,7 @@ function onMouseDown(event: MouseEvent) {
 }
 
 document.addEventListener('mouseup', onMouseUp)
-function onMouseUp(event: MouseEvent) {
-  event.preventDefault()
-
+function onMouseUp(_event: MouseEvent) {
   setMouseDown(false)
   setPainting(false)
   setPicking('')
@@ -121,8 +123,6 @@ function onKeyDown(event: KeyboardEvent) {
   if (event.key == 'Shift') {
     setShift(true)
   }
-
-  event.preventDefault()
 }
 
 document.addEventListener('keyup', onKeyUp)
@@ -130,8 +130,6 @@ function onKeyUp(event: KeyboardEvent) {
   if (event.key == 'Shift') {
     setShift(false)
   }
-
-  event.preventDefault()
 }
 
 window.addEventListener('resize', onWindowResize)
@@ -177,4 +175,54 @@ function onPickG(value: number) {
 function onPickB(value: number) {
   setPicking('b')
   updateColor('rgb', rgb.r, rgb.g, (value / 256) * 255)
+}
+
+document.getElementById('input-h')?.addEventListener('input', inputH)
+function inputH(event: Event) {
+  onPickH((clamp(Number((<HTMLInputElement>event.target).value), 0, 360) * 256) / 360)
+}
+document.getElementById('input-s')?.addEventListener('input', inputS)
+function inputS(event: Event) {
+  onPickS((clamp(Number((<HTMLInputElement>event.target).value), 0, 100) * 256) / 100)
+}
+document.getElementById('input-l')?.addEventListener('input', inputL)
+function inputL(event: Event) {
+  onPickL((clamp(Number((<HTMLInputElement>event.target).value), 0, 100) * 256) / 100)
+}
+document.getElementById('input-r')?.addEventListener('input', inputR)
+function inputR(event: Event) {
+  onPickR((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+}
+document.getElementById('input-g')?.addEventListener('input', inputG)
+function inputG(event: Event) {
+  onPickG((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+}
+document.getElementById('input-b')?.addEventListener('input', inputB)
+function inputB(event: Event) {
+  onPickB((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+}
+
+// TODO change icon back no matter where you release
+const ups = document.getElementsByClassName('up')
+for (const up of ups) {
+  up.addEventListener('mousedown', upMouseDown)
+  up.addEventListener('mouseup', upMouseUp)
+}
+const downs = document.getElementsByClassName('down')
+for (const down of downs) {
+  down.addEventListener('mousedown', downMouseDown)
+  down.addEventListener('mouseup', downMouseUp)
+}
+
+function upMouseDown(event: Event) {
+  ;(<HTMLImageElement>event.target).src = upSelectedURL
+}
+function upMouseUp(event: Event) {
+  ;(<HTMLImageElement>event.target).src = upURL
+}
+function downMouseDown(event: Event) {
+  ;(<HTMLImageElement>event.target).src = downSelectedURL
+}
+function downMouseUp(event: Event) {
+  ;(<HTMLImageElement>event.target).src = downURL
 }

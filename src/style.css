@@ -1,12 +1,46 @@
 body {
   margin: 0;
+  user-select: none;
 }
 
-div {
+#color-picker {
   position: absolute;
 }
 
-canvas {
+.color-value {
   display: block;
+  height: 32px;
   margin-bottom: 3px;
+}
+
+canvas {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+input {
+  position: absolute;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  padding-left: 3px;
+  outline: none;
+  margin-left: 3px;
+  height: 32px;
+  width: 96px;
+  line-height: 32px;
+  font-size: 24px;
+}
+
+.up {
+  position: absolute;
+  margin-left: 104px;
+  margin-top: 1px;
+}
+
+.down {
+  position: absolute;
+  margin-left: 104px;
+  margin-top: 17px;
 }

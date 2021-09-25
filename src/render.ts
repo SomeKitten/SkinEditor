@@ -121,9 +121,9 @@ export function updateColor(type: string, rh: number, gs: number, bl: number) {
     hsl.l = bl
 
     color.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
-    rgb.r = color.r * 255
-    rgb.g = color.g * 255
-    rgb.b = color.b * 255
+    rgb.r = Math.floor(color.r * 255)
+    rgb.g = Math.floor(color.g * 255)
+    rgb.b = Math.floor(color.b * 255)
   }
   if (type === 'rgb') {
     rgb.r = rh
@@ -132,9 +132,9 @@ export function updateColor(type: string, rh: number, gs: number, bl: number) {
 
     color.set(`rgb(${rh}, ${gs}, ${bl})`)
     color.getHSL(hsl)
-    hsl.h *= 360
-    hsl.s *= 100
-    hsl.l *= 100
+    hsl.h = Math.floor(360 * hsl.h)
+    hsl.s = Math.floor(100 * hsl.s)
+    hsl.l = Math.floor(100 * hsl.l)
   }
 
   resultCTX!.fillStyle = color.getStyle()
@@ -173,6 +173,7 @@ function updateH(h: number, s: number, l: number) {
   hCTX!.moveTo((h * 256) / 360, 0)
   hCTX!.lineTo((h * 256) / 360, 32)
   hCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-h')).value = `${h}`
 }
 function updateS(h: number, s: number, l: number) {
   const sGradient = sCTX!.createLinearGradient(0, 0, sCanvas.width, 0)
@@ -187,6 +188,7 @@ function updateS(h: number, s: number, l: number) {
   sCTX!.moveTo((s * 256) / 100, 0)
   sCTX!.lineTo((s * 256) / 100, 32)
   sCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-s')).value = `${s}`
 }
 function updateL(h: number, s: number, l: number) {
   const lGradient = lCTX!.createLinearGradient(0, 0, lCanvas.width, 0)
@@ -202,6 +204,7 @@ function updateL(h: number, s: number, l: number) {
   lCTX!.moveTo((l * 256) / 100, 0)
   lCTX!.lineTo((l * 256) / 100, 32)
   lCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-l')).value = `${l}`
 }
 
 function updateR(r: number, g: number, b: number) {
@@ -217,6 +220,7 @@ function updateR(r: number, g: number, b: number) {
   rCTX!.moveTo(r, 0)
   rCTX!.lineTo(r, 32)
   rCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-r')).value = `${r}`
 }
 function updateG(r: number, g: number, b: number) {
   const gGradient = gCTX!.createLinearGradient(0, 0, gCanvas.width, 0)
@@ -231,6 +235,7 @@ function updateG(r: number, g: number, b: number) {
   gCTX!.moveTo(g, 0)
   gCTX!.lineTo(g, 32)
   gCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-g')).value = `${g}`
 }
 function updateB(r: number, g: number, b: number) {
   const bGradient = bCTX!.createLinearGradient(0, 0, bCanvas.width, 0)
@@ -245,4 +250,5 @@ function updateB(r: number, g: number, b: number) {
   bCTX!.moveTo(b, 0)
   bCTX!.lineTo(b, 32)
   bCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-b')).value = `${b}`
 }
