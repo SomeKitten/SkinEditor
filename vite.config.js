@@ -7,4 +7,5 @@ export default {
   build: {
     outDir: 'docs',
   },
+  assetsInclude: ['**/*.png'],
 }

@@ -12,6 +12,8 @@ import {
 } from 'three'
 import { genBlockUVs } from './util'
 
+import defaultHeadURL from '../res/neferupitou.png'
+
 const layer1ToLayer2 = 9 / 8
 
 export let width = window.innerWidth
@@ -33,7 +35,7 @@ textureCanvas.width = 64
 textureCanvas.height = 64
 export const ctx = textureCanvas.getContext('2d')
 const image = document.createElement('img')
-image.src = '../img/neferupitou.png'
+image.src = defaultHeadURL
 image.addEventListener('load', () => {
   setTexture()
 })
