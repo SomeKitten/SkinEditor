@@ -8,4 +8,5 @@ export default {
     outDir: 'docs',
   },
   assetsInclude: ['**/*.png'],
+  base: './',
 }
