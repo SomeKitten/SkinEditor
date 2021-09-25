@@ -1,13 +1,14 @@
 import {
   cameraControls,
+  cameraMove,
   mouse,
   mouseButton,
   mouseDown,
   painting,
   picking,
+  setCameraMove,
   setMouseButton,
   setMouseDown,
-  setMouseDrag,
   setPainting,
   setPicking,
   setShift,
@@ -35,7 +36,7 @@ import {
   updateTexture,
   width,
 } from './render'
-import { download, raycaster } from './util'
+import { download, raycaster, rgb2hex } from './util'
 
 import upURL from '../res/up_arrow.png'
 import upSelectedURL from '../res/up_arrow_selected.png'
@@ -48,86 +49,112 @@ function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
   mouse.y = -(event.clientY / height) * 2 + 1
 
-  if (mouseDown && mouseButton == 0) {
-    if (picking === 'h') {
-      onPickH(clamp(event.clientX, 0, 256))
-    } else if (picking === 's') {
-      onPickS(clamp(event.clientX, 0, 256))
-    } else if (picking === 'l') {
-      onPickL(clamp(event.clientX, 0, 256))
-    } else if (picking === 'r') {
-      onPickR(clamp(event.clientX, 0, 256))
-    } else if (picking === 'g') {
-      onPickG(clamp(event.clientX, 0, 256))
-    } else if (picking === 'b') {
-      onPickB(clamp(event.clientX, 0, 256))
-    } else {
-      if (painting) {
-        raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects(scene.children)
+  if (mouseDown && mouseButton === 0) {
+    switch (picking) {
+      case 'h':
+        onPickN(onPickH, clamp(event.clientX, 0, 256), 360)
+        break
+      case 's':
+        onPickN(onPickS, clamp(event.clientX, 0, 256), 100)
+        break
+      case 'l':
+        onPickN(onPickL, clamp(event.clientX, 0, 256), 100)
+        break
+      case 'r':
+        onPickN(onPickR, clamp(event.clientX, 0, 256), 255)
+        break
+      case 'g':
+        onPickN(onPickG, clamp(event.clientX, 0, 256), 255)
+        break
+      case 'b':
+        onPickN(onPickB, clamp(event.clientX, 0, 256), 255)
+        break
+      default:
+        if (painting) {
+          raycaster.setFromCamera(mouse, camera)
+          const intersects = raycaster.intersectObjects(scene.children)
 
-        if (intersects.length > 0) {
-          let intersect
-          if (!shift && layer2.visible) {
-            intersect = intersects[0]
-          } else {
-            intersect = intersects[1]
+          if (intersects.length > 0) {
+            let intersect
+            if (!shift && layer2.visible) {
+              intersect = intersects[0]
+            } else {
+              intersect = intersects[1]
+
+              if (intersect.object === layer2) {
+                return
+              }
+            }
+            const x = Math.floor(intersect.uv!.x * 64)
+            const y = Math.floor(intersect.uv!.y * 64)
+
+            ctx!.fillStyle = color.getStyle()
+            ctx?.fillRect(x, 64 - y - 1, 1, 1)
+            updateTexture()
           }
-          const x = Math.floor(intersect.uv!.x * 64)
-          const y = Math.floor(intersect.uv!.y * 64)
-
-          ctx!.fillStyle = color.getStyle()
-          ctx?.fillRect(x, 64 - y - 1, 1, 1)
-          updateTexture()
         }
-      } else {
-        cameraControls(event.movementX, event.movementY)
-      }
     }
   }
 
-  setMouseDrag(true)
+  if (cameraMove && mouseButton === 0) {
+    cameraControls(event.movementX, event.movementY)
+  }
 }
 
-document.addEventListener('mousedown', onMouseDown)
-function onMouseDown(event: MouseEvent) {
+renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
+function onSceneMouseDown(_event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
   if (intersects.length > 0) {
     setPainting(true)
+  } else {
+    setCameraMove(true)
   }
+}
 
+document.addEventListener('mousedown', onMouseDown)
+function onMouseDown(event: MouseEvent) {
   setMouseDown(true)
   setMouseButton(event.button)
-  setMouseDrag(false)
 }
 
 document.addEventListener('mouseup', onMouseUp)
 function onMouseUp(_event: MouseEvent) {
+  setCameraMove(false)
   setMouseDown(false)
   setPainting(false)
   setPicking('')
+
+  for (const up of ups) {
+    ;(<HTMLImageElement>up).src = upURL
+  }
+  for (const down of downs) {
+    ;(<HTMLImageElement>down).src = downURL
+  }
 }
 
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
-  if (event.ctrlKey && event.code == 'KeyS') {
+  if (event.ctrlKey && event.code === 'KeyS') {
     download()
+    event.preventDefault()
   }
 
-  if (event.code == 'Tab') {
+  if (event.code === 'Tab') {
     layer2.visible = !layer2.visible
+    event.preventDefault()
   }
 
-  if (event.key == 'Shift') {
+  if (event.key === 'Shift') {
     setShift(true)
+    event.preventDefault()
   }
 }
 
 document.addEventListener('keyup', onKeyUp)
 function onKeyUp(event: KeyboardEvent) {
-  if (event.key == 'Shift') {
+  if (event.key === 'Shift') {
     setShift(false)
   }
 }
@@ -143,66 +170,82 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
 }
 
-hCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickH(event.x))
-sCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickS(event.x))
-lCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickL(event.x))
+hCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('h')
+  onPickN(onPickH, event.x, 360)
+})
+sCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('s')
+  onPickN(onPickS, event.x, 100)
+})
+lCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('l')
+  onPickN(onPickL, event.x, 100)
+})
 
-rCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickR(event.x))
-gCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickG(event.x))
-bCanvas.addEventListener('mousedown', (event: MouseEvent) => onPickB(event.x))
+rCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('r')
+  onPickN(onPickR, event.x, 255)
+})
+gCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('g')
+  onPickN(onPickG, event.x, 255)
+})
+bCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('b')
+  onPickN(onPickB, event.x, 255)
+})
+
+function onPickN(func: Function, value: number, n: number) {
+  func((value * n) / 256)
+}
 
 function onPickH(value: number) {
-  setPicking('h')
-  updateColor('hsl', (value * 360) / 256, hsl.s, hsl.l)
+  updateColor('hsl', value, hsl.s, hsl.l)
 }
 function onPickS(value: number) {
-  setPicking('s')
-  updateColor('hsl', hsl.h, (value * 100) / 256, hsl.l)
+  updateColor('hsl', hsl.h, value, hsl.l)
 }
 function onPickL(value: number) {
-  setPicking('l')
-  updateColor('hsl', hsl.h, hsl.s, (value * 100) / 256)
+  updateColor('hsl', hsl.h, hsl.s, value)
 }
 
 function onPickR(value: number) {
-  setPicking('r')
-  updateColor('rgb', (value / 256) * 255, rgb.g, rgb.b)
+  updateColor('rgb', value, rgb.g, rgb.b)
 }
 function onPickG(value: number) {
-  setPicking('g')
-  updateColor('rgb', rgb.r, (value / 256) * 255, rgb.b)
+  updateColor('rgb', rgb.r, value, rgb.b)
 }
 function onPickB(value: number) {
-  setPicking('b')
-  updateColor('rgb', rgb.r, rgb.g, (value / 256) * 255)
+  updateColor('rgb', rgb.r, rgb.g, value)
 }
 
+// TODO convert target to this: HTMLElement
 document.getElementById('input-h')?.addEventListener('input', inputH)
 function inputH(event: Event) {
-  onPickH((clamp(Number((<HTMLInputElement>event.target).value), 0, 360) * 256) / 360)
+  onPickH(clamp(Number((<HTMLInputElement>event.target).value), 0, 360))
 }
 document.getElementById('input-s')?.addEventListener('input', inputS)
 function inputS(event: Event) {
-  onPickS((clamp(Number((<HTMLInputElement>event.target).value), 0, 100) * 256) / 100)
+  onPickS(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
 }
 document.getElementById('input-l')?.addEventListener('input', inputL)
 function inputL(event: Event) {
-  onPickL((clamp(Number((<HTMLInputElement>event.target).value), 0, 100) * 256) / 100)
+  onPickL(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
 }
 document.getElementById('input-r')?.addEventListener('input', inputR)
 function inputR(event: Event) {
-  onPickR((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+  onPickR(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
 document.getElementById('input-g')?.addEventListener('input', inputG)
 function inputG(event: Event) {
-  onPickG((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+  onPickG(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
 document.getElementById('input-b')?.addEventListener('input', inputB)
 function inputB(event: Event) {
-  onPickB((clamp(Number((<HTMLInputElement>event.target).value), 0, 255) * 256) / 255)
+  onPickB(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
 
-// TODO change icon back no matter where you release
 const ups = document.getElementsByClassName('up')
 for (const up of ups) {
   up.addEventListener('mousedown', upMouseDown)
@@ -214,15 +257,77 @@ for (const down of downs) {
   down.addEventListener('mouseup', downMouseUp)
 }
 
+// TODO inc/dec HSLRGB values
 function upMouseDown(event: Event) {
   ;(<HTMLImageElement>event.target).src = upSelectedURL
+  switch ((<HTMLImageElement>event.target).classList[1]) {
+    case 'arrow-h':
+      onPickH(clamp(hsl.h + 1, 0, 360))
+      break
+    case 'arrow-s':
+      onPickS(clamp(hsl.s + 1, 0, 100))
+      break
+    case 'arrow-l':
+      onPickL(clamp(hsl.l + 1, 0, 100))
+      break
+    case 'arrow-r':
+      onPickR(clamp(rgb.r + 1, 0, 255))
+      break
+    case 'arrow-g':
+      onPickG(clamp(rgb.g + 1, 0, 255))
+      break
+    case 'arrow-b':
+      onPickB(clamp(rgb.b + 1, 0, 255))
+      break
+  }
 }
 function upMouseUp(event: Event) {
   ;(<HTMLImageElement>event.target).src = upURL
 }
 function downMouseDown(event: Event) {
   ;(<HTMLImageElement>event.target).src = downSelectedURL
+  switch ((<HTMLImageElement>event.target).classList[1]) {
+    case 'arrow-h':
+      onPickH(clamp(hsl.h - 1, 0, 360))
+      break
+    case 'arrow-s':
+      onPickS(clamp(hsl.s - 1, 0, 100))
+      break
+    case 'arrow-l':
+      onPickL(clamp(hsl.l - 1, 0, 100))
+      break
+    case 'arrow-r':
+      onPickR(clamp(rgb.r - 1, 0, 255))
+      break
+    case 'arrow-g':
+      onPickG(clamp(rgb.g - 1, 0, 255))
+      break
+    case 'arrow-b':
+      onPickB(clamp(rgb.b - 1, 0, 255))
+      break
+  }
 }
 function downMouseUp(event: Event) {
   ;(<HTMLImageElement>event.target).src = downURL
+}
+
+// TODO hex colour code input/output
+document.getElementById('input-result')?.addEventListener('input', onResultType)
+function onResultType(this: HTMLInputElement, _event: Event) {
+  updateColor('hex', rgb2hex(this.value, color.getHex()), 0, 0)
+}
+
+// TODO middle mouse for colour picker
+
+const imgs = document.getElementsByTagName('img')
+
+// ! FIREFOX DRAG FIX
+// loop through fetched images
+for (const img of imgs) {
+  // and define onmousedown event handler
+  img.onmousedown = disableDragging
+}
+
+function disableDragging(e: Event) {
+  e.preventDefault()
 }

@@ -103,3 +103,11 @@ export function download() {
   link!.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
   link!.click()
 }
+
+export function rgb2hex(rgb: string, def: number) {
+  if (rgb.length !== 6) {
+    return def
+  }
+
+  return Number('0x' + rgb)
+}

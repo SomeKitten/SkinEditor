@@ -3,14 +3,37 @@ body {
   user-select: none;
 }
 
+img {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  -ms-user-drag: none;
+}
+
 #color-picker {
   position: absolute;
+  z-index: 1;
 }
 
 .color-value {
-  display: block;
   height: 32px;
   margin-bottom: 3px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.arrow-div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 canvas {
@@ -20,7 +43,6 @@ canvas {
 }
 
 input {
-  position: absolute;
   margin: 0;
   border: 0;
   padding: 0;
@@ -28,19 +50,22 @@ input {
   outline: none;
   margin-left: 3px;
   height: 32px;
-  width: 96px;
+  width: 99px;
   line-height: 32px;
   font-size: 24px;
+  vertical-align: top;
+  left: 0;
+  right: auto;
 }
 
 .up {
-  position: absolute;
-  margin-left: 104px;
-  margin-top: 1px;
+  vertical-align: top;
+  margin-left: 2px;
+  margin-top: 2px;
 }
 
 .down {
-  position: absolute;
-  margin-left: 104px;
-  margin-top: 17px;
+  vertical-align: bottom;
+  margin-left: 2px;
+  margin-bottom: 2px;
 }

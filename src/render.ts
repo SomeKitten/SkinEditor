@@ -111,30 +111,45 @@ export function updateTexture() {
   material.map!.needsUpdate = true
 }
 
-export function updateColor(type: string, rh: number, gs: number, bl: number) {
-  rh = Math.floor(rh)
+export function updateColor(type: string, rhhex: number, gs: number, bl: number) {
+  rhhex = Math.floor(rhhex)
   gs = Math.floor(gs)
   bl = Math.floor(bl)
-  if (type === 'hsl') {
-    hsl.h = rh
-    hsl.s = gs
-    hsl.l = bl
 
-    color.set(`hsl(${rh}, ${gs}%, ${bl}%)`)
-    rgb.r = Math.floor(color.r * 255)
-    rgb.g = Math.floor(color.g * 255)
-    rgb.b = Math.floor(color.b * 255)
-  }
-  if (type === 'rgb') {
-    rgb.r = rh
-    rgb.g = gs
-    rgb.b = bl
+  switch (type) {
+    case 'hsl':
+      hsl.h = rhhex
+      hsl.s = gs
+      hsl.l = bl
 
-    color.set(`rgb(${rh}, ${gs}, ${bl})`)
-    color.getHSL(hsl)
-    hsl.h = Math.floor(360 * hsl.h)
-    hsl.s = Math.floor(100 * hsl.s)
-    hsl.l = Math.floor(100 * hsl.l)
+      color.set(`hsl(${rhhex}, ${gs}%, ${bl}%)`)
+      rgb.r = Math.floor(color.r * 255)
+      rgb.g = Math.floor(color.g * 255)
+      rgb.b = Math.floor(color.b * 255)
+      break
+    case 'rgb':
+      rgb.r = rhhex
+      rgb.g = gs
+      rgb.b = bl
+
+      color.set(`rgb(${rhhex}, ${gs}, ${bl})`)
+      color.getHSL(hsl)
+      hsl.h = Math.floor(360 * hsl.h)
+      hsl.s = Math.floor(100 * hsl.s)
+      hsl.l = Math.floor(100 * hsl.l)
+      break
+    case 'hex':
+      color.set(rhhex)
+
+      color.getHSL(hsl)
+      hsl.h = Math.floor(360 * hsl.h)
+      hsl.s = Math.floor(100 * hsl.s)
+      hsl.l = Math.floor(100 * hsl.l)
+
+      rgb.r = Math.floor(color.r * 255)
+      rgb.g = Math.floor(color.g * 255)
+      rgb.b = Math.floor(color.b * 255)
+      break
   }
 
   resultCTX!.fillStyle = color.getStyle()
@@ -142,6 +157,7 @@ export function updateColor(type: string, rh: number, gs: number, bl: number) {
 
   updateHSL()
   updateRGB()
+  updateHEX()
 }
 
 function updateHSL() {
@@ -153,6 +169,9 @@ function updateRGB() {
   updateR(rgb.r, rgb.g, rgb.b)
   updateG(rgb.r, rgb.g, rgb.b)
   updateB(rgb.r, rgb.g, rgb.b)
+}
+function updateHEX() {
+  ;(<HTMLInputElement>document.getElementById('input-result')).value = color.getHexString()
 }
 
 function updateH(h: number, s: number, l: number) {
@@ -252,3 +271,5 @@ function updateB(r: number, g: number, b: number) {
   bCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-b')).value = `${b}`
 }
+
+// TODO colour hotbar
