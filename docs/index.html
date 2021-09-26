@@ -5,9 +5,9 @@
     <link rel="icon" type="image/ico" href="./assets/pitou-icon.f2c9a694.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Head Editor</title>
-    <script type="module" crossorigin src="./assets/index.2c52b95f.js"></script>
+    <script type="module" crossorigin src="./assets/index.0ec45bb3.js"></script>
     <link rel="modulepreload" href="./assets/vendor.1ead472e.js">
-    <link rel="stylesheet" href="./assets/index.9bfcb72b.css">
+    <link rel="stylesheet" href="./assets/index.dbcaf54d.css">
   </head>
   <body>
     
@@ -55,9 +55,18 @@
         </div>
       </div>
       <div class="color-value">
+        <canvas id="color-a" width="256" height="32"></canvas><input type="text" id="input-a" />
+        <div class="arrow-div">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAOCAYAAAArMezNAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAZ0lEQVQ4jb2QwQ2AIAwAT+NOXbKjsEinqg/lgREsieWSvgrN5SCO3xNinzg8xRZ44wAiAoCZhf6mGR+DnQO4X1lVtVmaWe39ar608dC0UkoB+s2XGIdMn/TMU40b0y+izfON/ybN+ARxcy4PTYWvaAAAAABJRU5ErkJggg==" alt="" class="up arrow-a" draggable="false" />
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAOCAYAAAArMezNAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAaklEQVQ4jb3UsQ2AMAxE0X+I8T1KFvFUpkAWCEEgSM6vXJ1emggICloqRgHWPCJ2uJn9GmqtAeDuQKFYpztgXH6V5uYUcfZJ/iTNpoqzW/mbNCsT94YFSBLSgXL31IrOi8vEIwUD/0qZeAM7ri7Wv08DdwAAAABJRU5ErkJggg==" alt="" class="down arrow-a" draggable="false" />
+        </div>
+      </div>
+      <div class="color-value">
         <canvas id="color-result" width="256" height="32"></canvas><input type="text" id="input-result" />
       </div>
     </div>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAgCAYAAAD9qabkAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAr0lEQVR4nO3cwQnDMAAEQTukC9WnPtyHik060M/EZGe+4r6LQMbndV2fY2OttTs+5pzbc3t7++fuX9tT4K8JAIQJAIQJAIQJAIQJAIQJAISdY4ztdwC/fqe0t7e/b+8GAGECAGECAGECAGECAGECAGECAGHvp79T2tvb37d3A4AwAYAwAYAwAYAwAYAwAYAwAYAw/wOwtw/v3QAgTAAgTAAgTAAgTAAgTAAgTAAg7AsNpcCO9fMYTgAAAABJRU5ErkJggg==" alt="" id="alpha-checker" />
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAgCAYAAAD9qabkAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAr0lEQVR4nO3cwQnDMAAEQTukC9WnPtyHik060M/EZGe+4r6LQMbndV2fY2OttTs+5pzbc3t7++fuX9tT4K8JAIQJAIQJAIQJAIQJAIQJAISdY4ztdwC/fqe0t7e/b+8GAGECAGECAGECAGECAGECAGECAGHvp79T2tvb37d3A4AwAYAwAYAwAYAwAYAwAYAwAYAw/wOwtw/v3QAgTAAgTAAgTAAgTAAgTAAgTAAg7AsNpcCO9fMYTgAAAABJRU5ErkJggg==" alt="" id="result-checker" />
   </body>
   <a id="link"></a>
 </html>
