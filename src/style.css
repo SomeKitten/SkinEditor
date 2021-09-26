@@ -23,6 +23,16 @@ img {
   z-index: 1;
 }
 
+#alpha-checker {
+  position: absolute;
+  margin-top: 210px;
+}
+
+#result-checker {
+  position: absolute;
+  margin-top: 245px;
+}
+
 .color-value {
   height: 32px;
   margin-bottom: 3px;

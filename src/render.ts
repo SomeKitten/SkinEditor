@@ -44,19 +44,26 @@ const texture = new CanvasTexture(textureCanvas)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
 
-const material = new MeshBasicMaterial({
+const layer1Mat = new MeshBasicMaterial({
   color: 0xffffff,
-  transparent: false,
   map: texture,
-  alphaTest: 0.5,
   depthWrite: true,
   depthTest: true,
   side: DoubleSide,
 })
 
-export const layer1 = new Mesh(layer1Geometry, material)
+const layer2Mat = new MeshBasicMaterial({
+  color: 0xffffff,
+  transparent: true,
+  map: texture,
+  depthWrite: true,
+  depthTest: true,
+  side: DoubleSide,
+})
+
+export const layer1 = new Mesh(layer1Geometry, layer1Mat)
 scene.add(layer1)
-export const layer2 = new Mesh(layer2Geometry, material)
+export const layer2 = new Mesh(layer2Geometry, layer2Mat)
 layer2.scale.multiplyScalar(layer1ToLayer2)
 scene.add(layer2)
 
@@ -89,17 +96,26 @@ const gCTX = gCanvas.getContext('2d')
 export const bCanvas = <HTMLCanvasElement>document.getElementById('color-b')
 const bCTX = bCanvas.getContext('2d')
 
+export const aCanvas = <HTMLCanvasElement>document.getElementById('color-a')
+const aCTX = aCanvas.getContext('2d')
+
 export const hsl = { h: 0, s: 0, l: 0 }
 export const rgb = { r: 0, g: 0, b: 0 }
 export const color = new Color()
+export let alpha = 255
 
 updateColor('hsl', 0, 100, 50)
 
 export function setWidth(value: number) {
   width = value
 }
+
 export function setHeight(value: number) {
   height = value
+}
+
+export function setAlpha(value: number) {
+  alpha = value
 }
 
 export function setTexture() {
@@ -108,7 +124,8 @@ export function setTexture() {
 }
 
 export function updateTexture() {
-  material.map!.needsUpdate = true
+  layer1Mat.map!.needsUpdate = true
+  layer2Mat.map!.needsUpdate = true
 }
 
 export function updateColor(type: string, rhhex: number, gs: number, bl: number) {
@@ -152,11 +169,14 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
       break
   }
 
-  resultCTX!.fillStyle = color.getStyle()
+  resultCTX!.clearRect(0, 0, resultCanvas.width, resultCanvas.height)
+
+  resultCTX!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
   resultCTX!.fillRect(0, 0, 256, 32)
 
   updateHSL()
   updateRGB()
+  updateA(color.r, color.g, color.b, alpha)
   updateHEX()
 }
 
@@ -165,11 +185,13 @@ function updateHSL() {
   updateS(hsl.h, hsl.s, hsl.l)
   updateL(hsl.h, hsl.s, hsl.l)
 }
+
 function updateRGB() {
   updateR(rgb.r, rgb.g, rgb.b)
   updateG(rgb.r, rgb.g, rgb.b)
   updateB(rgb.r, rgb.g, rgb.b)
 }
+
 function updateHEX() {
   ;(<HTMLInputElement>document.getElementById('input-result')).value = color.getHexString()
 }
@@ -194,6 +216,7 @@ function updateH(h: number, s: number, l: number) {
   hCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-h')).value = `${h}`
 }
+
 function updateS(h: number, s: number, l: number) {
   const sGradient = sCTX!.createLinearGradient(0, 0, sCanvas.width, 0)
 
@@ -209,6 +232,7 @@ function updateS(h: number, s: number, l: number) {
   sCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-s')).value = `${s}`
 }
+
 function updateL(h: number, s: number, l: number) {
   const lGradient = lCTX!.createLinearGradient(0, 0, lCanvas.width, 0)
 
@@ -241,6 +265,7 @@ function updateR(r: number, g: number, b: number) {
   rCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-r')).value = `${r}`
 }
+
 function updateG(r: number, g: number, b: number) {
   const gGradient = gCTX!.createLinearGradient(0, 0, gCanvas.width, 0)
 
@@ -256,6 +281,7 @@ function updateG(r: number, g: number, b: number) {
   gCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-g')).value = `${g}`
 }
+
 function updateB(r: number, g: number, b: number) {
   const bGradient = bCTX!.createLinearGradient(0, 0, bCanvas.width, 0)
 
@@ -270,6 +296,24 @@ function updateB(r: number, g: number, b: number) {
   bCTX!.lineTo(b, 32)
   bCTX!.stroke()
   ;(<HTMLInputElement>document.getElementById('input-b')).value = `${b}`
+}
+
+function updateA(r: number, g: number, b: number, a: number) {
+  const aGradient = aCTX!.createLinearGradient(0, 0, aCanvas.width, 0)
+
+  aGradient.addColorStop(0, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 0)`)
+  aGradient.addColorStop(1, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 255)`)
+
+  aCTX!.clearRect(0, 0, aCanvas.width, aCanvas.height)
+
+  aCTX!.fillStyle = aGradient
+  aCTX!.fillRect(0, 0, 256, 32)
+
+  aCTX!.beginPath()
+  aCTX!.moveTo(a, 0)
+  aCTX!.lineTo(a, 32)
+  aCTX!.stroke()
+  ;(<HTMLInputElement>document.getElementById('input-a')).value = `${a}`
 }
 
 // TODO colour hotbar

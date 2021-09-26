@@ -15,6 +15,8 @@ import {
   shift,
 } from './input'
 import {
+  aCanvas,
+  alpha,
   bCanvas,
   camera,
   color,
@@ -30,6 +32,7 @@ import {
   rgb,
   sCanvas,
   scene,
+  setAlpha,
   setHeight,
   setWidth,
   updateColor,
@@ -69,6 +72,9 @@ function onMouseMove(event: MouseEvent) {
       case 'b':
         onPickN(onPickB, clamp(event.clientX, 0, 256), 255)
         break
+      case 'a':
+        onPickN(onPickA, clamp(event.clientX, 0, 256), 255)
+        break
       default:
         if (painting) {
           raycaster.setFromCamera(mouse, camera)
@@ -88,7 +94,10 @@ function onMouseMove(event: MouseEvent) {
             const x = Math.floor(intersect.uv!.x * 64)
             const y = Math.floor(intersect.uv!.y * 64)
 
-            ctx!.fillStyle = color.getStyle()
+            ctx?.clearRect(x, 64 - y - 1, 1, 1)
+
+            console.log(`rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`)
+            ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
             ctx?.fillRect(x, 64 - y - 1, 1, 1)
             updateTexture()
           }
@@ -195,6 +204,10 @@ bCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('b')
   onPickN(onPickB, event.x, 255)
 })
+aCanvas.addEventListener('mousedown', (event: MouseEvent) => {
+  setPicking('a')
+  onPickN(onPickA, event.x, 255)
+})
 
 function onPickN(func: Function, value: number, n: number) {
   func((value * n) / 256)
@@ -203,9 +216,11 @@ function onPickN(func: Function, value: number, n: number) {
 function onPickH(value: number) {
   updateColor('hsl', value, hsl.s, hsl.l)
 }
+
 function onPickS(value: number) {
   updateColor('hsl', hsl.h, value, hsl.l)
 }
+
 function onPickL(value: number) {
   updateColor('hsl', hsl.h, hsl.s, value)
 }
@@ -213,11 +228,18 @@ function onPickL(value: number) {
 function onPickR(value: number) {
   updateColor('rgb', value, rgb.g, rgb.b)
 }
+
 function onPickG(value: number) {
   updateColor('rgb', rgb.r, value, rgb.b)
 }
+
 function onPickB(value: number) {
   updateColor('rgb', rgb.r, rgb.g, value)
+}
+
+function onPickA(value: number) {
+  setAlpha(Math.floor(value))
+  updateColor('rgb', rgb.r, rgb.g, rgb.b)
 }
 
 // TODO convert target to this: HTMLElement
@@ -225,25 +247,35 @@ document.getElementById('input-h')?.addEventListener('input', inputH)
 function inputH(event: Event) {
   onPickH(clamp(Number((<HTMLInputElement>event.target).value), 0, 360))
 }
+
 document.getElementById('input-s')?.addEventListener('input', inputS)
 function inputS(event: Event) {
   onPickS(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
 }
+
 document.getElementById('input-l')?.addEventListener('input', inputL)
 function inputL(event: Event) {
   onPickL(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
 }
+
 document.getElementById('input-r')?.addEventListener('input', inputR)
 function inputR(event: Event) {
   onPickR(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
+
 document.getElementById('input-g')?.addEventListener('input', inputG)
 function inputG(event: Event) {
   onPickG(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
+
 document.getElementById('input-b')?.addEventListener('input', inputB)
 function inputB(event: Event) {
   onPickB(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
+}
+
+document.getElementById('input-a')?.addEventListener('input', inputA)
+function inputA(event: Event) {
+  onPickA(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
 }
 
 const ups = document.getElementsByClassName('up')
@@ -279,6 +311,9 @@ function upMouseDown(event: Event) {
     case 'arrow-b':
       onPickB(clamp(rgb.b + 1, 0, 255))
       break
+    case 'arrow-a':
+      onPickA(clamp(alpha + 1, 0, 255))
+      break
   }
 }
 function upMouseUp(event: Event) {
@@ -304,6 +339,9 @@ function downMouseDown(event: Event) {
       break
     case 'arrow-b':
       onPickB(clamp(rgb.b - 1, 0, 255))
+      break
+    case 'arrow-a':
+      onPickA(clamp(alpha - 1, 0, 255))
       break
   }
 }
