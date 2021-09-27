@@ -40,9 +40,11 @@ import {
   setAlpha,
   setHeight,
   setMouseTexture,
+  setTexture,
   setWidth,
   showCanvas,
   showZoom,
+  textureImage,
   updateColor,
   updateTexture,
   width,
@@ -238,6 +240,54 @@ function onKeyUp(event: KeyboardEvent) {
     setShift(false)
   }
 }
+
+document.addEventListener('dragover', (event: DragEvent) => {
+  event.preventDefault()
+})
+
+const fileReader = new FileReader()
+fileReader.addEventListener(
+  'load',
+  function () {
+    // console.log(fileReader.result)
+    textureImage.src = <string>fileReader.result
+    setTexture()
+  },
+  false,
+)
+document.addEventListener('drop', (event: DragEvent) => {
+  event.preventDefault()
+  if (event.dataTransfer?.items) {
+    if (event.dataTransfer.items[0].kind === 'file') {
+      const file = event.dataTransfer.items[0].getAsFile()
+      if (file?.name.endsWith('.png')) {
+        fileReader.readAsDataURL(file)
+        // console.log('... file[' + i + '].name = ' + file!.name)
+      }
+    }
+    // for (let i = 0; i < event.dataTransfer.items.length; i++) {
+    //   if (event.dataTransfer.items[i].kind === 'file') {
+    //     const file = event.dataTransfer.items[i].getAsFile()
+    //     if (file?.name.endsWith('.png')) {
+    //       fileReader.readAsDataURL(file)
+    //       // console.log('... file[' + i + '].name = ' + file!.name)
+    //     }
+    //   }
+    // }
+  } else {
+    const file = event.dataTransfer!.files[0]
+    if (file.name.endsWith('png')) {
+      fileReader.readAsDataURL(file)
+    }
+    // for (var i = 0; i < event.dataTransfer!.files.length; i++) {
+    //   const file = event.dataTransfer!.files[i]
+    //   if (file.name.endsWith('png')) {
+    //     fileReader.readAsDataURL(file)
+    //     // console.log('... file[' + i + '].name = ' + file.name)
+    //   }
+    // }
+  }
+})
 
 saveIcon.addEventListener('mousedown', (event: MouseEvent) => {
   ;(<HTMLImageElement>event.target).src = saveSelected

@@ -46,7 +46,7 @@ export let showZoom = 1
 export let zoomPos = { x: 0, y: 0 }
 export const mouseTexture = { x: 0, y: 0 }
 
-const textureImage = document.createElement('img')
+export const textureImage = document.createElement('img')
 textureImage.src = defaultHeadURL
 textureImage.addEventListener('load', () => {
   setTexture()
@@ -179,6 +179,7 @@ export function setAlpha(value: number) {
 }
 
 export function setTexture() {
+  ctx?.clearRect(0, 0, 64, 64)
   ctx?.drawImage(textureImage, 0, 0)
   updateTexture()
 }
