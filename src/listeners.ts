@@ -55,7 +55,7 @@ import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
 
-// document.addEventListener('wheel', onScroll)
+// renderer.domElement.addEventListener('wheel', onScroll)
 // function onScroll(event: MouseEvent) {
 //   console.log(event)
 
@@ -67,7 +67,7 @@ function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
   mouse.y = -(event.clientY / height) * 2 + 1
 
-  if (mouseDown && mouseButton === 0) {
+  if (mouseDown && (mouseButton === 0 || mouseButton === 2)) {
     switch (picking) {
       case 'h':
         onPickN(onPickH, clamp(event.clientX, 0, 256), 360)
@@ -122,8 +122,11 @@ function paint() {
 
     ctx?.clearRect(x, 64 - y - 1, 1, 1)
 
-    ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
-    ctx?.fillRect(x, 64 - y - 1, 1, 1)
+    if (mouseButton === 0) {
+      ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+      ctx?.fillRect(x, 64 - y - 1, 1, 1)
+    }
+
     updateTexture()
   }
 }
@@ -134,19 +137,30 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
 }
 
 function draw(x: number, y: number) {
-  ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
   ctx?.clearRect(x, y, 1, 1)
-  ctx?.fillRect(x, y, 1, 1)
+  if (mouseButton === 0) {
+    ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+    ctx?.clearRect(x, y, 1, 1)
+    ctx?.fillRect(x, y, 1, 1)
+  }
   updateTexture()
 }
 
 showCanvas.addEventListener('mousedown', onDrawStart)
 function onDrawStart(this: HTMLElement, event: MouseEvent) {
-  if (event.button == 0) {
+  if (event.button === 0 || event.button === 2) {
     setDrawing(true)
 
     drawFromOffset(event.offsetX, event.offsetY)
   }
+}
+
+document.addEventListener('contextmenu', onContextMenu)
+function onContextMenu(event: Event) {
+  event.preventDefault()
+  // this.width = 64
+  // this.height = 64
+  // showCTX?.drawImage(textureCanvas, 0, 0)
 }
 
 function drawFromOffset(x: number, y: number) {
@@ -167,13 +181,17 @@ function onZoom(this: HTMLElement, event: WheelEvent) {
 }
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
-function onSceneMouseDown(_event: MouseEvent) {
+function onSceneMouseDown(event: MouseEvent) {
+  setMouseButton(event.button)
+
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
   if (intersects.length > 0) {
     setPainting(true)
-    paint()
+    if (event.button === 0 || event.button === 2) {
+      paint()
+    }
   } else {
     setCameraMove(true)
   }
