@@ -10,61 +10,77 @@
     <script type="module" src="/src/main.ts"></script>
     <div id="color-picker">
       <div class="color-value">
-        <canvas id="color-h" width="256" height="32"></canvas><input type="text" id="input-h" />
+        <canvas id="color-h" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-h" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-h" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-h" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-s" width="256" height="32"></canvas><input type="text" id="input-s" />
+        <canvas id="color-s" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-s" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-s" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-s" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-l" width="256" height="32"></canvas><input type="text" id="input-l" />
+        <canvas id="color-l" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-l" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-l" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-l" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-r" width="256" height="32"></canvas><input type="text" id="input-r" />
+        <canvas id="color-r" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-r" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-r" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-r" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-g" width="256" height="32"></canvas><input type="text" id="input-g" />
+        <canvas id="color-g" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-g" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-g" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-g" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-b" width="256" height="32"></canvas><input type="text" id="input-b" />
+        <canvas id="color-b" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-b" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-b" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-b" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-a" width="256" height="32"></canvas><input type="text" id="input-a" />
+        <canvas id="color-a" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-a" />
         <div class="arrow-div">
           <img src="res/up_arrow.png" alt="" class="up arrow-a" draggable="false" />
           <img src="res/down_arrow.png" alt="" class="down arrow-a" draggable="false" />
         </div>
       </div>
       <div class="color-value">
-        <canvas id="color-result" width="256" height="32"></canvas><input type="text" id="input-result" />
+        <canvas id="color-result" class="color-canvas" width="256" height="32"></canvas>
+        <input type="text" id="input-result" />
       </div>
     </div>
     <img src="res/checkerboard.png" alt="" id="alpha-checker" />
     <img src="res/checkerboard.png" alt="" id="result-checker" />
-    <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
+    <div id="texture-area">
+      <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
+      <canvas id="texture-canvas"></canvas>
+      <div id="skin-name">
+        <input type="text" id="skin-name-input" placeholder="skin" />
+        <p id="skin-name-png">.png</p>
+        <img src="res/save.png" alt="" id="save" />
+      </div>
+    </div>
   </body>
   <a id="link"></a>
 </html>

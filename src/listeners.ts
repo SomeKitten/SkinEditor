@@ -22,6 +22,7 @@ import {
   bCanvas,
   camera,
   color,
+  colorPicker,
   ctx,
   gCanvas,
   hCanvas,
@@ -33,6 +34,7 @@ import {
   rCanvas,
   renderer,
   rgb,
+  saveIcon,
   sCanvas,
   scene,
   setAlpha,
@@ -49,19 +51,13 @@ import {
 } from './render'
 import { download, raycaster, rgb2hex } from './util'
 
+import saveNormal from '../res/save.png'
+import saveSelected from '../res/save_selected.png'
 import upURL from '../res/up_arrow.png'
 import upSelectedURL from '../res/up_arrow_selected.png'
 import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
-
-// renderer.domElement.addEventListener('wheel', onScroll)
-// function onScroll(event: MouseEvent) {
-//   console.log(event)
-
-//   event.preventDefault()
-// }
-
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
@@ -70,25 +66,25 @@ function onMouseMove(event: MouseEvent) {
   if (mouseDown && (mouseButton === 0 || mouseButton === 2)) {
     switch (picking) {
       case 'h':
-        onPickN(onPickH, clamp(event.clientX, 0, 256), 360)
+        onPickN(onPickH, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 360)
         break
       case 's':
-        onPickN(onPickS, clamp(event.clientX, 0, 256), 100)
+        onPickN(onPickS, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 100)
         break
       case 'l':
-        onPickN(onPickL, clamp(event.clientX, 0, 256), 100)
+        onPickN(onPickL, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 100)
         break
       case 'r':
-        onPickN(onPickR, clamp(event.clientX, 0, 256), 255)
+        onPickN(onPickR, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 255)
         break
       case 'g':
-        onPickN(onPickG, clamp(event.clientX, 0, 256), 255)
+        onPickN(onPickG, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 255)
         break
       case 'b':
-        onPickN(onPickB, clamp(event.clientX, 0, 256), 255)
+        onPickN(onPickB, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 255)
         break
       case 'a':
-        onPickN(onPickA, clamp(event.clientX, 0, 256), 255)
+        onPickN(onPickA, clamp(event.clientX - colorPicker.clientLeft, 0, 256), 255)
         break
       default:
         if (painting) {
@@ -158,9 +154,6 @@ function onDrawStart(this: HTMLElement, event: MouseEvent) {
 document.addEventListener('contextmenu', onContextMenu)
 function onContextMenu(event: Event) {
   event.preventDefault()
-  // this.width = 64
-  // this.height = 64
-  // showCTX?.drawImage(textureCanvas, 0, 0)
 }
 
 function drawFromOffset(x: number, y: number) {
@@ -217,6 +210,8 @@ function onMouseUp(_event: MouseEvent) {
   for (const down of downs) {
     ;(<HTMLImageElement>down).src = downURL
   }
+
+  saveIcon.src = saveNormal
 }
 
 document.addEventListener('keydown', onKeyDown)
@@ -244,6 +239,11 @@ function onKeyUp(event: KeyboardEvent) {
   }
 }
 
+saveIcon.addEventListener('mousedown', (event: MouseEvent) => {
+  ;(<HTMLImageElement>event.target).src = saveSelected
+  download()
+})
+
 window.addEventListener('resize', onWindowResize)
 function onWindowResize() {
   setWidth(window.innerWidth)
@@ -257,32 +257,32 @@ function onWindowResize() {
 
 hCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('h')
-  onPickN(onPickH, event.x, 360)
+  onPickN(onPickH, event.offsetX, 360)
 })
 sCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('s')
-  onPickN(onPickS, event.x, 100)
+  onPickN(onPickS, event.offsetX, 100)
 })
 lCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('l')
-  onPickN(onPickL, event.x, 100)
+  onPickN(onPickL, event.offsetX, 100)
 })
 
 rCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('r')
-  onPickN(onPickR, event.x, 255)
+  onPickN(onPickR, event.offsetX, 255)
 })
 gCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('g')
-  onPickN(onPickG, event.x, 255)
+  onPickN(onPickG, event.offsetX, 255)
 })
 bCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('b')
-  onPickN(onPickB, event.x, 255)
+  onPickN(onPickB, event.offsetX, 255)
 })
 aCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('a')
-  onPickN(onPickA, event.x, 255)
+  onPickN(onPickA, event.offsetX, 255)
 })
 
 function onPickN(func: Function, value: number, n: number) {

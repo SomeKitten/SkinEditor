@@ -36,9 +36,10 @@ textureCanvas.width = 64
 textureCanvas.height = 64
 export const ctx = textureCanvas.getContext('2d')
 
-export const showCanvas = document.createElement('canvas')
-showCanvas.id = 'texture-canvas'
-document.body.appendChild(showCanvas)
+export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
+export const saveIcon = <HTMLImageElement>document.getElementById('save')
+
+export const showCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
 export const showCTX = showCanvas.getContext('2d')
 showCTX!.imageSmoothingEnabled = false
 export let showZoom = 1
@@ -110,6 +111,8 @@ const bCTX = bCanvas.getContext('2d')
 export const aCanvas = <HTMLCanvasElement>document.getElementById('color-a')
 const aCTX = aCanvas.getContext('2d')
 
+export const colorPicker = <HTMLDivElement>document.getElementById('color-picker')
+
 export const hsl = { h: 0, s: 0, l: 0 }
 export const rgb = { r: 0, g: 0, b: 0 }
 export const color = new Color()
@@ -144,22 +147,26 @@ export function zoom(value: number) {
   showZoom = newZoom
 }
 
+const textureHeight = 0.8
+
 export function setWidth(value: number) {
   width = value
-  showCanvas.width = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  showCanvas.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight)
   ;(<HTMLImageElement>document.getElementById('texture-checker')).width = Math.min(
     window.innerWidth * 0.3,
-    window.innerHeight,
+    window.innerHeight * textureHeight,
   )
+  skinName.parentElement!.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) + 'px'
+  skinName.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) - 35 + 'px'
   updateTexture()
 }
 
 export function setHeight(value: number) {
   height = value
-  showCanvas.height = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  showCanvas.height = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight)
   ;(<HTMLImageElement>document.getElementById('texture-checker')).height = Math.min(
     window.innerWidth * 0.3,
-    window.innerHeight,
+    window.innerHeight * textureHeight,
   )
   updateTexture()
 }

@@ -1,5 +1,5 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { textureCanvas } from './render'
+import { skinName, textureCanvas } from './render'
 
 export const camOrbit = new Vector3()
 
@@ -99,7 +99,7 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
 }
 
 export function download() {
-  link!.setAttribute('download', 'skin.png')
+  link!.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
   link!.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
   link!.click()
 }
