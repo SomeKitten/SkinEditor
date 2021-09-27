@@ -39,6 +39,12 @@ img {
   image-rendering: pixelated;
 }
 
+#texture-checker {
+  position: absolute;
+  right: 0;
+  image-rendering: pixelated;
+}
+
 .color-value {
   height: 32px;
   margin-bottom: 3px;

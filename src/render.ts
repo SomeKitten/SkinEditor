@@ -147,12 +147,20 @@ export function zoom(value: number) {
 export function setWidth(value: number) {
   width = value
   showCanvas.width = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  ;(<HTMLImageElement>document.getElementById('texture-checker')).width = Math.min(
+    window.innerWidth * 0.3,
+    window.innerHeight,
+  )
   updateTexture()
 }
 
 export function setHeight(value: number) {
   height = value
   showCanvas.height = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  ;(<HTMLImageElement>document.getElementById('texture-checker')).height = Math.min(
+    window.innerWidth * 0.3,
+    window.innerHeight,
+  )
   updateTexture()
 }
 
