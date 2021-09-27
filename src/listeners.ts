@@ -1,6 +1,7 @@
 import {
   cameraControls,
   cameraMove,
+  drawing,
   mouse,
   mouseButton,
   mouseDown,
@@ -10,6 +11,7 @@ import {
   setMouseButton,
   setMouseDown,
   setPainting,
+  setDrawing,
   setPicking,
   setShift,
   shift,
@@ -27,6 +29,7 @@ import {
   hsl,
   layer2,
   lCanvas,
+  mouseTexture,
   rCanvas,
   renderer,
   rgb,
@@ -34,10 +37,14 @@ import {
   scene,
   setAlpha,
   setHeight,
+  setMouseTexture,
   setWidth,
+  showZoom,
   updateColor,
   updateTexture,
   width,
+  zoom,
+  zoomPos,
 } from './render'
 import { download, raycaster, rgb2hex } from './util'
 
@@ -46,6 +53,13 @@ import upSelectedURL from '../res/up_arrow_selected.png'
 import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
+
+// document.addEventListener('wheel', onScroll)
+// function onScroll(event: MouseEvent) {
+//   console.log(event)
+
+//   event.preventDefault()
+// }
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
@@ -96,7 +110,6 @@ function onMouseMove(event: MouseEvent) {
 
             ctx?.clearRect(x, 64 - y - 1, 1, 1)
 
-            console.log(`rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`)
             ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
             ctx?.fillRect(x, 64 - y - 1, 1, 1)
             updateTexture()
@@ -108,6 +121,39 @@ function onMouseMove(event: MouseEvent) {
   if (cameraMove && mouseButton === 0) {
     cameraControls(event.movementX, event.movementY)
   }
+}
+
+document.getElementById('texture-canvas')?.addEventListener('mousemove', onDraw)
+function onDraw(this: HTMLElement, event: MouseEvent) {
+  setMouseTexture(
+    (event.offsetX * 64) / this.clientWidth / showZoom + zoomPos.x,
+    (event.offsetY * 64) / this.clientHeight / showZoom + zoomPos.y,
+  )
+
+  if (drawing) {
+    draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+  }
+}
+
+function draw(x: number, y: number) {
+  ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+  ctx?.clearRect(x, y, 1, 1)
+  ctx?.fillRect(x, y, 1, 1)
+  updateTexture()
+}
+
+document.getElementById('texture-canvas')?.addEventListener('mousedown', onDrawStart)
+function onDrawStart(this: HTMLElement, event: MouseEvent) {
+  if (event.button == 0) {
+    setDrawing(true)
+  }
+}
+
+document.getElementById('texture-canvas')?.addEventListener('wheel', onZoom)
+function onZoom(this: HTMLElement, event: WheelEvent) {
+  zoom(event.deltaY / -100)
+  updateTexture()
+  // this.style.height = `${this.clientHeight * Math.pow(1.1, event.deltaY / -100)}px`
 }
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
@@ -133,6 +179,7 @@ function onMouseUp(_event: MouseEvent) {
   setCameraMove(false)
   setMouseDown(false)
   setPainting(false)
+  setDrawing(false)
   setPicking('')
 
   for (const up of ups) {
@@ -289,7 +336,6 @@ for (const down of downs) {
   down.addEventListener('mouseup', downMouseUp)
 }
 
-// TODO inc/dec HSLRGB values
 function upMouseDown(event: Event) {
   ;(<HTMLImageElement>event.target).src = upSelectedURL
   switch ((<HTMLImageElement>event.target).classList[1]) {
@@ -349,7 +395,6 @@ function downMouseUp(event: Event) {
   ;(<HTMLImageElement>event.target).src = downURL
 }
 
-// TODO hex colour code input/output
 document.getElementById('input-result')?.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   updateColor('hex', rgb2hex(this.value, color.getHex()), 0, 0)

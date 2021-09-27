@@ -13,6 +13,7 @@ import {
 import { genBlockUVs } from './util'
 
 import defaultHeadURL from '../res/neferupitou.png'
+import { clamp } from 'three/src/math/MathUtils'
 
 const layer1ToLayer2 = 9 / 8
 
@@ -34,9 +35,19 @@ export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
 textureCanvas.height = 64
 export const ctx = textureCanvas.getContext('2d')
-const image = document.createElement('img')
-image.src = defaultHeadURL
-image.addEventListener('load', () => {
+
+export const showCanvas = document.createElement('canvas')
+showCanvas.id = 'texture-canvas'
+document.body.appendChild(showCanvas)
+export const showCTX = showCanvas.getContext('2d')
+showCTX!.imageSmoothingEnabled = false
+export let showZoom = 1
+export let zoomPos = { x: 0, y: 0 }
+export const mouseTexture = { x: 0, y: 0 }
+
+const textureImage = document.createElement('img')
+textureImage.src = defaultHeadURL
+textureImage.addEventListener('load', () => {
   setTexture()
 })
 
@@ -106,26 +117,74 @@ export let alpha = 255
 
 updateColor('hsl', 0, 100, 50)
 
+export function setMouseTexture(x: number, y: number) {
+  mouseTexture.x = x
+  mouseTexture.y = y
+}
+
+export function zoom(value: number) {
+  const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 1, 8)
+
+  const x = zoomPos.x
+  const y = zoomPos.y
+
+  const mx = mouseTexture.x
+  const my = mouseTexture.y
+
+  const newSize = 64 / newZoom
+
+  zoomPos = {
+    x: (x - mx) * (showZoom / newZoom) + mx,
+    y: (y - my) * (showZoom / newZoom) + my,
+  }
+
+  zoomPos.x = clamp(zoomPos.x, 0, 64 - newSize)
+  zoomPos.y = clamp(zoomPos.y, 0, 64 - newSize)
+
+  showZoom = newZoom
+}
+
 export function setWidth(value: number) {
   width = value
+  showCanvas.width = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  updateTexture()
 }
 
 export function setHeight(value: number) {
   height = value
+  showCanvas.height = Math.min(window.innerWidth * 0.3, window.innerHeight)
+  updateTexture()
 }
+
+setWidth(window.innerWidth)
+setHeight(window.innerHeight)
 
 export function setAlpha(value: number) {
   alpha = value
 }
 
 export function setTexture() {
-  ctx?.drawImage(image, 0, 0)
+  ctx?.drawImage(textureImage, 0, 0)
   updateTexture()
 }
 
 export function updateTexture() {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
+
+  showCTX!.imageSmoothingEnabled = false
+  showCTX?.clearRect(0, 0, showCanvas.width, showCanvas.height)
+  showCTX?.drawImage(
+    textureCanvas,
+    zoomPos.x,
+    zoomPos.y,
+    64 / showZoom,
+    64 / showZoom,
+    0,
+    0,
+    showCanvas.width,
+    showCanvas.height,
+  )
 }
 
 export function updateColor(type: string, rhhex: number, gs: number, bl: number) {
