@@ -39,6 +39,7 @@ import {
   setHeight,
   setMouseTexture,
   setWidth,
+  showCanvas,
   showZoom,
   updateColor,
   updateTexture,
@@ -91,29 +92,7 @@ function onMouseMove(event: MouseEvent) {
         break
       default:
         if (painting) {
-          raycaster.setFromCamera(mouse, camera)
-          const intersects = raycaster.intersectObjects(scene.children)
-
-          if (intersects.length > 0) {
-            let intersect
-            if (!shift && layer2.visible) {
-              intersect = intersects[0]
-            } else {
-              intersect = intersects[1]
-
-              if (intersect.object === layer2) {
-                return
-              }
-            }
-            const x = Math.floor(intersect.uv!.x * 64)
-            const y = Math.floor(intersect.uv!.y * 64)
-
-            ctx?.clearRect(x, 64 - y - 1, 1, 1)
-
-            ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
-            ctx?.fillRect(x, 64 - y - 1, 1, 1)
-            updateTexture()
-          }
+          paint()
         }
     }
   }
@@ -123,16 +102,35 @@ function onMouseMove(event: MouseEvent) {
   }
 }
 
-document.getElementById('texture-canvas')?.addEventListener('mousemove', onDraw)
-function onDraw(this: HTMLElement, event: MouseEvent) {
-  setMouseTexture(
-    (event.offsetX * 64) / this.clientWidth / showZoom + zoomPos.x,
-    (event.offsetY * 64) / this.clientHeight / showZoom + zoomPos.y,
-  )
+function paint() {
+  raycaster.setFromCamera(mouse, camera)
+  const intersects = raycaster.intersectObjects(scene.children)
 
-  if (drawing) {
-    draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+  if (intersects.length > 0) {
+    let intersect
+    if (!shift && layer2.visible) {
+      intersect = intersects[0]
+    } else {
+      intersect = intersects[1]
+
+      if (intersect.object === layer2) {
+        return
+      }
+    }
+    const x = Math.floor(intersect.uv!.x * 64)
+    const y = Math.floor(intersect.uv!.y * 64)
+
+    ctx?.clearRect(x, 64 - y - 1, 1, 1)
+
+    ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+    ctx?.fillRect(x, 64 - y - 1, 1, 1)
+    updateTexture()
   }
+}
+
+showCanvas.addEventListener('mousemove', onDraw)
+function onDraw(this: HTMLElement, event: MouseEvent) {
+  drawFromOffset(event.offsetX, event.offsetY)
 }
 
 function draw(x: number, y: number) {
@@ -142,18 +140,30 @@ function draw(x: number, y: number) {
   updateTexture()
 }
 
-document.getElementById('texture-canvas')?.addEventListener('mousedown', onDrawStart)
+showCanvas.addEventListener('mousedown', onDrawStart)
 function onDrawStart(this: HTMLElement, event: MouseEvent) {
   if (event.button == 0) {
     setDrawing(true)
+
+    drawFromOffset(event.offsetX, event.offsetY)
   }
 }
 
-document.getElementById('texture-canvas')?.addEventListener('wheel', onZoom)
+function drawFromOffset(x: number, y: number) {
+  setMouseTexture(
+    (x * 64) / showCanvas.width / showZoom + zoomPos.x,
+    (y * 64) / showCanvas.height / showZoom + zoomPos.y,
+  )
+
+  if (drawing) {
+    draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+  }
+}
+
+showCanvas.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
   zoom(event.deltaY / -100)
   updateTexture()
-  // this.style.height = `${this.clientHeight * Math.pow(1.1, event.deltaY / -100)}px`
 }
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
@@ -163,6 +173,7 @@ function onSceneMouseDown(_event: MouseEvent) {
 
   if (intersects.length > 0) {
     setPainting(true)
+    paint()
   } else {
     setCameraMove(true)
   }
