@@ -217,15 +217,6 @@ function onMouseUp(_event: MouseEvent) {
   setPainting(false)
   setDrawing(false)
   setPicking('')
-
-  for (const up of ups) {
-    ;(<HTMLImageElement>up).src = upURL
-  }
-  for (const down of downs) {
-    ;(<HTMLImageElement>down).src = downURL
-  }
-
-  saveIcon.src = saveNormal
 }
 
 document.addEventListener('keydown', onKeyDown)
@@ -267,7 +258,6 @@ const fileReader = new FileReader()
 fileReader.addEventListener(
   'load',
   function () {
-    // console.log(fileReader.result)
     textureImage.src = <string>fileReader.result
     setTexture()
   },
@@ -280,35 +270,24 @@ document.addEventListener('drop', (event: DragEvent) => {
       const file = event.dataTransfer.items[0].getAsFile()
       if (file?.name.endsWith('.png')) {
         fileReader.readAsDataURL(file)
-        // console.log('... file[' + i + '].name = ' + file!.name)
       }
     }
-    // for (let i = 0; i < event.dataTransfer.items.length; i++) {
-    //   if (event.dataTransfer.items[i].kind === 'file') {
-    //     const file = event.dataTransfer.items[i].getAsFile()
-    //     if (file?.name.endsWith('.png')) {
-    //       fileReader.readAsDataURL(file)
-    //       // console.log('... file[' + i + '].name = ' + file!.name)
-    //     }
-    //   }
-    // }
   } else {
     const file = event.dataTransfer!.files[0]
     if (file.name.endsWith('png')) {
       fileReader.readAsDataURL(file)
     }
-    // for (var i = 0; i < event.dataTransfer!.files.length; i++) {
-    //   const file = event.dataTransfer!.files[i]
-    //   if (file.name.endsWith('png')) {
-    //     fileReader.readAsDataURL(file)
-    //     // console.log('... file[' + i + '].name = ' + file.name)
-    //   }
-    // }
   }
 })
 
-saveIcon.addEventListener('mousedown', (event: MouseEvent) => {
+// TODO change event.target to existing variables
+saveIcon.addEventListener('mouseenter', (event: MouseEvent) => {
   ;(<HTMLImageElement>event.target).src = saveSelected
+})
+saveIcon.addEventListener('mouseleave', (event: MouseEvent) => {
+  ;(<HTMLImageElement>event.target).src = saveNormal
+})
+saveIcon.addEventListener('mousedown', (_event: MouseEvent) => {
   download()
 })
 
@@ -425,16 +404,27 @@ function inputA(event: Event) {
 const ups = document.getElementsByClassName('up')
 for (const up of ups) {
   up.addEventListener('mousedown', upMouseDown)
-  up.addEventListener('mouseup', upMouseUp)
+  up.addEventListener('mouseenter', (event: Event) => {
+    ;(<HTMLImageElement>event.target).src = upSelectedURL
+  })
+  up.addEventListener('mouseleave', (event: Event) => {
+    ;(<HTMLImageElement>event.target).src = upURL
+  })
 }
 const downs = document.getElementsByClassName('down')
 for (const down of downs) {
   down.addEventListener('mousedown', downMouseDown)
-  down.addEventListener('mouseup', downMouseUp)
+  down.addEventListener('mouseenter', (event: Event) => {
+    ;(<HTMLImageElement>event.target).src = downSelectedURL
+  })
+  down.addEventListener('mouseleave', (event: Event) => {
+    ;(<HTMLImageElement>event.target).src = downURL
+  })
+  // down.addEventListener('mouseup', downMouseUp)
 }
 
 function upMouseDown(event: Event) {
-  ;(<HTMLImageElement>event.target).src = upSelectedURL
+  // ;(<HTMLImageElement>event.target).src = upSelectedURL
   switch ((<HTMLImageElement>event.target).classList[1]) {
     case 'arrow-h':
       onPickH(clamp(hsl.h + 1, 0, 360))
@@ -459,11 +449,7 @@ function upMouseDown(event: Event) {
       break
   }
 }
-function upMouseUp(event: Event) {
-  ;(<HTMLImageElement>event.target).src = upURL
-}
 function downMouseDown(event: Event) {
-  ;(<HTMLImageElement>event.target).src = downSelectedURL
   switch ((<HTMLImageElement>event.target).classList[1]) {
     case 'arrow-h':
       onPickH(clamp(hsl.h - 1, 0, 360))
@@ -487,9 +473,6 @@ function downMouseDown(event: Event) {
       onPickA(clamp(alpha - 1, 0, 255))
       break
   }
-}
-function downMouseUp(event: Event) {
-  ;(<HTMLImageElement>event.target).src = downURL
 }
 
 document.getElementById('input-result')?.addEventListener('input', onResultType)

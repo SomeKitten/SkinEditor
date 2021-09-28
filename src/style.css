@@ -57,14 +57,12 @@ img {
   position: absolute;
   right: 0;
   image-rendering: pixelated;
-  /* margin: 3px; */
   border-radius: 0;
 }
 
 #texture-checker {
   right: 0;
   image-rendering: pixelated;
-  /* margin: 3px; */
   border-radius: 0;
 }
 
@@ -73,10 +71,6 @@ img {
   left: 0;
   right: 0;
   margin-top: 3px;
-  /* margin: auto; */
-  /* margin-top: 3px; */
-  /* background-color: rgb(36, 36, 36); */
-  /* color: white; */
 }
 
 #skin-name-input {
@@ -101,6 +95,7 @@ img {
   position: absolute;
   height: 32px;
   right: 0;
+  cursor: pointer;
 }
 
 .color-canvas {
@@ -149,6 +144,7 @@ input {
   margin-left: 2px;
   margin-top: 2px;
   height: 14px;
+  cursor: pointer;
 }
 
 .down {
@@ -156,4 +152,5 @@ input {
   margin-left: 2px;
   margin-bottom: 2px;
   height: 14px;
+  cursor: pointer;
 }
