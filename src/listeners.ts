@@ -64,6 +64,8 @@ import { clamp } from 'three/src/math/MathUtils'
 export const keys: { [key: string]: boolean } = {}
 export const codes: { [code: string]: boolean } = {}
 
+const prevDraw = { x: -1, y: -1 }
+
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
@@ -139,13 +141,44 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
 }
 
 function draw(x: number, y: number) {
-  ctx?.clearRect(x, y, 1, 1)
+  if (prevDraw.x < 0 || prevDraw.y < 0) {
+    prevDraw.x = x
+    prevDraw.y = y
+  }
+
+  // ctx?.clearRect(x, y, 1, 1)
+  clearLine(x, y, prevDraw.x, prevDraw.y)
   if (mouseButton === 0) {
     ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
-    ctx?.clearRect(x, y, 1, 1)
-    ctx?.fillRect(x, y, 1, 1)
+    // ctx?.clearRect(x, y, 1, 1)
+    // ctx?.fillRect(x, y, 1, 1)
+    line(x, y, prevDraw.x, prevDraw.y)
   }
+
+  prevDraw.x = x
+  prevDraw.y = y
+
   updateTexture()
+}
+
+function clearLine(x: number, y: number, x1: number, y1: number) {
+  const distX = x1 - x
+  const distY = y1 - y
+  const steps = Math.sqrt(distX * distX + distY * distY)
+
+  for (let i = 0; i < steps; i++) {
+    ctx?.clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+  }
+}
+
+function line(x: number, y: number, x1: number, y1: number) {
+  const distX = x1 - x
+  const distY = y1 - y
+  const steps = Math.sqrt(distX * distX + distY * distY)
+
+  for (let i = 0; i < steps; i++) {
+    ctx?.fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+  }
 }
 
 showCanvas.addEventListener('mousedown', onDrawStart)
@@ -217,6 +250,9 @@ function onMouseUp(_event: MouseEvent) {
   setPainting(false)
   setDrawing(false)
   setPicking('')
+
+  prevDraw.x = -1
+  prevDraw.y = -1
 }
 
 document.addEventListener('keydown', onKeyDown)
