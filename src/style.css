@@ -26,6 +26,27 @@ img {
   image-rendering: crisp-edges;
 }
 
+table {
+  color: white;
+}
+
+td {
+  margin: 3px;
+  border-radius: 3px;
+  padding: 3px;
+  background-color: rgb(19, 19, 19);
+}
+
+#dom-element {
+  position: absolute;
+  z-index: -1;
+}
+
+#controls {
+  position: absolute;
+  bottom: 0;
+}
+
 #color-picker {
   position: absolute;
   z-index: 1;

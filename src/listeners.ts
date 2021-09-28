@@ -276,7 +276,7 @@ function onSceneMouseDown(event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
-  if (!keys['Control'] && intersects.length > 0) {
+  if (!event.ctrlKey && intersects.length > 0) {
     setPainting(true)
     if (event.button === 0 || event.button === 2) {
       paint()

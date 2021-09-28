@@ -85,6 +85,7 @@ camera.position.set(1.1, 1.1, 1.1)
 
 export const renderer = new WebGLRenderer()
 renderer.setSize(width, height)
+renderer.domElement.id = 'dom-element'
 document.body.appendChild(renderer.domElement)
 
 export const resultCanvas = <HTMLCanvasElement>document.getElementById('color-result')
@@ -147,7 +148,7 @@ export function zoom(value: number) {
   showZoom = newZoom
 }
 
-const textureHeight = 0.8
+const textureHeight = 0.5
 
 export function setWidth(value: number) {
   width = value
