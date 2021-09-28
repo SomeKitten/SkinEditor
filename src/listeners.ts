@@ -163,8 +163,6 @@ function intersectDrop(intersect: Intersection): boolean {
 
   const c = ctx?.getImageData(x, y, 1, 1).data
 
-  console.log(c)
-
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
 
@@ -200,6 +198,13 @@ function draw(x: number, y: number) {
   updateTexture()
 }
 
+function eyeDropper2D(x: number, y: number) {
+  const c = ctx?.getImageData(x, y, 1, 1).data
+
+  setAlpha(c![3])
+  updateColor('rgb', c![0], c![1], c![2])
+}
+
 function clearLine(x: number, y: number, x1: number, y1: number) {
   const distX = x1 - x
   const distY = y1 - y
@@ -224,7 +229,7 @@ showCanvas.addEventListener('mousedown', onDrawStart)
 function onDrawStart(this: HTMLElement, event: MouseEvent) {
   setMouseButton(event.button)
 
-  if (event.button === 0 || event.button === 2) {
+  if (event.button === 0 || event.button === 1 || event.button === 2) {
     setDrawing(true)
 
     drawFromOffset(event.offsetX, event.offsetY)
@@ -243,7 +248,11 @@ function drawFromOffset(x: number, y: number) {
   )
 
   if (drawing) {
-    draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+    if (mouseButton === 1) {
+      eyeDropper2D(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+    } else {
+      draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+    }
   }
 }
 
@@ -252,7 +261,6 @@ function onZoom3D(event: WheelEvent) {
   if (!((camera.position.length() < 1.2 && event.deltaY < 0) || (camera.position.length() > 5 && event.deltaY > 0))) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
   }
-  console.log(camera.position.length())
 }
 
 showCanvas.addEventListener('wheel', onZoom)
@@ -559,8 +567,6 @@ document.getElementById('input-result')?.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   updateColor('hex', rgb2hex(this.value, color.getHex()), 0, 0)
 }
-
-// TODO middle mouse for colour picker
 
 const imgs = document.getElementsByTagName('img')
 
