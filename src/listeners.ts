@@ -61,6 +61,9 @@ import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
 
+export const keys: { [key: string]: boolean } = {}
+export const codes: { [code: string]: boolean } = {}
+
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
@@ -191,7 +194,7 @@ function onSceneMouseDown(event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
-  if (intersects.length > 0) {
+  if (!keys['Control'] && intersects.length > 0) {
     setPainting(true)
     if (event.button === 0 || event.button === 2) {
       paint()
@@ -241,6 +244,9 @@ function onKeyDown(event: KeyboardEvent) {
     setShift(true)
     event.preventDefault()
   }
+
+  keys[event.key] = true
+  codes[event.code] = true
 }
 
 document.addEventListener('keyup', onKeyUp)
@@ -248,6 +254,9 @@ function onKeyUp(event: KeyboardEvent) {
   if (event.key === 'Shift') {
     setShift(false)
   }
+
+  keys[event.key] = false
+  codes[event.code] = false
 }
 
 document.addEventListener('dragover', (event: DragEvent) => {
