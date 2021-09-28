@@ -60,6 +60,7 @@ import upSelectedURL from '../res/up_arrow_selected.png'
 import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
+
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   mouse.x = (event.clientX / width) * 2 - 1
@@ -167,6 +168,14 @@ function drawFromOffset(x: number, y: number) {
   if (drawing) {
     draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
   }
+}
+
+renderer.domElement.addEventListener('wheel', onZoom3D)
+function onZoom3D(event: WheelEvent) {
+  if (!((camera.position.length() < 1.2 && event.deltaY < 0) || (camera.position.length() > 5 && event.deltaY > 0))) {
+    camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
+  }
+  console.log(camera.position.length())
 }
 
 showCanvas.addEventListener('wheel', onZoom)
