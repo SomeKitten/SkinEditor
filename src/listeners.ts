@@ -185,12 +185,12 @@ function draw(x: number, y: number) {
     prevDraw.y = y
   }
 
-  // ctx?.clearRect(x, y, 1, 1)
+  ctx?.clearRect(x, y, 1, 1)
   clearLine(x, y, prevDraw.x, prevDraw.y)
   if (mouseButton === 0) {
     ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
     // ctx?.clearRect(x, y, 1, 1)
-    // ctx?.fillRect(x, y, 1, 1)
+    ctx?.fillRect(x, y, 1, 1)
     line(x, y, prevDraw.x, prevDraw.y)
   }
 
@@ -222,6 +222,8 @@ function line(x: number, y: number, x1: number, y1: number) {
 
 showCanvas.addEventListener('mousedown', onDrawStart)
 function onDrawStart(this: HTMLElement, event: MouseEvent) {
+  setMouseButton(event.button)
+
   if (event.button === 0 || event.button === 2) {
     setDrawing(true)
 
