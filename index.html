@@ -9,6 +9,7 @@
   <body>
     <script type="module" src="/src/main.ts"></script>
     <div id="color-picker">
+      <!-- TODO overlay that says what each slider is -->
       <div class="color-value">
         <canvas id="color-h" class="color-canvas" width="256" height="32"></canvas>
         <input type="text" id="input-h" />
@@ -74,7 +75,7 @@
       <table>
         <tr>
           <td>left click</td>
-          <td>paint</td>
+          <td>paint / orbit camera</td>
         </tr>
         <tr>
           <td>right click</td>
@@ -83,6 +84,14 @@
         <tr>
           <td>middle click</td>
           <td>get colour under cursor</td>
+        </tr>
+        <tr>
+          <td>scroll</td>
+          <td>select hotbar item</td>
+        </tr>
+        <tr>
+          <td>ctrl+scroll</td>
+          <td>zoom in and out in 2D and 3D</td>
         </tr>
         <tr>
           <td>tab</td>
@@ -94,7 +103,7 @@
         </tr>
         <tr>
           <td>control+click</td>
-          <td>force camera orbit</td>
+          <td>force camera to orbit</td>
         </tr>
         <tr>
           <td>control+s</td>
@@ -102,6 +111,9 @@
         </tr>
       </table>
     </div>
+    <canvas id="hotbar" height="24px" width="184px"></canvas>
+    <img src="res/hotbar.png" alt="" id="hotbar-img" />
+    <img src="res/hotbar_select.png" alt="" id="hotbar-select-img" />
     <img src="res/checkerboard.png" alt="" id="alpha-checker" />
     <img src="res/checkerboard.png" alt="" id="result-checker" />
     <div id="texture-area">

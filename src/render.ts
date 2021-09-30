@@ -11,9 +11,11 @@ import {
   WebGLRenderer,
 } from 'three'
 import { genBlockUVs } from './util'
+import { clamp } from 'three/src/math/MathUtils'
 
 import defaultHeadURL from '../res/neferupitou.png'
-import { clamp } from 'three/src/math/MathUtils'
+import hotbarImgURL from '../res/hotbar.png'
+import hotbarSelectImgURL from '../res/hotbar_select.png'
 
 const layer1ToLayer2 = 9 / 8
 
@@ -116,10 +118,56 @@ export const colorPicker = <HTMLDivElement>document.getElementById('color-picker
 
 export const hsl = { h: 0, s: 0, l: 0 }
 export const rgb = { r: 0, g: 0, b: 0 }
-export const color = new Color()
-export let alpha = 255
 
-updateColor('hsl', 0, 100, 50)
+export let hotbar = 0
+export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
+export const hotbarImg = document.createElement('img')
+hotbarImg.src = hotbarImgURL
+hotbarImg.addEventListener('load', () => {
+  setHotbar(hotbar)
+})
+export const hotbarSelectImg = document.createElement('img')
+hotbarSelectImg.src = hotbarSelectImgURL
+hotbarSelectImg.addEventListener('load', () => {
+  setHotbar(hotbar)
+})
+export const hotbarCTX = hotbarCanvas.getContext('2d')
+export const hotbarColors: { color: Color; alpha: number }[] = [
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+  { color: new Color(1, 0, 0), alpha: 255 },
+]
+
+setHotbar(hotbar)
+
+export function setHotbar(value: number) {
+  hotbar = value
+
+  hotbarCTX!.imageSmoothingEnabled = false
+  hotbarCTX!.clearRect(0, 0, hotbarCanvas.width, hotbarCanvas.height)
+
+  hotbarCTX!.drawImage(hotbarImg, 1, 1)
+
+  hotbarCTX!.drawImage(hotbarSelectImg, 20 * hotbar, 0)
+
+  for (let i = 0; i < hotbarColors.length; i++) {
+    hotbarCTX!.fillStyle = hotbarColors[i].color.getStyle()
+    hotbarCTX!.fillRect(i * 20 + 4, 4, 16, 16)
+  }
+
+  updateColor(
+    'rgb',
+    hotbarColors[hotbar].color.r * 255,
+    hotbarColors[hotbar].color.g * 255,
+    hotbarColors[hotbar].color.b * 255,
+  )
+}
 
 export function setMouseTexture(x: number, y: number) {
   mouseTexture.x = x
@@ -159,6 +207,8 @@ export function setWidth(value: number) {
   )
   skinName.parentElement!.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) + 'px'
   skinName.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) - 35 + 'px'
+
+  setHotbar(hotbar)
   updateTexture()
 }
 
@@ -176,7 +226,7 @@ setWidth(window.innerWidth)
 setHeight(window.innerHeight)
 
 export function setAlpha(value: number) {
-  alpha = value
+  hotbarColors[hotbar].alpha = value
 }
 
 export function setTexture() {
@@ -215,44 +265,54 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
       hsl.s = gs
       hsl.l = bl
 
-      color.set(`hsl(${rhhex}, ${gs}%, ${bl}%)`)
-      rgb.r = Math.floor(color.r * 255)
-      rgb.g = Math.floor(color.g * 255)
-      rgb.b = Math.floor(color.b * 255)
+      hotbarColors[hotbar].color.set(`hsl(${rhhex}, ${gs}%, ${bl}%)`)
+      rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
+      rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
+      rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
       break
     case 'rgb':
       rgb.r = rhhex
       rgb.g = gs
       rgb.b = bl
 
-      color.set(`rgb(${rhhex}, ${gs}, ${bl})`)
-      color.getHSL(hsl)
+      hotbarColors[hotbar].color.set(`rgb(${rhhex}, ${gs}, ${bl})`)
+      hotbarColors[hotbar].color.getHSL(hsl)
       hsl.h = Math.floor(360 * hsl.h)
       hsl.s = Math.floor(100 * hsl.s)
       hsl.l = Math.floor(100 * hsl.l)
       break
     case 'hex':
-      color.set(rhhex)
+      hotbarColors[hotbar].color.set(rhhex)
 
-      color.getHSL(hsl)
+      hotbarColors[hotbar].color.getHSL(hsl)
       hsl.h = Math.floor(360 * hsl.h)
       hsl.s = Math.floor(100 * hsl.s)
       hsl.l = Math.floor(100 * hsl.l)
 
-      rgb.r = Math.floor(color.r * 255)
-      rgb.g = Math.floor(color.g * 255)
-      rgb.b = Math.floor(color.b * 255)
+      rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
+      rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
+      rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
       break
   }
 
   resultCTX!.clearRect(0, 0, resultCanvas.width, resultCanvas.height)
 
-  resultCTX!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+  resultCTX!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+    hotbarColors[hotbar].color.b * 255
+  }, ${hotbarColors[hotbar].alpha / 255})`
   resultCTX!.fillRect(0, 0, 256, 32)
+
+  hotbarCTX!.fillStyle = hotbarColors[hotbar].color.getStyle()
+  hotbarCTX!.fillRect(hotbar * 20 + 4, 4, 16, 16)
 
   updateHSL()
   updateRGB()
-  updateA(color.r, color.g, color.b, alpha)
+  updateA(
+    hotbarColors[hotbar].color.r,
+    hotbarColors[hotbar].color.g,
+    hotbarColors[hotbar].color.b,
+    hotbarColors[hotbar].alpha,
+  )
   updateHEX()
 }
 
@@ -269,7 +329,7 @@ function updateRGB() {
 }
 
 function updateHEX() {
-  ;(<HTMLInputElement>document.getElementById('input-result')).value = color.getHexString()
+  ;(<HTMLInputElement>document.getElementById('input-result')).value = hotbarColors[hotbar].color.getHexString()
 }
 
 function updateH(h: number, s: number, l: number) {

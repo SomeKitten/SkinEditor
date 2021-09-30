@@ -26,8 +26,16 @@ img {
   image-rendering: crisp-edges;
 }
 
+canvas {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 table {
   color: white;
+  margin: 1px;
 }
 
 td {
@@ -37,8 +45,23 @@ td {
   background-color: rgb(19, 19, 19);
 }
 
+#hotbar {
+  display: block;
+  position: absolute;
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 #dom-element {
   position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
   z-index: -1;
 }
 
@@ -67,6 +90,7 @@ td {
 
 #texture-area {
   position: absolute;
+  top: 0;
   right: 0;
   display: flex;
   flex-direction: column;

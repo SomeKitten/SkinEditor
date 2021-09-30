@@ -18,15 +18,16 @@ import {
 } from './input'
 import {
   aCanvas,
-  alpha,
   bCanvas,
   camera,
-  color,
   colorPicker,
   ctx,
   gCanvas,
   hCanvas,
   height,
+  hotbar,
+  hotbarCanvas,
+  hotbarColors,
   hsl,
   layer2,
   lCanvas,
@@ -39,6 +40,7 @@ import {
   scene,
   setAlpha,
   setHeight,
+  setHotbar,
   setMouseTexture,
   setTexture,
   setWidth,
@@ -51,7 +53,7 @@ import {
   zoom,
   zoomPos,
 } from './render'
-import { download, raycaster, rgb2hex } from './util'
+import { download, raycaster, rgb2hex, wrap } from './util'
 
 import saveNormal from '../res/save.png'
 import saveSelected from '../res/save_selected.png'
@@ -132,7 +134,9 @@ function paint() {
     ctx?.clearRect(x, y, 1, 1)
 
     if (mouseButton === 0) {
-      ctx!.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+      ctx!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+        hotbarColors[hotbar].color.b * 255
+      }, ${hotbarColors[hotbar].alpha / 255})`
       ctx?.fillRect(x, y, 1, 1)
     }
 
@@ -166,7 +170,7 @@ function intersectDrop(intersect: Intersection): boolean {
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
 
-  if (alpha === 0) {
+  if (hotbarColors[hotbar].alpha === 0) {
     return false
   }
   return true
@@ -186,7 +190,9 @@ function draw(x: number, y: number) {
   ctx?.clearRect(x, y, 1, 1)
   clearLine(x, y, prevDraw.x, prevDraw.y)
   if (mouseButton === 0) {
-    ctx!.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha / 255})`
+    ctx!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+      hotbarColors[hotbar].color.b * 255
+    }, ${hotbarColors[hotbar].alpha / 255})`
     // ctx?.clearRect(x, y, 1, 1)
     ctx?.fillRect(x, y, 1, 1)
     line(x, y, prevDraw.x, prevDraw.y)
@@ -256,17 +262,32 @@ function drawFromOffset(x: number, y: number) {
   }
 }
 
+document.addEventListener('wheel', (event: WheelEvent) => {
+  if (!event.ctrlKey) {
+    setHotbar(wrap(hotbar + (event.deltaY > 0 ? -1 : 1), 0, 8))
+  }
+})
+
 renderer.domElement.addEventListener('wheel', onZoom3D)
 function onZoom3D(event: WheelEvent) {
-  if (!((camera.position.length() < 1.2 && event.deltaY < 0) || (camera.position.length() > 5 && event.deltaY > 0))) {
+  if (
+    event.ctrlKey &&
+    !((camera.position.length() < 1.2 && event.deltaY < 0) || (camera.position.length() > 5 && event.deltaY > 0))
+  ) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
   }
+
+  event.preventDefault()
 }
 
 showCanvas.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
-  zoom(event.deltaY / -100)
-  updateTexture()
+  if (event.ctrlKey) {
+    zoom(event.deltaY / -100)
+    updateTexture()
+  }
+
+  event.preventDefault()
 }
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
@@ -368,15 +389,24 @@ document.addEventListener('drop', (event: DragEvent) => {
 })
 
 // TODO change event.target to existing variables
-saveIcon.addEventListener('mouseenter', (event: MouseEvent) => {
-  ;(<HTMLImageElement>event.target).src = saveSelected
+saveIcon.addEventListener('mouseenter', (_event: MouseEvent) => {
+  saveIcon.src = saveSelected
 })
-saveIcon.addEventListener('mouseleave', (event: MouseEvent) => {
-  ;(<HTMLImageElement>event.target).src = saveNormal
+saveIcon.addEventListener('mouseleave', (_event: MouseEvent) => {
+  saveIcon.src = saveNormal
 })
 saveIcon.addEventListener('mousedown', (_event: MouseEvent) => {
   download()
 })
+
+hotbarCanvas.addEventListener('mousedown', hotbarClick)
+
+function hotbarClick(event: MouseEvent) {
+  const offset = hotbarCanvas.clientWidth * (1 / 184)
+  const size = hotbarCanvas.clientWidth * (20 / 184)
+
+  setHotbar(clamp(Math.floor((event.offsetX - offset) / size), 0, 8))
+}
 
 window.addEventListener('resize', onWindowResize)
 function onWindowResize() {
@@ -532,7 +562,7 @@ function upMouseDown(event: Event) {
       onPickB(clamp(rgb.b + 1, 0, 255))
       break
     case 'arrow-a':
-      onPickA(clamp(alpha + 1, 0, 255))
+      onPickA(clamp(hotbarColors[hotbar].alpha + 1, 0, 255))
       break
   }
 }
@@ -557,7 +587,7 @@ function downMouseDown(event: Event) {
       onPickB(clamp(rgb.b - 1, 0, 255))
       break
     case 'arrow-a':
-      onPickA(clamp(alpha - 1, 0, 255))
+      onPickA(clamp(hotbarColors[hotbar].alpha - 1, 0, 255))
       break
   }
 }
@@ -565,7 +595,7 @@ function downMouseDown(event: Event) {
 // TODO alpha colour add to hex
 document.getElementById('input-result')?.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
-  updateColor('hex', rgb2hex(this.value, color.getHex()), 0, 0)
+  updateColor('hex', rgb2hex(this.value, hotbarColors[hotbar].color.getHex()), 0, 0)
 }
 
 const imgs = document.getElementsByTagName('img')

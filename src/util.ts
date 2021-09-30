@@ -111,3 +111,14 @@ export function rgb2hex(rgb: string, def: number) {
 
   return Number('0x' + rgb)
 }
+
+export function wrap(value: number, min: number, max: number) {
+  if (value > max) {
+    return min + value - max - 1
+  }
+  if (value < min) {
+    return max - (min - value - 1)
+  }
+
+  return value
+}
