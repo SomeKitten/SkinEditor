@@ -264,7 +264,7 @@ function drawFromOffset(x: number, y: number) {
 
 document.addEventListener('wheel', (event: WheelEvent) => {
   if (!event.ctrlKey) {
-    setHotbar(wrap(hotbar + (event.deltaY > 0 ? -1 : 1), 0, 8))
+    setHotbar(wrap(hotbar + (event.deltaY > 0 ? 1 : -1), 0, 8))
   }
 })
 
