@@ -34,10 +34,16 @@ const layer2UVS = genBlockUVs(32, 64, 8, 8, 8, 64, 64)
 const layer2Geometry = new BoxGeometry()
 layer2Geometry.setAttribute('uv', layer2UVS)
 
+export let layer = 0
+
+export const layers: HTMLCanvasElement[] = []
+export const layerCTXs: CanvasRenderingContext2D[] = []
+export const layersDiv = <HTMLDivElement>document.getElementById('layers')
+
 export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
 textureCanvas.height = 64
-export const ctx = textureCanvas.getContext('2d')
+export const textureCTX = textureCanvas.getContext('2d')
 
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
@@ -152,6 +158,43 @@ export const hotbarColors: { color: Color; alpha: number }[] = [
 
 setHotbar(hotbar)
 
+export function addLayer() {
+  layers.push(document.createElement('canvas'))
+  layers[layers.length - 1].width = 64
+  layers[layers.length - 1].height = 64
+  layers[layers.length - 1].id = 'layer' + (layers.length - 1) + '-canvas'
+  layers[layers.length - 1].className = 'layer-canvas'
+
+  layerCTXs.push(layers[layers.length - 1].getContext('2d')!)
+
+  const layerDiv = document.createElement('div')
+  layerDiv.id = 'layer' + (layers.length - 1)
+  layerDiv.className = 'layer'
+
+  const layerLabel = document.createElement('p')
+  layerLabel.innerHTML = 'Layer ' + (layers.length - 1)
+  layerLabel.id = 'layer' + (layers.length - 1) + '-label'
+  layerLabel.className = 'layer-label'
+
+  layerDiv.appendChild(layerLabel)
+  layerDiv.appendChild(layers[layers.length - 1])
+
+  const l = layers.length - 1
+  layerDiv.addEventListener('mousedown', (_event: MouseEvent) => {
+    setLayer(l)
+  })
+
+  layersDiv.appendChild(layerDiv)
+}
+
+export function setLayer(value: number) {
+  layers[layer].parentElement!.style.backgroundColor = 'rgb(19, 19, 19)'
+
+  layer = value
+
+  layers[layer].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
+}
+
 export function setHotbar(value: number) {
   hotbar = value
 
@@ -203,16 +246,19 @@ export function zoom(value: number) {
 }
 
 const textureHeight = 0.5
+const textureWidth = 0.3
 
 export function setWidth(value: number) {
   width = value
-  showCanvas.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight)
-  ;(<HTMLImageElement>document.getElementById('texture-checker')).width = Math.min(
-    window.innerWidth * 0.3,
-    window.innerHeight * textureHeight,
-  )
-  skinName.parentElement!.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) + 'px'
-  skinName.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) - 35 + 'px'
+
+  const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+
+  showCanvas.width = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+  ;(<HTMLImageElement>document.getElementById('texture-checker')).width = rightSideWidth
+  skinName.parentElement!.style.width = rightSideWidth + 'px'
+  skinName.style.width = rightSideWidth - 35 + 'px'
+
+  layersDiv.style.width = rightSideWidth + 6 + 'px'
 
   setHotbar(hotbar)
   updateTextureHighlight()
@@ -220,11 +266,14 @@ export function setWidth(value: number) {
 
 export function setHeight(value: number) {
   height = value
-  showCanvas.height = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight)
-  ;(<HTMLImageElement>document.getElementById('texture-checker')).height = Math.min(
-    window.innerWidth * 0.3,
-    window.innerHeight * textureHeight,
-  )
+
+  const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+
+  showCanvas.height = rightSideWidth
+  ;(<HTMLImageElement>document.getElementById('texture-checker')).height = rightSideWidth
+
+  layersDiv.style.height = rightSideWidth - 37 + 'px'
+
   updateTextureHighlight()
 }
 
@@ -236,8 +285,8 @@ export function setAlpha(value: number) {
 }
 
 export function setTexture() {
-  ctx?.clearRect(0, 0, 64, 64)
-  ctx?.drawImage(textureImage, 0, 0)
+  layerCTXs[0]?.clearRect(0, 0, 64, 64)
+  layerCTXs[0]?.drawImage(textureImage, 0, 0)
   updateTextureHighlight()
 }
 
@@ -263,6 +312,11 @@ export function updateTextureHighlight() {
 export function updateTexture(u?: number, v?: number) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
+
+  textureCTX?.clearRect(0, 0, 64, 64)
+  for (const l of layers) {
+    textureCTX?.drawImage(l, 0, 0)
+  }
 
   highlightCTX?.clearRect(0, 0, 64, 64)
   highlightCTX?.drawImage(textureCanvas, 0, 0)
@@ -489,3 +543,9 @@ function updateA(r: number, g: number, b: number, a: number) {
 }
 
 // TODO colour hotbar
+
+addLayer()
+addLayer()
+addLayer()
+
+setLayer(0)

@@ -2,6 +2,7 @@ body {
   margin: 0;
   user-select: none;
   font-size: 24px;
+  color: white;
 }
 
 img {
@@ -43,6 +44,35 @@ td {
   border-radius: 3px;
   padding: 3px;
   background-color: rgb(19, 19, 19);
+}
+
+p {
+  margin: 0;
+  color: white;
+}
+
+#layers {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.layer {
+  margin: 3px;
+  border-radius: 3px;
+  padding: 3px;
+  background-color: rgb(19, 19, 19);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.layer:hover {
+  cursor: pointer;
+}
+
+.layer-canvas {
+  float: right;
 }
 
 #hotbar {
@@ -130,7 +160,6 @@ td {
   position: absolute;
   display: inline;
   right: 0;
-  margin: 0;
   margin-left: auto;
   margin-right: 38px;
   color: white;

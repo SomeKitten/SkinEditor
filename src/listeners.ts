@@ -21,7 +21,6 @@ import {
   bCanvas,
   camera,
   colorPicker,
-  ctx,
   gCanvas,
   hCanvas,
   height,
@@ -29,7 +28,9 @@ import {
   hotbarCanvas,
   hotbarColors,
   hsl,
+  layer,
   layer2,
+  layerCTXs,
   lCanvas,
   mouseTexture,
   rCanvas,
@@ -46,6 +47,7 @@ import {
   setWidth,
   showCanvas,
   showZoom,
+  textureCTX,
   textureImage,
   updateColor,
   updateTextureHighlight,
@@ -131,13 +133,13 @@ function paint() {
     const x = Math.floor(intersect.uv!.x * 64)
     const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-    ctx?.clearRect(x, y, 1, 1)
+    layerCTXs[layer]?.clearRect(x, y, 1, 1)
 
     if (mouseButton === 0) {
-      ctx!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
-        hotbarColors[hotbar].color.b * 255
-      }, ${hotbarColors[hotbar].alpha / 255})`
-      ctx?.fillRect(x, y, 1, 1)
+      layerCTXs[layer]!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${
+        hotbarColors[hotbar].color.g * 255
+      }, ${hotbarColors[hotbar].color.b * 255}, ${hotbarColors[hotbar].alpha / 255})`
+      layerCTXs[layer]?.fillRect(x, y, 1, 1)
     }
 
     updateTextureHighlight()
@@ -165,7 +167,7 @@ function intersectDrop(intersect: Intersection): boolean {
   const x = Math.floor(intersect.uv!.x * 64)
   const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-  const c = ctx?.getImageData(x, y, 1, 1).data
+  const c = layerCTXs[layer]?.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -187,15 +189,14 @@ function draw(x: number, y: number) {
     prevDraw.y = y
   }
 
-  ctx?.clearRect(x, y, 1, 1)
   clearLine(x, y, prevDraw.x, prevDraw.y)
   if (mouseButton === 0) {
-    ctx!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+    layerCTXs[layer]!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
-    // ctx?.clearRect(x, y, 1, 1)
-    ctx?.fillRect(x, y, 1, 1)
     line(x, y, prevDraw.x, prevDraw.y)
+    layerCTXs[layer]?.clearRect(x, y, 1, 1)
+    layerCTXs[layer]?.fillRect(x, y, 1, 1)
   }
 
   prevDraw.x = x
@@ -205,7 +206,7 @@ function draw(x: number, y: number) {
 }
 
 function eyeDropper2D(x: number, y: number) {
-  const c = ctx?.getImageData(x, y, 1, 1).data
+  const c = textureCTX?.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -217,7 +218,7 @@ function clearLine(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    ctx?.clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    layerCTXs[layer]?.clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
@@ -227,7 +228,7 @@ function line(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    ctx?.fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    layerCTXs[layer]?.fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
