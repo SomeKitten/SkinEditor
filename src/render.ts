@@ -10,12 +10,13 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three'
-import { genBlockUVs } from './util'
+import { genBlockUVs, raycaster } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
 import defaultHeadURL from '../res/neferupitou.png'
 import hotbarImgURL from '../res/hotbar.png'
 import hotbarSelectImgURL from '../res/hotbar_select.png'
+import { mouse, shift } from './input'
 
 const layer1ToLayer2 = 9 / 8
 
@@ -37,6 +38,11 @@ export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
 textureCanvas.height = 64
 export const ctx = textureCanvas.getContext('2d')
+
+export const highlightCanvas = document.createElement('canvas')
+highlightCanvas.width = 64
+highlightCanvas.height = 64
+export const highlightCTX = highlightCanvas.getContext('2d')
 
 export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
 export const saveIcon = <HTMLImageElement>document.getElementById('save')
@@ -209,7 +215,7 @@ export function setWidth(value: number) {
   skinName.style.width = Math.min(window.innerWidth * 0.3, window.innerHeight * textureHeight) - 35 + 'px'
 
   setHotbar(hotbar)
-  updateTexture()
+  updateTextureHighlight()
 }
 
 export function setHeight(value: number) {
@@ -219,7 +225,7 @@ export function setHeight(value: number) {
     window.innerWidth * 0.3,
     window.innerHeight * textureHeight,
   )
-  updateTexture()
+  updateTextureHighlight()
 }
 
 setWidth(window.innerWidth)
@@ -232,17 +238,47 @@ export function setAlpha(value: number) {
 export function setTexture() {
   ctx?.clearRect(0, 0, 64, 64)
   ctx?.drawImage(textureImage, 0, 0)
-  updateTexture()
+  updateTextureHighlight()
 }
 
-export function updateTexture() {
+export function updateTextureHighlight() {
+  raycaster.setFromCamera(mouse, camera)
+  const intersects = raycaster.intersectObjects(scene.children)
+
+  if (intersects.length > 0) {
+    if (!shift && layer2.visible) {
+      const uv = intersects[0].uv
+      updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
+    } else {
+      if (intersects[1].object === layer1) {
+        const uv = intersects[1].uv
+        updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
+      }
+    }
+  } else {
+    updateTexture()
+  }
+}
+
+export function updateTexture(u?: number, v?: number) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
+
+  highlightCTX?.clearRect(0, 0, 64, 64)
+  highlightCTX?.drawImage(textureCanvas, 0, 0)
+
+  if (typeof u == 'number' && typeof v == 'number') {
+    u = Math.floor(u / 8) * 8
+    v = Math.floor((64 - v - 1) / 8) * 8
+
+    highlightCTX!.fillStyle = 'rgba(255, 255, 0, 0.5)'
+    highlightCTX!.fillRect(u, v, 8, 8)
+  }
 
   showCTX!.imageSmoothingEnabled = false
   showCTX?.clearRect(0, 0, showCanvas.width, showCanvas.height)
   showCTX?.drawImage(
-    textureCanvas,
+    highlightCanvas,
     zoomPos.x,
     zoomPos.y,
     64 / showZoom,

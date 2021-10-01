@@ -48,7 +48,7 @@ import {
   showZoom,
   textureImage,
   updateColor,
-  updateTexture,
+  updateTextureHighlight,
   width,
   zoom,
   zoomPos,
@@ -140,7 +140,7 @@ function paint() {
       ctx?.fillRect(x, y, 1, 1)
     }
 
-    updateTexture()
+    updateTextureHighlight()
   }
 }
 
@@ -201,7 +201,7 @@ function draw(x: number, y: number) {
   prevDraw.x = x
   prevDraw.y = y
 
-  updateTexture()
+  updateTextureHighlight()
 }
 
 function eyeDropper2D(x: number, y: number) {
@@ -284,11 +284,15 @@ showCanvas.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
   if (event.ctrlKey) {
     zoom(event.deltaY / -100)
-    updateTexture()
+    updateTextureHighlight()
   }
 
   event.preventDefault()
 }
+
+renderer.domElement.addEventListener('mousemove', (_event: MouseEvent) => {
+  updateTextureHighlight()
+})
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
 function onSceneMouseDown(event: MouseEvent) {
@@ -344,6 +348,8 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
+  updateTextureHighlight()
+
   keys[event.key] = true
   codes[event.code] = true
 }
@@ -353,6 +359,8 @@ function onKeyUp(event: KeyboardEvent) {
   if (event.key === 'Shift') {
     setShift(false)
   }
+
+  updateTextureHighlight()
 
   keys[event.key] = false
   codes[event.code] = false
