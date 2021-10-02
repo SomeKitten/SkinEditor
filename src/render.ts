@@ -188,7 +188,8 @@ export function addLayer() {
 }
 
 export function setLayer(value: number) {
-  layers[layer].parentElement!.style.backgroundColor = 'rgb(19, 19, 19)'
+  // ! must match CSS --background
+  layers[layer].parentElement!.style.backgroundColor = 'rgb(30, 30, 30)'
 
   layer = value
 

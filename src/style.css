@@ -1,3 +1,7 @@
+:root {
+  --background: rgb(30, 30, 30);
+}
+
 body {
   margin: 0;
   user-select: none;
@@ -43,7 +47,7 @@ td {
   margin: 3px;
   border-radius: 3px;
   padding: 3px;
-  background-color: rgb(19, 19, 19);
+  background-color: var(--background);
 }
 
 p {
@@ -61,7 +65,7 @@ p {
   margin: 3px;
   border-radius: 3px;
   padding: 3px;
-  background-color: rgb(19, 19, 19);
+  background-color: var(--background);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -208,7 +212,7 @@ input {
   vertical-align: top;
   left: 0;
   right: auto;
-  background-color: rgb(19, 19, 19);
+  background-color: var(--background);
   color: white;
   border-radius: 3px;
 }
