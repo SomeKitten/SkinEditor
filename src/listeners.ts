@@ -397,7 +397,6 @@ document.addEventListener('drop', (event: DragEvent) => {
   }
 })
 
-// TODO change event.target to existing variables
 saveIcon.addEventListener('mouseenter', (_event: MouseEvent) => {
   saveIcon.src = saveSelected
 })
@@ -493,65 +492,63 @@ function onPickA(value: number) {
 
 // TODO convert target to this: HTMLElement
 document.getElementById('input-h')?.addEventListener('input', inputH)
-function inputH(event: Event) {
-  onPickH(clamp(Number((<HTMLInputElement>event.target).value), 0, 360))
+function inputH(this: HTMLInputElement, _event: Event) {
+  onPickH(clamp(Number(this.value), 0, 360))
 }
 
 document.getElementById('input-s')?.addEventListener('input', inputS)
-function inputS(event: Event) {
-  onPickS(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
+function inputS(this: HTMLInputElement, _event: Event) {
+  onPickS(clamp(Number(this.value), 0, 100))
 }
 
 document.getElementById('input-l')?.addEventListener('input', inputL)
-function inputL(event: Event) {
-  onPickL(clamp(Number((<HTMLInputElement>event.target).value), 0, 100))
+function inputL(this: HTMLInputElement, _event: Event) {
+  onPickL(clamp(Number(this.value), 0, 100))
 }
 
 document.getElementById('input-r')?.addEventListener('input', inputR)
-function inputR(event: Event) {
-  onPickR(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
+function inputR(this: HTMLInputElement, _event: Event) {
+  onPickR(clamp(Number(this.value), 0, 255))
 }
 
 document.getElementById('input-g')?.addEventListener('input', inputG)
-function inputG(event: Event) {
-  onPickG(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
+function inputG(this: HTMLInputElement, _event: Event) {
+  onPickG(clamp(Number(this.value), 0, 255))
 }
 
 document.getElementById('input-b')?.addEventListener('input', inputB)
-function inputB(event: Event) {
-  onPickB(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
+function inputB(this: HTMLInputElement, _event: Event) {
+  onPickB(clamp(Number(this.value), 0, 255))
 }
 
 document.getElementById('input-a')?.addEventListener('input', inputA)
-function inputA(event: Event) {
-  onPickA(clamp(Number((<HTMLInputElement>event.target).value), 0, 255))
+function inputA(this: HTMLInputElement, _event: Event) {
+  onPickA(clamp(Number(this.value), 0, 255))
 }
 
 const ups = document.getElementsByClassName('up')
 for (const up of ups) {
   up.addEventListener('mousedown', upMouseDown)
-  up.addEventListener('mouseenter', (event: Event) => {
-    ;(<HTMLImageElement>event.target).src = upSelectedURL
+  up.addEventListener('mouseenter', function (this: HTMLImageElement, _event: Event) {
+    this.src = upSelectedURL
   })
-  up.addEventListener('mouseleave', (event: Event) => {
-    ;(<HTMLImageElement>event.target).src = upURL
+  up.addEventListener('mouseleave', function (this: HTMLImageElement, _event: Event) {
+    this.src = upURL
   })
 }
 const downs = document.getElementsByClassName('down')
 for (const down of downs) {
   down.addEventListener('mousedown', downMouseDown)
-  down.addEventListener('mouseenter', (event: Event) => {
-    ;(<HTMLImageElement>event.target).src = downSelectedURL
+  down.addEventListener('mouseenter', function (this: HTMLImageElement, _event: Event) {
+    this.src = downSelectedURL
   })
-  down.addEventListener('mouseleave', (event: Event) => {
-    ;(<HTMLImageElement>event.target).src = downURL
+  down.addEventListener('mouseleave', function (this: HTMLImageElement, _event: Event) {
+    this.src = downURL
   })
-  // down.addEventListener('mouseup', downMouseUp)
 }
 
-function upMouseDown(event: Event) {
-  // ;(<HTMLImageElement>event.target).src = upSelectedURL
-  switch ((<HTMLImageElement>event.target).classList[1]) {
+function upMouseDown(this: HTMLImageElement, _event: Event) {
+  switch (this.classList[1]) {
     case 'arrow-h':
       onPickH(clamp(hsl.h + 1, 0, 360))
       break
@@ -575,8 +572,8 @@ function upMouseDown(event: Event) {
       break
   }
 }
-function downMouseDown(event: Event) {
-  switch ((<HTMLImageElement>event.target).classList[1]) {
+function downMouseDown(this: HTMLImageElement, _event: Event) {
+  switch (this.classList[1]) {
     case 'arrow-h':
       onPickH(clamp(hsl.h - 1, 0, 360))
       break
