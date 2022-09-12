@@ -40,6 +40,9 @@ export const layers: HTMLCanvasElement[] = []
 export const layerCTXs: CanvasRenderingContext2D[] = []
 export const layersDiv = <HTMLDivElement>document.getElementById('layers')
 
+export const undoStacks: HTMLCanvasElement[][] = []
+export const redoStacks: HTMLCanvasElement[][] = []
+
 export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
 textureCanvas.height = 64
@@ -185,6 +188,9 @@ export function addLayer() {
   })
 
   layersDiv.appendChild(layerDiv)
+
+  undoStacks.push([])
+  redoStacks.push([])
 }
 
 export function setLayer(value: number) {
@@ -546,9 +552,8 @@ function updateA(r: number, g: number, b: number, a: number) {
   ;(<HTMLInputElement>document.getElementById('input-a')).value = `${a}`
 }
 
-// TODO re-implement layers with undo/redo
 addLayer()
-// addLayer()
-// addLayer()
+addLayer()
+addLayer()
 
 setLayer(0)

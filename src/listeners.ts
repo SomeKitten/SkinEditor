@@ -31,9 +31,11 @@ import {
   layer,
   layer2,
   layerCTXs,
+  layers,
   lCanvas,
   mouseTexture,
   rCanvas,
+  redoStacks,
   renderer,
   rgb,
   saveIcon,
@@ -49,6 +51,7 @@ import {
   showZoom,
   textureCTX,
   textureImage,
+  undoStacks,
   updateColor,
   updateTextureHighlight,
   width,
@@ -176,11 +179,14 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
   drawFromOffset(event.offsetX, event.offsetY)
 }
 
-// TODO add UNDO / REDO
 function draw(x: number, y: number, connectPrev: boolean = false) {
+  // if starting to draw...
   if (prevDraw.x < 0 || prevDraw.y < 0) {
     prevDraw.x = x
     prevDraw.y = y
+
+    newCanvasState(undoStacks[layer])
+    redoStacks[layer] = []
   }
 
   layerCTXs[layer]?.clearRect(x, y, 1, 1)
@@ -330,9 +336,19 @@ function onMouseUp(_event: MouseEvent) {
 
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
-  if (event.ctrlKey && event.code === 'KeyS') {
-    download()
-    event.preventDefault()
+  if (event.ctrlKey) {
+    if (event.code === 'KeyS') {
+      download()
+      event.preventDefault()
+    }
+
+    if (event.code === 'KeyZ') {
+      if (event.shiftKey) {
+        redo()
+      } else {
+        undo()
+      }
+    }
   }
 
   if (event.code === 'Tab') {
@@ -349,6 +365,33 @@ function onKeyDown(event: KeyboardEvent) {
 
   keys[event.key] = true
   codes[event.code] = true
+}
+
+function undo() {
+  if (undoStacks[layer].length > 0) {
+    const undoCanvas = undoStacks[layer].pop()!
+    newCanvasState(redoStacks[layer], undoCanvas)
+  }
+}
+
+function redo() {
+  if (redoStacks[layer].length > 0) {
+    const redoCanvas = redoStacks[layer].pop()!
+    newCanvasState(undoStacks[layer], redoCanvas)
+  }
+}
+
+function newCanvasState(stack: HTMLCanvasElement[], newCanvas?: HTMLCanvasElement) {
+  const oldCanvas = document.createElement('canvas')
+  oldCanvas.width = 64
+  oldCanvas.height = 64
+  oldCanvas.getContext('2d')?.drawImage(layers[layer], 0, 0)
+  stack.push(oldCanvas)
+
+  if (newCanvas) {
+    layerCTXs[layer]?.clearRect(0, 0, 64, 64)
+    layerCTXs[layer]?.drawImage(newCanvas, 0, 0)
+  }
 }
 
 document.addEventListener('keyup', onKeyUp)
