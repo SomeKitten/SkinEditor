@@ -7,6 +7,9 @@ export default {
   build: {
     outDir: 'docs',
   },
+  server: {
+    port: 3000,
+  },
   assetsInclude: ['**/*.png'],
   base: './',
 }

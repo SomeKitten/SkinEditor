@@ -224,6 +224,7 @@ export function setMouseTexture(x: number, y: number) {
   mouseTexture.y = y
 }
 
+// TODO make zoom have bias towards edges
 export function zoom(value: number) {
   const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 1, 8)
 
@@ -420,7 +421,9 @@ function updateRGB() {
 }
 
 function updateHEX() {
-  ;(<HTMLInputElement>document.getElementById('input-result')).value = hotbarColors[hotbar].color.getHexString()
+  // TODO change the static document.getElementById() to const variables
+  ;(<HTMLInputElement>document.getElementById('input-result')).value =
+    hotbarColors[hotbar].color.getHexString() + hotbarColors[hotbar].alpha.toString(16)
 }
 
 function updateH(h: number, s: number, l: number) {
@@ -543,10 +546,9 @@ function updateA(r: number, g: number, b: number, a: number) {
   ;(<HTMLInputElement>document.getElementById('input-a')).value = `${a}`
 }
 
-// TODO colour hotbar
-
+// TODO re-implement layers with undo/redo
 addLayer()
-addLayer()
-addLayer()
+// addLayer()
+// addLayer()
 
 setLayer(0)

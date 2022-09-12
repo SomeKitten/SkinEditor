@@ -133,14 +133,7 @@ function paint() {
     const x = Math.floor(intersect.uv!.x * 64)
     const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-    layerCTXs[layer]?.clearRect(x, y, 1, 1)
-
-    if (mouseButton === 0) {
-      layerCTXs[layer]!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${
-        hotbarColors[hotbar].color.g * 255
-      }, ${hotbarColors[hotbar].color.b * 255}, ${hotbarColors[hotbar].alpha / 255})`
-      layerCTXs[layer]?.fillRect(x, y, 1, 1)
-    }
+    draw(x, y)
 
     updateTextureHighlight()
   }
@@ -183,19 +176,22 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
   drawFromOffset(event.offsetX, event.offsetY)
 }
 
-function draw(x: number, y: number) {
+// TODO add UNDO / REDO
+function draw(x: number, y: number, connectPrev: boolean = false) {
   if (prevDraw.x < 0 || prevDraw.y < 0) {
     prevDraw.x = x
     prevDraw.y = y
   }
 
-  clearLine(x, y, prevDraw.x, prevDraw.y)
+  layerCTXs[layer]?.clearRect(x, y, 1, 1)
+  if (connectPrev) clearLine(x, y, prevDraw.x, prevDraw.y)
+
   if (mouseButton === 0) {
     layerCTXs[layer]!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
-    line(x, y, prevDraw.x, prevDraw.y)
-    layerCTXs[layer]?.clearRect(x, y, 1, 1)
+    
+    if (connectPrev) line(x, y, prevDraw.x, prevDraw.y)
     layerCTXs[layer]?.fillRect(x, y, 1, 1)
   }
 
@@ -258,7 +254,7 @@ function drawFromOffset(x: number, y: number) {
     if (mouseButton === 1) {
       eyeDropper2D(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
     } else {
-      draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+      draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y), true)
     }
   }
 }
@@ -490,7 +486,6 @@ function onPickA(value: number) {
   updateColor('rgb', rgb.r, rgb.g, rgb.b)
 }
 
-// TODO convert target to this: HTMLElement
 document.getElementById('input-h')?.addEventListener('input', inputH)
 function inputH(this: HTMLInputElement, _event: Event) {
   onPickH(clamp(Number(this.value), 0, 360))
