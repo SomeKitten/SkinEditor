@@ -187,7 +187,7 @@ export function addLayer() {
     setLayer(l)
   })
 
-  layersDiv.appendChild(layerDiv)
+  layersDiv.prepend(layerDiv)
 
   undoStacks.push([])
   redoStacks.push([])
