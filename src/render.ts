@@ -66,7 +66,12 @@ export const mouseTexture = { x: 0, y: 0 }
 export const textureImage = document.createElement('img')
 textureImage.src = defaultHeadURL
 textureImage.addEventListener('load', () => {
-  setTexture()
+  if (textureImage.width == 64 && textureImage.height == 64) {
+    setTexture()
+  } else {
+    // TODO better alert
+    alert('Skin texture must be 64x64')
+  }
 })
 
 const texture = new CanvasTexture(textureCanvas)

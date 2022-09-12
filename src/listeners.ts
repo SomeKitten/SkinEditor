@@ -415,7 +415,6 @@ fileReader.addEventListener(
   'load',
   function () {
     textureImage.src = <string>fileReader.result
-    setTexture()
   },
   false,
 )
