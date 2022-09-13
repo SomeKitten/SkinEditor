@@ -374,6 +374,12 @@ function onKeyDown(event: KeyboardEvent) {
       } else {
         undo()
       }
+      event.preventDefault()
+    }
+
+    if (event.ctrlKey && event.code === 'KeyY') {
+      redo()
+      event.preventDefault()
     }
   }
 
