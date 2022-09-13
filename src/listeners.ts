@@ -29,7 +29,6 @@ import {
   hotbarColors,
   hsl,
   layer,
-  layer2,
   layerCTXs,
   layers,
   lCanvas,
@@ -45,7 +44,6 @@ import {
   setHeight,
   setHotbar,
   setMouseTexture,
-  setTexture,
   setWidth,
   showCanvas,
   showZoom,
@@ -57,6 +55,9 @@ import {
   width,
   zoom,
   zoomPos,
+  outerLayerVisible,
+  outerSkinLayer,
+  toggleOuterLayer,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -67,7 +68,7 @@ import upSelectedURL from '../res/up_arrow_selected.png'
 import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
-import { Intersection } from 'three'
+import { Intersection, Mesh } from 'three'
 
 export const keys: { [key: string]: boolean } = {}
 export const codes: { [code: string]: boolean } = {}
@@ -124,15 +125,16 @@ function paint() {
 
   if (intersects.length > 0) {
     let intersect
-    if (!shift && layer2.visible) {
+    if (!shift && outerLayerVisible) {
       intersect = intersects[0]
     } else {
       intersect = intersects[1]
 
-      if (intersect.object === layer2) {
+      if (intersect.object instanceof Mesh && outerSkinLayer.includes(intersect.object)) {
         return
       }
     }
+
     const x = Math.floor(intersect.uv!.x * 64)
     const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
@@ -148,7 +150,7 @@ function eyeDropper3D() {
 
   if (intersects.length > 0) {
     let intersect
-    if (!shift && layer2.visible) {
+    if (!shift && outerLayerVisible) {
       if (!intersectDrop(intersects[0])) {
         intersectDrop(intersects[1])
       }
@@ -275,7 +277,7 @@ renderer.domElement.addEventListener('wheel', onZoom3D)
 function onZoom3D(event: WheelEvent) {
   if (
     event.ctrlKey &&
-    !((camera.position.length() < 1.2 && event.deltaY < 0) || (camera.position.length() > 5 && event.deltaY > 0))
+    !((camera.position.length() < 13 && event.deltaY < 0) || (camera.position.length() > 40 && event.deltaY > 0))
   ) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
   }
@@ -352,7 +354,7 @@ function onKeyDown(event: KeyboardEvent) {
   }
 
   if (event.code === 'Tab') {
-    layer2.visible = !layer2.visible
+    toggleOuterLayer()
     event.preventDefault()
   }
 
