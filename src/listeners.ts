@@ -283,7 +283,7 @@ function drawFromOffset(x: number, y: number) {
 }
 
 document.addEventListener('wheel', (event: WheelEvent) => {
-  if (!event.ctrlKey) {
+  if (!event.ctrlKey && !event.altKey) {
     setHotbar(wrap(hotbar + (event.deltaY > 0 ? 1 : -1), 0, 8))
   }
 })
@@ -291,7 +291,7 @@ document.addEventListener('wheel', (event: WheelEvent) => {
 renderer.domElement.addEventListener('wheel', onZoom3D)
 function onZoom3D(event: WheelEvent) {
   if (
-    event.ctrlKey &&
+    (event.ctrlKey || event.altKey) &&
     !((camera.position.length() < 13 && event.deltaY < 0) || (camera.position.length() > 40 && event.deltaY > 0))
   ) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))

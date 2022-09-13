@@ -1,138 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/ico" href="pitou-icon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Head Editor</title>
-  </head>
-  <body>
-    <script type="module" src="/src/main.ts"></script>
-    <div id="color-picker">
-      <!-- TODO overlay that says what each slider is -->
-      <div class="color-value">
-        <canvas id="color-h" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-h" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-h" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-h" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-s" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-s" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-s" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-s" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-l" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-l" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-l" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-l" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-r" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-r" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-r" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-r" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-g" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-g" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-g" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-g" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-b" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-b" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-b" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-b" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-a" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-a" />
-        <div class="arrow-div">
-          <img src="res/up_arrow.png" alt="" class="up arrow-a" draggable="false" />
-          <img src="res/down_arrow.png" alt="" class="down arrow-a" draggable="false" />
-        </div>
-      </div>
-      <div class="color-value">
-        <canvas id="color-result" class="color-canvas" width="256" height="32"></canvas>
-        <input type="text" id="input-result" />
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/ico" href="pitou-icon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Head Editor</title>
+</head>
+
+<body>
+  <script type="module" src="/src/main.ts"></script>
+  <div id="color-picker">
+    <!-- TODO overlay that says what each slider is -->
+    <div class="color-value">
+      <canvas id="color-h" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-h" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-h" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-h" draggable="false" />
       </div>
     </div>
-    <div id="controls">
-      <table>
-        <tr>
-          <td>left click</td>
-          <td>paint / orbit camera</td>
-        </tr>
-        <tr>
-          <td>right click</td>
-          <td>erase</td>
-        </tr>
-        <tr>
-          <td>middle click</td>
-          <td>get colour under cursor</td>
-        </tr>
-        <tr>
-          <td>scroll</td>
-          <td>select hotbar item</td>
-        </tr>
-        <tr>
-          <td>ctrl+scroll</td>
-          <td>zoom in and out in 2D and 3D</td>
-        </tr>
-        <tr>
-          <td>ctrl+z</td>
-          <td>undo painting / erasing actions</td>
-        </tr>
-        <tr>
-          <td>ctrl+z</td>
-          <td>redo painting / erasing actions</td>
-        </tr>
-        <tr>
-          <td>tab</td>
-          <td>toggle second layer</td>
-        </tr>
-        <tr>
-          <td>shift</td>
-          <td>paint under second layer</td>
-        </tr>
-        <tr>
-          <td>control+click</td>
-          <td>force camera to orbit</td>
-        </tr>
-        <tr>
-          <td>control+s</td>
-          <td>save texture</td>
-        </tr>
-      </table>
-    </div>
-    <canvas id="hotbar" height="24px" width="184px"></canvas>
-    <img src="res/checkerboard.png" alt="" id="alpha-checker" />
-    <img src="res/checkerboard.png" alt="" id="result-checker" />
-    <div id="texture-area">
-      <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
-      <canvas id="texture-canvas"></canvas>
-      <div id="skin-name">
-        <input type="text" id="skin-name-input" placeholder="skin" />
-        <p id="skin-name-png">.png</p>
-        <img src="res/save.png" alt="" id="save" />
+    <div class="color-value">
+      <canvas id="color-s" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-s" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-s" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-s" draggable="false" />
       </div>
     </div>
-    <div id="layers"></div>
-    <!-- TODO button that takes you to the skin change page on Minecraft.net -->
-  </body>
-  <a id="link"></a>
+    <div class="color-value">
+      <canvas id="color-l" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-l" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-l" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-l" draggable="false" />
+      </div>
+    </div>
+    <div class="color-value">
+      <canvas id="color-r" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-r" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-r" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-r" draggable="false" />
+      </div>
+    </div>
+    <div class="color-value">
+      <canvas id="color-g" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-g" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-g" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-g" draggable="false" />
+      </div>
+    </div>
+    <div class="color-value">
+      <canvas id="color-b" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-b" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-b" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-b" draggable="false" />
+      </div>
+    </div>
+    <div class="color-value">
+      <canvas id="color-a" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-a" />
+      <div class="arrow-div">
+        <img src="res/up_arrow.png" alt="" class="up arrow-a" draggable="false" />
+        <img src="res/down_arrow.png" alt="" class="down arrow-a" draggable="false" />
+      </div>
+    </div>
+    <div class="color-value">
+      <canvas id="color-result" class="color-canvas" width="256" height="32"></canvas>
+      <input type="text" id="input-result" />
+    </div>
+  </div>
+  <div id="controls">
+    <table>
+      <tr>
+        <td>left click</td>
+        <td>paint / orbit camera</td>
+      </tr>
+      <tr>
+        <td>right click</td>
+        <td>erase</td>
+      </tr>
+      <tr>
+        <td>middle click</td>
+        <td>get colour under cursor</td>
+      </tr>
+      <tr>
+        <td>scroll</td>
+        <td>select hotbar item</td>
+      </tr>
+      <tr>
+        <td>ctrl+scroll</td>
+        <td>zoom in and out in 2D and 3D</td>
+      </tr>
+      <tr>
+        <td>ctrl+z</td>
+        <td>undo painting / erasing actions</td>
+      </tr>
+      <tr>
+        <td>ctrl+z</td>
+        <td>redo painting / erasing actions</td>
+      </tr>
+      <tr>
+        <td>tab</td>
+        <td>toggle second layer</td>
+      </tr>
+      <tr>
+        <td>shift</td>
+        <td>paint under second layer</td>
+      </tr>
+      <tr>
+        <td>alt</td>
+        <td>click to enable/disable body parts</td>
+      </tr>
+      <tr>
+        <td>control+click</td>
+        <td>force camera to orbit</td>
+      </tr>
+      <tr>
+        <td>control+s</td>
+        <td>save texture</td>
+      </tr>
+    </table>
+  </div>
+  <canvas id="hotbar" height="24px" width="184px"></canvas>
+  <img src="res/checkerboard.png" alt="" id="alpha-checker" />
+  <img src="res/checkerboard.png" alt="" id="result-checker" />
+  <div id="texture-area">
+    <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
+    <canvas id="texture-canvas"></canvas>
+    <div id="skin-name">
+      <input type="text" id="skin-name-input" placeholder="skin" />
+      <p id="skin-name-png">.png</p>
+      <img src="res/save.png" alt="" id="save" />
+    </div>
+  </div>
+  <div id="layers"></div>
+  <!-- TODO button that takes you to the skin change page on Minecraft.net -->
+</body>
+<a id="link"></a>
+
 </html>
