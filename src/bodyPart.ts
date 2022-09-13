@@ -56,7 +56,6 @@ export class BodyPart {
   }
 
   setVisible(visible: boolean) {
-    console.log('setVisible', visible)
     this.visible = visible
     if (visible) {
       this.innerLayer.material = whiteMat

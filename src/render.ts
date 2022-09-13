@@ -146,6 +146,8 @@ export const parts = [
   ),
 ]
 
+disableAltMode()
+
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
 camera.rotation.order = 'ZYX'
 camera.position.set(24, 24, 24)
@@ -232,9 +234,34 @@ export function disableAltMode() {
   for (const part of parts) {
     part.disableAltMode()
   }
+
+  const center = new Vector3(0, 0, 0)
+  let visibleCount = 0
+  for (const part of parts) {
+    if (part.visible) {
+      center.add(part.innerLayer.position)
+      visibleCount++
+    }
+  }
+
+  center.divideScalar(visibleCount)
+
+  for (const part of parts) {
+    part.innerLayer.position.sub(center)
+    part.outerLayer.position.sub(center)
+  }
 }
 
 export function togglePart(partIndex: number) {
+  let visibleCount = 0
+  for (const part of parts) {
+    if (part.visible) {
+      visibleCount++
+    }
+  }
+
+  if (visibleCount === 1 && parts[partIndex].visible) return
+
   const part = parts[partIndex]
   part.setVisible(!part.visible)
 }

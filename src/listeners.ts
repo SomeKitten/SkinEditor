@@ -326,6 +326,7 @@ function onSceneMouseDown(event: MouseEvent) {
       if (event.button !== 0) return
       if (!(intersects[0].object instanceof Mesh)) return
       let index = innerSkinLayer.indexOf(intersects[0].object)
+      if (index === -1) return
 
       togglePart(index)
     } else {
