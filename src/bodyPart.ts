@@ -19,7 +19,6 @@ export class BodyPart {
     const layer1Geometry = new BoxGeometry(size.x, size.y, size.z)
     layer1Geometry.setAttribute('uv', layer1UVS)
 
-    // TODO head 2nd layer is +1, not +0.5
     const layer2Geometry = new BoxGeometry(size.x + 0.5, size.y + 0.5, size.z + 0.5)
     layer2Geometry.setAttribute('uv', layer2UVS)
 

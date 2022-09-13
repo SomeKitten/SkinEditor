@@ -143,7 +143,7 @@ function paint() {
     if (shift && outerLayerVisible) {
       intersect = intersects[1]
 
-      if (intersect.object instanceof Mesh && outerSkinLayer.includes(intersect.object)) {
+      if (outerSkinLayer.includes(intersect.object as Mesh)) {
         return
       }
     } else {
@@ -324,8 +324,7 @@ function onSceneMouseDown(event: MouseEvent) {
   if (!event.ctrlKey && intersects.length > 0) {
     if (event.altKey) {
       if (event.button !== 0) return
-      if (!(intersects[0].object instanceof Mesh)) return
-      let index = innerSkinLayer.indexOf(intersects[0].object)
+      let index = innerSkinLayer.indexOf(intersects[0].object as Mesh)
       if (index === -1) return
 
       togglePart(index)

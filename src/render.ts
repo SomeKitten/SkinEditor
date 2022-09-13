@@ -18,6 +18,7 @@ import hotbarImgURL from '../res/hotbar.png'
 import hotbarSelectImgURL from '../res/hotbar_select.png'
 import { mouse, shift } from './input'
 import { BodyPart } from './bodyPart'
+import { UVSection } from './uvSection'
 
 export let width = window.innerWidth
 export let height = window.innerHeight
@@ -42,7 +43,9 @@ export const textureCTX = textureCanvas.getContext('2d')
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
 highlightCanvas.height = 64
-export const highlightCTX = highlightCanvas.getContext('2d')
+
+export const highlightCTX = highlightCanvas.getContext('2d')!
+highlightCTX.fillStyle = 'rgba(255, 255, 0, 0.5)'
 
 export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
 export const saveIcon = <HTMLImageElement>document.getElementById('save')
@@ -145,8 +148,24 @@ export const parts = [
     new Vector3(4, 12, 4),
   ),
 ]
+parts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5) // scale head outer layer
 
 disableAltMode()
+
+const highlightSections = [
+  new UVSection(0, 64, 8, 8, 8),
+  new UVSection(32, 64, 8, 8, 8),
+  new UVSection(16, 48, 8, 12, 4),
+  new UVSection(16, 32, 8, 12, 4),
+  new UVSection(40, 48, 3, 12, 4),
+  new UVSection(40, 32, 3, 12, 4),
+  new UVSection(32, 16, 3, 12, 4),
+  new UVSection(48, 16, 3, 12, 4),
+  new UVSection(0, 48, 4, 12, 4),
+  new UVSection(0, 32, 4, 12, 4),
+  new UVSection(16, 16, 4, 12, 4),
+  new UVSection(0, 16, 4, 12, 4),
+]
 
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
 camera.rotation.order = 'ZYX'
@@ -411,7 +430,7 @@ export function updateTextureHighlight() {
 
   if (intersects.length > 0) {
     if (shift && outerLayerVisible) {
-      if (intersects[1].object instanceof Mesh && innerSkinLayer.includes(intersects[1].object)) {
+      if (innerSkinLayer.includes(intersects[1].object as Mesh)) {
         const uv = intersects[1].uv
         updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
       }
@@ -433,13 +452,14 @@ export function updateTexture(u?: number, v?: number) {
     textureCTX?.drawImage(l, 0, 0)
   }
 
-  highlightCTX?.clearRect(0, 0, 64, 64)
-  highlightCTX?.drawImage(textureCanvas, 0, 0)
+  highlightCTX.clearRect(0, 0, 64, 64)
+  highlightCTX.drawImage(textureCanvas, 0, 0)
 
-  // TODO re-add proper face-by-face highlighting
   if (typeof u === 'number' && typeof v === 'number') {
-    highlightCTX!.fillStyle = 'rgba(255, 255, 0, 0.5)'
-    highlightCTX!.fillRect(u, 63 - v, 1, 1)
+    for (const section of highlightSections) {
+      highlightCTX!.fillStyle = 'rgba(255, 255, 0, 0.5)'
+      section.highlight(highlightCTX, u, v)
+    }
   }
 
   showCTX!.imageSmoothingEnabled = false
