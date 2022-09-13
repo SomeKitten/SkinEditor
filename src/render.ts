@@ -354,15 +354,19 @@ export function setMouseTexture(x: number, y: number) {
   mouseTexture.y = y
 }
 
-// TODO make zoom have bias towards edges
 export function zoom(value: number) {
   const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 1, 8)
 
   const x = zoomPos.x
   const y = zoomPos.y
 
-  const mx = mouseTexture.x
-  const my = mouseTexture.y
+  let mx = mouseTexture.x
+  let my = mouseTexture.y
+
+  if (mx < 8) mx = 0
+  if (mx >= 56) mx = 64
+  if (my < 8) my = 0
+  if (my >= 56) my = 64
 
   const newSize = 64 / newZoom
 
