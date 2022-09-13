@@ -38,7 +38,7 @@ export const redoStacks: HTMLCanvasElement[][] = []
 export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
 textureCanvas.height = 64
-export const textureCTX = textureCanvas.getContext('2d')
+export const textureCTX = textureCanvas.getContext('2d')!
 
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
@@ -51,8 +51,8 @@ export const skinName = <HTMLInputElement>document.getElementById('skin-name-inp
 export const saveIcon = <HTMLImageElement>document.getElementById('save')
 
 export const showCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
-export const showCTX = showCanvas.getContext('2d')
-showCTX!.imageSmoothingEnabled = false
+export const showCTX = showCanvas.getContext('2d')!
+showCTX.imageSmoothingEnabled = false
 export let showZoom = 1
 export let zoomPos = { x: 0, y: 0 }
 export const mouseTexture = { x: 0, y: 0 }
@@ -177,28 +177,28 @@ renderer.domElement.id = 'dom-element'
 document.body.appendChild(renderer.domElement)
 
 export const resultCanvas = <HTMLCanvasElement>document.getElementById('color-result')
-const resultCTX = resultCanvas.getContext('2d')
+const resultCTX = resultCanvas.getContext('2d')!
 
 export const hCanvas = <HTMLCanvasElement>document.getElementById('color-h')
-const hCTX = hCanvas.getContext('2d')
+const hCTX = hCanvas.getContext('2d')!
 
 export const sCanvas = <HTMLCanvasElement>document.getElementById('color-s')
-const sCTX = sCanvas.getContext('2d')
+const sCTX = sCanvas.getContext('2d')!
 
 export const lCanvas = <HTMLCanvasElement>document.getElementById('color-l')
-const lCTX = lCanvas.getContext('2d')
+const lCTX = lCanvas.getContext('2d')!
 
 export const rCanvas = <HTMLCanvasElement>document.getElementById('color-r')
-const rCTX = rCanvas.getContext('2d')
+const rCTX = rCanvas.getContext('2d')!
 
 export const gCanvas = <HTMLCanvasElement>document.getElementById('color-g')
-const gCTX = gCanvas.getContext('2d')
+const gCTX = gCanvas.getContext('2d')!
 
 export const bCanvas = <HTMLCanvasElement>document.getElementById('color-b')
-const bCTX = bCanvas.getContext('2d')
+const bCTX = bCanvas.getContext('2d')!
 
 export const aCanvas = <HTMLCanvasElement>document.getElementById('color-a')
-const aCTX = aCanvas.getContext('2d')
+const aCTX = aCanvas.getContext('2d')!
 
 export const colorPicker = <HTMLDivElement>document.getElementById('color-picker')
 
@@ -217,7 +217,7 @@ hotbarSelectImg.src = hotbarSelectImgURL
 hotbarSelectImg.addEventListener('load', () => {
   setHotbar(hotbar)
 })
-export const hotbarCTX = hotbarCanvas.getContext('2d')
+export const hotbarCTX = hotbarCanvas.getContext('2d')!
 export const hotbarColors: { color: Color; alpha: number }[] = [
   { color: new Color(1, 0, 0), alpha: 255 },
   { color: new Color(1, 0, 0), alpha: 255 },
@@ -329,16 +329,16 @@ export function setLayer(value: number) {
 export function setHotbar(value: number) {
   hotbar = value
 
-  hotbarCTX!.imageSmoothingEnabled = false
-  hotbarCTX!.clearRect(0, 0, hotbarCanvas.width, hotbarCanvas.height)
+  hotbarCTX.imageSmoothingEnabled = false
+  hotbarCTX.clearRect(0, 0, hotbarCanvas.width, hotbarCanvas.height)
 
-  hotbarCTX!.drawImage(hotbarImg, 1, 1)
+  hotbarCTX.drawImage(hotbarImg, 1, 1)
 
-  hotbarCTX!.drawImage(hotbarSelectImg, 20 * hotbar, 0)
+  hotbarCTX.drawImage(hotbarSelectImg, 20 * hotbar, 0)
 
   for (let i = 0; i < hotbarColors.length; i++) {
-    hotbarCTX!.fillStyle = hotbarColors[i].color.getStyle()
-    hotbarCTX!.fillRect(i * 20 + 4, 4, 16, 16)
+    hotbarCTX.fillStyle = hotbarColors[i].color.getStyle()
+    hotbarCTX.fillRect(i * 20 + 4, 4, 16, 16)
   }
 
   updateColor(
@@ -419,8 +419,8 @@ export function setAlpha(value: number) {
 // TODO figure out what to do with other layers on import
 // perhaps make a new layer and import into that?
 function setTexture() {
-  layerCTXs[0]?.clearRect(0, 0, 64, 64)
-  layerCTXs[0]?.drawImage(textureImage, 0, 0)
+  layerCTXs[0].clearRect(0, 0, 64, 64)
+  layerCTXs[0].drawImage(textureImage, 0, 0)
   updateTextureHighlight()
 }
 
@@ -431,12 +431,12 @@ export function updateTextureHighlight() {
   if (intersects.length > 0) {
     if (shift && outerLayerVisible) {
       if (innerSkinLayer.includes(intersects[1].object as Mesh)) {
-        const uv = intersects[1].uv
-        updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
+        const uv = intersects[1].uv!
+        updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64))
       }
     } else {
-      const uv = intersects[0].uv
-      updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
+      const uv = intersects[0].uv!
+      updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64))
     }
   } else {
     updateTexture()
@@ -447,9 +447,9 @@ export function updateTexture(u?: number, v?: number) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
-  textureCTX?.clearRect(0, 0, 64, 64)
+  textureCTX.clearRect(0, 0, 64, 64)
   for (const l of layers) {
-    textureCTX?.drawImage(l, 0, 0)
+    textureCTX.drawImage(l, 0, 0)
   }
 
   highlightCTX.clearRect(0, 0, 64, 64)
@@ -457,14 +457,14 @@ export function updateTexture(u?: number, v?: number) {
 
   if (typeof u === 'number' && typeof v === 'number') {
     for (const section of highlightSections) {
-      highlightCTX!.fillStyle = 'rgba(255, 255, 0, 0.5)'
+      highlightCTX.fillStyle = 'rgba(255, 255, 0, 0.5)'
       section.highlight(highlightCTX, u, v)
     }
   }
 
-  showCTX!.imageSmoothingEnabled = false
-  showCTX?.clearRect(0, 0, showCanvas.width, showCanvas.height)
-  showCTX?.drawImage(
+  showCTX.imageSmoothingEnabled = false
+  showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+  showCTX.drawImage(
     highlightCanvas,
     zoomPos.x,
     zoomPos.y,
@@ -518,15 +518,15 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
       break
   }
 
-  resultCTX!.clearRect(0, 0, resultCanvas.width, resultCanvas.height)
+  resultCTX.clearRect(0, 0, resultCanvas.width, resultCanvas.height)
 
-  resultCTX!.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+  resultCTX.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
     hotbarColors[hotbar].color.b * 255
   }, ${hotbarColors[hotbar].alpha / 255})`
-  resultCTX!.fillRect(0, 0, 256, 32)
+  resultCTX.fillRect(0, 0, 256, 32)
 
-  hotbarCTX!.fillStyle = hotbarColors[hotbar].color.getStyle()
-  hotbarCTX!.fillRect(hotbar * 20 + 4, 4, 16, 16)
+  hotbarCTX.fillStyle = hotbarColors[hotbar].color.getStyle()
+  hotbarCTX.fillRect(hotbar * 20 + 4, 4, 16, 16)
 
   updateHSL()
   updateRGB()
@@ -558,7 +558,7 @@ function updateHEX() {
 }
 
 function updateH(h: number, s: number, l: number) {
-  const hGradient = hCTX!.createLinearGradient(0, 0, hCanvas.width, 0)
+  const hGradient = hCTX.createLinearGradient(0, 0, hCanvas.width, 0)
 
   hGradient.addColorStop(0, `hsl(0, ${s}%, ${l}%)`)
   hGradient.addColorStop(0.15, `hsl(60, ${s}%, ${l}%)`)
@@ -568,112 +568,112 @@ function updateH(h: number, s: number, l: number) {
   hGradient.addColorStop(0.84, `hsl(300, ${s}%, ${l}%)`)
   hGradient.addColorStop(1, `hsl(360, ${s}%, ${l}%)`)
 
-  hCTX!.fillStyle = hGradient
-  hCTX!.fillRect(0, 0, 256, 32)
+  hCTX.fillStyle = hGradient
+  hCTX.fillRect(0, 0, 256, 32)
 
-  hCTX!.beginPath()
-  hCTX!.moveTo((h * 256) / 360, 0)
-  hCTX!.lineTo((h * 256) / 360, 32)
-  hCTX!.stroke()
+  hCTX.beginPath()
+  hCTX.moveTo((h * 256) / 360, 0)
+  hCTX.lineTo((h * 256) / 360, 32)
+  hCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-h')).value = `${h}`
 }
 
 function updateS(h: number, s: number, l: number) {
-  const sGradient = sCTX!.createLinearGradient(0, 0, sCanvas.width, 0)
+  const sGradient = sCTX.createLinearGradient(0, 0, sCanvas.width, 0)
 
   sGradient.addColorStop(0, `hsl(${h}, 0%, ${l}%)`)
   sGradient.addColorStop(1, `hsl(${h}, 100%, ${l}%)`)
 
-  sCTX!.fillStyle = sGradient
-  sCTX!.fillRect(0, 0, 256, 32)
+  sCTX.fillStyle = sGradient
+  sCTX.fillRect(0, 0, 256, 32)
 
-  sCTX!.beginPath()
-  sCTX!.moveTo((s * 256) / 100, 0)
-  sCTX!.lineTo((s * 256) / 100, 32)
-  sCTX!.stroke()
+  sCTX.beginPath()
+  sCTX.moveTo((s * 256) / 100, 0)
+  sCTX.lineTo((s * 256) / 100, 32)
+  sCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-s')).value = `${s}`
 }
 
 function updateL(h: number, s: number, l: number) {
-  const lGradient = lCTX!.createLinearGradient(0, 0, lCanvas.width, 0)
+  const lGradient = lCTX.createLinearGradient(0, 0, lCanvas.width, 0)
 
   lGradient.addColorStop(0, `hsl(${h}, ${s}%, 0%)`)
   lGradient.addColorStop(0.5, `hsl(${h}, ${s}%, 50%)`)
   lGradient.addColorStop(1, `hsl(${h}, ${s}%, 100%)`)
 
-  lCTX!.fillStyle = lGradient
-  lCTX!.fillRect(0, 0, 256, 32)
+  lCTX.fillStyle = lGradient
+  lCTX.fillRect(0, 0, 256, 32)
 
-  lCTX!.beginPath()
-  lCTX!.moveTo((l * 256) / 100, 0)
-  lCTX!.lineTo((l * 256) / 100, 32)
-  lCTX!.stroke()
+  lCTX.beginPath()
+  lCTX.moveTo((l * 256) / 100, 0)
+  lCTX.lineTo((l * 256) / 100, 32)
+  lCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-l')).value = `${l}`
 }
 
 function updateR(r: number, g: number, b: number) {
-  const rGradient = rCTX!.createLinearGradient(0, 0, rCanvas.width, 0)
+  const rGradient = rCTX.createLinearGradient(0, 0, rCanvas.width, 0)
 
   rGradient.addColorStop(0, `rgb(0, ${g}, ${b})`)
   rGradient.addColorStop(1, `rgb(255, ${g}, ${b})`)
 
-  rCTX!.fillStyle = rGradient
-  rCTX!.fillRect(0, 0, 256, 32)
+  rCTX.fillStyle = rGradient
+  rCTX.fillRect(0, 0, 256, 32)
 
-  rCTX!.beginPath()
-  rCTX!.moveTo(r, 0)
-  rCTX!.lineTo(r, 32)
-  rCTX!.stroke()
+  rCTX.beginPath()
+  rCTX.moveTo(r, 0)
+  rCTX.lineTo(r, 32)
+  rCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-r')).value = `${r}`
 }
 
 function updateG(r: number, g: number, b: number) {
-  const gGradient = gCTX!.createLinearGradient(0, 0, gCanvas.width, 0)
+  const gGradient = gCTX.createLinearGradient(0, 0, gCanvas.width, 0)
 
   gGradient.addColorStop(0, `rgb(${r}, 0, ${b})`)
   gGradient.addColorStop(1, `rgb(${r}, 255, ${b})`)
 
-  gCTX!.fillStyle = gGradient
-  gCTX!.fillRect(0, 0, 256, 32)
+  gCTX.fillStyle = gGradient
+  gCTX.fillRect(0, 0, 256, 32)
 
-  gCTX!.beginPath()
-  gCTX!.moveTo(g, 0)
-  gCTX!.lineTo(g, 32)
-  gCTX!.stroke()
+  gCTX.beginPath()
+  gCTX.moveTo(g, 0)
+  gCTX.lineTo(g, 32)
+  gCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-g')).value = `${g}`
 }
 
 function updateB(r: number, g: number, b: number) {
-  const bGradient = bCTX!.createLinearGradient(0, 0, bCanvas.width, 0)
+  const bGradient = bCTX.createLinearGradient(0, 0, bCanvas.width, 0)
 
   bGradient.addColorStop(0, `rgb(${r}, ${g}, 0)`)
   bGradient.addColorStop(1, `rgb(${r}, ${g}, 255)`)
 
-  bCTX!.fillStyle = bGradient
-  bCTX!.fillRect(0, 0, 256, 32)
+  bCTX.fillStyle = bGradient
+  bCTX.fillRect(0, 0, 256, 32)
 
-  bCTX!.beginPath()
-  bCTX!.moveTo(b, 0)
-  bCTX!.lineTo(b, 32)
-  bCTX!.stroke()
+  bCTX.beginPath()
+  bCTX.moveTo(b, 0)
+  bCTX.lineTo(b, 32)
+  bCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-b')).value = `${b}`
 }
 
 function updateA(r: number, g: number, b: number, a: number) {
-  const aGradient = aCTX!.createLinearGradient(0, 0, aCanvas.width, 0)
+  const aGradient = aCTX.createLinearGradient(0, 0, aCanvas.width, 0)
 
   aGradient.addColorStop(0, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 0)`)
   aGradient.addColorStop(1, `rgba(${r * 255}, ${g * 255}, ${b * 255}, 255)`)
 
-  aCTX!.clearRect(0, 0, aCanvas.width, aCanvas.height)
+  aCTX.clearRect(0, 0, aCanvas.width, aCanvas.height)
 
-  aCTX!.fillStyle = aGradient
-  aCTX!.fillRect(0, 0, 256, 32)
+  aCTX.fillStyle = aGradient
+  aCTX.fillRect(0, 0, 256, 32)
 
-  aCTX!.beginPath()
-  aCTX!.moveTo(a, 0)
-  aCTX!.lineTo(a, 32)
-  aCTX!.stroke()
+  aCTX.beginPath()
+  aCTX.moveTo(a, 0)
+  aCTX.lineTo(a, 32)
+  aCTX.stroke()
   ;(<HTMLInputElement>document.getElementById('input-a')).value = `${a}`
 }
 

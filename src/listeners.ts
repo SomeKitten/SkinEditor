@@ -180,7 +180,7 @@ function intersectDrop(intersect: Intersection): boolean {
   const x = Math.floor(intersect.uv!.x * 64)
   const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-  const c = layerCTXs[layer]?.getImageData(x, y, 1, 1).data
+  const c = layerCTXs[layer].getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -206,16 +206,16 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     redoStacks[layer] = []
   }
 
-  layerCTXs[layer]?.clearRect(x, y, 1, 1)
+  layerCTXs[layer].clearRect(x, y, 1, 1)
   if (connectPrev) clearLine(x, y, prevDraw.x, prevDraw.y)
 
   if (mouseButton === 0) {
-    layerCTXs[layer]!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+    layerCTXs[layer].fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
 
     if (connectPrev) line(x, y, prevDraw.x, prevDraw.y)
-    layerCTXs[layer]?.fillRect(x, y, 1, 1)
+    layerCTXs[layer].fillRect(x, y, 1, 1)
   }
 
   prevDraw.x = x
@@ -225,7 +225,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
 }
 
 function eyeDropper2D(x: number, y: number) {
-  const c = textureCTX?.getImageData(x, y, 1, 1).data
+  const c = textureCTX.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -237,7 +237,7 @@ function clearLine(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    layerCTXs[layer]?.clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    layerCTXs[layer].clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
@@ -247,7 +247,7 @@ function line(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    layerCTXs[layer]?.fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    layerCTXs[layer].fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
@@ -425,8 +425,8 @@ function newCanvasState(stack: HTMLCanvasElement[], newCanvas?: HTMLCanvasElemen
   stack.push(oldCanvas)
 
   if (newCanvas) {
-    layerCTXs[layer]?.clearRect(0, 0, 64, 64)
-    layerCTXs[layer]?.drawImage(newCanvas, 0, 0)
+    layerCTXs[layer].clearRect(0, 0, 64, 64)
+    layerCTXs[layer].drawImage(newCanvas, 0, 0)
   }
 }
 

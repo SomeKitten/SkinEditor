@@ -8,7 +8,7 @@ export const targetC = { h: 0, s: 0, l: 0 }
 
 export const raycaster = new Raycaster()
 
-const link = document.getElementById('link')
+const link = document.getElementById('link')!
 
 export function rotateSpherical(spherical: Spherical, angleX: number, angleY: number) {
   spherical.theta -= angleY
@@ -99,9 +99,9 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
 }
 
 export function download() {
-  link!.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
-  link!.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-  link!.click()
+  link.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
+  link.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+  link.click()
 }
 
 export function rgb2hex(rgb: string, def: number) {
