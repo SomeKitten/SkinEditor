@@ -58,6 +58,10 @@ import {
   outerLayerVisible,
   outerSkinLayer,
   toggleOuterLayer,
+  togglePart,
+  enableAltMode,
+  disableAltMode,
+  innerSkinLayer,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -74,6 +78,17 @@ export const keys: { [key: string]: boolean } = {}
 export const codes: { [code: string]: boolean } = {}
 
 const prevDraw = { x: -1, y: -1 }
+
+window.addEventListener('blur', () => {
+  setCameraMove(false)
+  setMouseDown(false)
+  setPainting(false)
+  setDrawing(false)
+  setPainting(false)
+  setMouseButton(-1)
+  setShift(false)
+  disableAltMode()
+})
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
@@ -125,14 +140,14 @@ function paint() {
 
   if (intersects.length > 0) {
     let intersect
-    if (!shift && outerLayerVisible) {
-      intersect = intersects[0]
-    } else {
+    if (shift && outerLayerVisible) {
       intersect = intersects[1]
 
       if (intersect.object instanceof Mesh && outerSkinLayer.includes(intersect.object)) {
         return
       }
+    } else {
+      intersect = intersects[0]
     }
 
     const x = Math.floor(intersect.uv!.x * 64)
@@ -150,13 +165,13 @@ function eyeDropper3D() {
 
   if (intersects.length > 0) {
     let intersect
-    if (!shift && outerLayerVisible) {
+    if (shift && outerLayerVisible) {
+      intersect = intersects[1]
+      intersectDrop(intersect)
+    } else {
       if (!intersectDrop(intersects[0])) {
         intersectDrop(intersects[1])
       }
-    } else {
-      intersect = intersects[1]
-      intersectDrop(intersect)
     }
   }
 }
@@ -198,7 +213,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     layerCTXs[layer]!.fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
-    
+
     if (connectPrev) line(x, y, prevDraw.x, prevDraw.y)
     layerCTXs[layer]?.fillRect(x, y, 1, 1)
   }
@@ -307,11 +322,19 @@ function onSceneMouseDown(event: MouseEvent) {
   const intersects = raycaster.intersectObjects(scene.children)
 
   if (!event.ctrlKey && intersects.length > 0) {
-    setPainting(true)
-    if (event.button === 0 || event.button === 2) {
-      paint()
-    } else if (event.button === 1) {
-      eyeDropper3D()
+    if (event.altKey) {
+      if (event.button !== 0) return
+      if (!(intersects[0].object instanceof Mesh)) return
+      let index = innerSkinLayer.indexOf(intersects[0].object)
+
+      togglePart(index)
+    } else {
+      setPainting(true)
+      if (event.button === 0 || event.button === 2) {
+        paint()
+      } else if (event.button === 1) {
+        eyeDropper3D()
+      }
     }
   } else {
     setCameraMove(true)
@@ -363,6 +386,11 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
+  if (event.key === 'Alt') {
+    enableAltMode()
+    event.preventDefault()
+  }
+
   updateTextureHighlight()
 
   keys[event.key] = true
@@ -400,6 +428,11 @@ document.addEventListener('keyup', onKeyUp)
 function onKeyUp(event: KeyboardEvent) {
   if (event.key === 'Shift') {
     setShift(false)
+  }
+
+  if (event.key === 'Alt') {
+    disableAltMode()
+    event.preventDefault()
   }
 
   updateTextureHighlight()

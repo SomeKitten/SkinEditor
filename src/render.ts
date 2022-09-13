@@ -57,7 +57,7 @@ export const mouseTexture = { x: 0, y: 0 }
 export const textureImage = document.createElement('img')
 textureImage.src = defaultHeadURL
 textureImage.addEventListener('load', () => {
-  if (textureImage.width == 64 && textureImage.height == 64) {
+  if (textureImage.width === 64 && textureImage.height === 64) {
     setTexture()
   } else {
     // TODO better alert
@@ -69,7 +69,7 @@ const texture = new CanvasTexture(textureCanvas)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
 
-const layer1Mat = new MeshBasicMaterial({
+export const layer1Mat = new MeshBasicMaterial({
   color: 0xffffff,
   map: texture,
   depthWrite: true,
@@ -77,10 +77,24 @@ const layer1Mat = new MeshBasicMaterial({
   side: DoubleSide,
 })
 
-const layer2Mat = new MeshBasicMaterial({
+export const layer2Mat = new MeshBasicMaterial({
   color: 0xffffff,
   transparent: true,
   map: texture,
+  depthWrite: true,
+  depthTest: true,
+  side: DoubleSide,
+})
+
+export const whiteMat = new MeshBasicMaterial({
+  color: 0xffffff,
+  depthWrite: true,
+  depthTest: true,
+  side: DoubleSide,
+})
+
+export const blackMat = new MeshBasicMaterial({
+  color: 0x000000,
   depthWrite: true,
   depthTest: true,
   side: DoubleSide,
@@ -93,55 +107,43 @@ export const outerSkinLayer: Mesh[] = []
 
 export const parts = [
   new BodyPart( // head
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(0, 64, 8, 8, 8, 64, 64),
     genBlockUVs(32, 64, 8, 8, 8, 64, 64),
     new Vector3(0, 12, 0),
-    new Vector3(8, 8, 8)
+    new Vector3(8, 8, 8),
   ),
   new BodyPart( // torso
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(16, 48, 8, 12, 4, 64, 64),
     genBlockUVs(16, 32, 8, 12, 4, 64, 64),
     new Vector3(0, 2, 0),
-    new Vector3(8, 12, 4)
+    new Vector3(8, 12, 4),
   ),
   // TODO add slim/wide toggle
   new BodyPart( // right arm
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(40, 48, 3, 12, 4, 64, 64),
     genBlockUVs(40, 32, 3, 12, 4, 64, 64),
     new Vector3(-5.5, 2, 0),
-    new Vector3(3, 12, 4)
+    new Vector3(3, 12, 4),
   ),
   // TODO add slim/wide toggle
   new BodyPart( // left arm
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(32, 16, 3, 12, 4, 64, 64),
     genBlockUVs(48, 16, 3, 12, 4, 64, 64),
     new Vector3(5.5, 2, 0),
-    new Vector3(3, 12, 4)
+    new Vector3(3, 12, 4),
   ),
   new BodyPart( // right leg
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(0, 48, 4, 12, 4, 64, 64),
     genBlockUVs(0, 32, 4, 12, 4, 64, 64),
     new Vector3(-2, -10, 0),
-    new Vector3(4, 12, 4)
+    new Vector3(4, 12, 4),
   ),
   new BodyPart( // left leg
-    scene,
-    layer1Mat, layer2Mat,
     genBlockUVs(16, 16, 4, 12, 4, 64, 64),
     genBlockUVs(0, 16, 4, 12, 4, 64, 64),
     new Vector3(2, -10, 0),
-    new Vector3(4, 12, 4)
-  )
+    new Vector3(4, 12, 4),
+  ),
 ]
 
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
@@ -211,9 +213,30 @@ setHotbar(hotbar)
 
 export function toggleOuterLayer() {
   outerLayerVisible = !outerLayerVisible
-  for (const part of outerSkinLayer) {
-    part.visible = outerLayerVisible
+  for (const part of parts) {
+    if (part.visible && outerLayerVisible) {
+      scene.add(part.outerLayer)
+    } else {
+      scene.remove(part.outerLayer)
+    }
   }
+}
+
+export function enableAltMode() {
+  for (const part of parts) {
+    part.enableAltMode()
+  }
+}
+
+export function disableAltMode() {
+  for (const part of parts) {
+    part.disableAltMode()
+  }
+}
+
+export function togglePart(partIndex: number) {
+  const part = parts[partIndex]
+  part.setVisible(!part.visible)
 }
 
 export function addLayer() {
@@ -360,14 +383,14 @@ export function updateTextureHighlight() {
   const intersects = raycaster.intersectObjects(scene.children)
 
   if (intersects.length > 0) {
-    if (!shift && outerLayerVisible) {
-      const uv = intersects[0].uv
-      updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
-    } else {
+    if (shift && outerLayerVisible) {
       if (intersects[1].object instanceof Mesh && innerSkinLayer.includes(intersects[1].object)) {
         const uv = intersects[1].uv
         updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
       }
+    } else {
+      const uv = intersects[0].uv
+      updateTexture(Math.floor(uv!.x * 64), Math.floor(uv!.y * 64))
     }
   } else {
     updateTexture()
@@ -387,9 +410,9 @@ export function updateTexture(u?: number, v?: number) {
   highlightCTX?.drawImage(textureCanvas, 0, 0)
 
   // TODO re-add proper face-by-face highlighting
-  if (typeof u == 'number' && typeof v == 'number') {
+  if (typeof u === 'number' && typeof v === 'number') {
     highlightCTX!.fillStyle = 'rgba(255, 255, 0, 0.5)'
-    highlightCTX!.fillRect(u, 63-v, 1, 1)
+    highlightCTX!.fillRect(u, 63 - v, 1, 1)
   }
 
   showCTX!.imageSmoothingEnabled = false
