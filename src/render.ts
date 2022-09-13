@@ -393,7 +393,7 @@ export function setWidth(value: number) {
   layersDiv.style.width = rightSideWidth + 6 + 'px'
 
   setHotbar(hotbar)
-  updateTextureHighlight()
+  updateTexture()
 }
 
 export function setHeight(value: number) {
@@ -406,7 +406,7 @@ export function setHeight(value: number) {
 
   layersDiv.style.height = rightSideWidth - 37 + 'px'
 
-  updateTextureHighlight()
+  updateTexture()
 }
 
 setWidth(window.innerWidth)
@@ -421,7 +421,7 @@ export function setAlpha(value: number) {
 function setTexture() {
   layerCTXs[0].clearRect(0, 0, 64, 64)
   layerCTXs[0].drawImage(textureImage, 0, 0)
-  updateTextureHighlight()
+  updateTexture()
 }
 
 export function updateTextureHighlight() {
@@ -432,18 +432,18 @@ export function updateTextureHighlight() {
     if (shift && outerLayerVisible) {
       if (innerSkinLayer.includes(intersects[1].object as Mesh)) {
         const uv = intersects[1].uv!
-        updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64))
+        updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64), '2d')
       }
     } else {
       const uv = intersects[0].uv!
-      updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64))
+      updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64), '2d')
     }
   } else {
     updateTexture()
   }
 }
 
-export function updateTexture(u?: number, v?: number) {
+export function updateTexture(u?: number, v?: number, highlight?: string) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
@@ -462,19 +462,57 @@ export function updateTexture(u?: number, v?: number) {
     }
   }
 
-  showCTX.imageSmoothingEnabled = false
-  showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
-  showCTX.drawImage(
-    highlightCanvas,
-    zoomPos.x,
-    zoomPos.y,
-    64 / showZoom,
-    64 / showZoom,
-    0,
-    0,
-    showCanvas.width,
-    showCanvas.height,
-  )
+  if (!highlight) {
+    showCTX.imageSmoothingEnabled = false
+    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+    showCTX.drawImage(
+      textureCanvas,
+      zoomPos.x,
+      zoomPos.y,
+      64 / showZoom,
+      64 / showZoom,
+      0,
+      0,
+      showCanvas.width,
+      showCanvas.height,
+    )
+
+    return
+  }
+
+  if (highlight === '2d') {
+    showCTX.imageSmoothingEnabled = false
+    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+    showCTX.drawImage(
+      highlightCanvas,
+      zoomPos.x,
+      zoomPos.y,
+      64 / showZoom,
+      64 / showZoom,
+      0,
+      0,
+      showCanvas.width,
+      showCanvas.height,
+    )
+  } else {
+    showCTX.imageSmoothingEnabled = false
+    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+    showCTX.drawImage(
+      textureCanvas,
+      zoomPos.x,
+      zoomPos.y,
+      64 / showZoom,
+      64 / showZoom,
+      0,
+      0,
+      showCanvas.width,
+      showCanvas.height,
+    )
+
+    textureCTX.imageSmoothingEnabled = false
+    textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.height)
+    textureCTX.drawImage(highlightCanvas, 0, 0, textureCanvas.width, textureCanvas.height)
+  }
 }
 
 export function updateColor(type: string, rhhex: number, gs: number, bl: number) {

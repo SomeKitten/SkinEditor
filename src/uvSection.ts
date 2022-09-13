@@ -9,8 +9,8 @@ export class UVSection {
         [u + z + x, v],
       ],
       [
-        [u + z + x, v],
-        [u + z + x + x, v - z],
+        [u + z + x, v - z],
+        [u + z + x + x, v],
       ],
       [
         [u, v - z - y],

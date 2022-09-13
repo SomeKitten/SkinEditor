@@ -62,6 +62,7 @@ import {
   enableAltMode,
   disableAltMode,
   innerSkinLayer,
+  updateTexture,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -221,7 +222,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
   prevDraw.x = x
   prevDraw.y = y
 
-  updateTextureHighlight()
+  updateTexture(x, 63 - y, '3d')
 }
 
 function eyeDropper2D(x: number, y: number) {
@@ -279,6 +280,8 @@ function drawFromOffset(x: number, y: number) {
     } else {
       draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y), true)
     }
+  } else {
+    updateTexture(mouseTexture.x, 63 - mouseTexture.y, '3d')
   }
 }
 
@@ -304,7 +307,7 @@ showCanvas.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
   if (event.ctrlKey) {
     zoom(event.deltaY / -100)
-    updateTextureHighlight()
+    updateTexture()
   }
 
   event.preventDefault()
@@ -397,7 +400,7 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
-  updateTextureHighlight()
+  updateTexture()
 
   keys[event.key] = true
   codes[event.code] = true
@@ -441,7 +444,7 @@ function onKeyUp(event: KeyboardEvent) {
     event.preventDefault()
   }
 
-  updateTextureHighlight()
+  updateTexture()
 
   keys[event.key] = false
   codes[event.code] = false
