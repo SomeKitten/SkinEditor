@@ -111,50 +111,57 @@ export let outerLayerVisible: boolean = true
 export const innerSkinLayer: Mesh[] = []
 export const outerSkinLayer: Mesh[] = []
 
+const EPS = 0.01
+
 export const parts = [
   new BodyPart( // head
     genBlockUVs(0, 64, 8, 8, 8, 64, 64),
     genBlockUVs(32, 64, 8, 8, 8, 64, 64),
     new Vector3(0, 12, 0),
+    new Vector3(0, 0, 0),
     new Vector3(8, 8, 8),
   ),
   new BodyPart( // torso
     genBlockUVs(16, 48, 8, 12, 4, 64, 64),
     genBlockUVs(16, 32, 8, 12, 4, 64, 64),
-    new Vector3(0, 2, 0),
+    new Vector3(0 + EPS, 2 + EPS, 0 + EPS),
+    new Vector3(0, 0, 0),
     new Vector3(8, 12, 4),
   ),
   // TODO add slim/wide toggle
   new BodyPart( // right arm
     genBlockUVs(40, 48, 3, 12, 4, 64, 64),
     genBlockUVs(40, 32, 3, 12, 4, 64, 64),
-    new Vector3(-5.5, 2, 0),
+    new Vector3(-5.5 + EPS * 4, 6 + EPS * 4, 0 + EPS * 4),
+    new Vector3(0, -4, 0),
     new Vector3(3, 12, 4),
   ),
   // TODO add slim/wide toggle
   new BodyPart( // left arm
     genBlockUVs(32, 16, 3, 12, 4, 64, 64),
     genBlockUVs(48, 16, 3, 12, 4, 64, 64),
-    new Vector3(5.5, 2, 0),
+    new Vector3(5.5 + EPS * 4, 6 + EPS * 4, 0 + EPS * 4),
+    new Vector3(0, -4, 0),
     new Vector3(3, 12, 4),
   ),
   new BodyPart( // right leg
     genBlockUVs(0, 48, 4, 12, 4, 64, 64),
     genBlockUVs(0, 32, 4, 12, 4, 64, 64),
-    new Vector3(-2, -10, 0),
+    new Vector3(-2 + EPS * 2, -4 + EPS * 2, 0 + EPS * 2),
+    new Vector3(0, -6, 0),
     new Vector3(4, 12, 4),
   ),
   new BodyPart( // left leg
     genBlockUVs(16, 16, 4, 12, 4, 64, 64),
     genBlockUVs(0, 16, 4, 12, 4, 64, 64),
-    new Vector3(2, -10, 0),
+    new Vector3(2 + EPS * 3, -4 + EPS * 3, 0 + EPS * 3),
+    new Vector3(0, -6, 0),
     new Vector3(4, 12, 4),
   ),
 ]
-parts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5) // scale head outer layer
-// TODO re-scale/re-position body parts to avoid z-fighting
-// TODO add animation modes (walking, running, attacking, sneaking, looking around etc)
-// TODO take a look at Planet Minecraft's skin viewer for inspiration
+
+// scale head outer layer
+parts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5)
 
 disableAltMode()
 
@@ -237,6 +244,34 @@ export const hotbarColors: { color: Color; alpha: number }[] = [
 ]
 
 setHotbar(hotbar)
+
+export let playPlayerModelAnimation = false
+export let playerModelAnimationTime = 0
+export function setPlayPlayerModelAnimation(value: boolean) {
+  playPlayerModelAnimation = value
+
+  playerModelAnimationTime = Date.now()
+  animatePlayerModel()
+}
+
+// TODO add more animation modes (walking, running, attacking, sneaking, looking around etc)
+// TODO take a look at Planet Minecraft's skin viewer for inspiration
+// TODO make walking animation more accurate, currently uses arbitrary values
+export function animatePlayerModel() {
+  const now = Date.now() - playerModelAnimationTime
+
+  // rotate arms
+  parts[2].innerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
+  parts[2].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
+  parts[3].innerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), -Math.sin(now / 300) / 4)
+  parts[3].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), -Math.sin(now / 300) / 4)
+
+  // rotate legs
+  parts[4].innerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), -Math.sin(now / 300) / 4)
+  parts[4].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), -Math.sin(now / 300) / 4)
+  parts[5].innerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
+  parts[5].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
+}
 
 export function toggleOuterLayer() {
   outerLayerVisible = !outerLayerVisible

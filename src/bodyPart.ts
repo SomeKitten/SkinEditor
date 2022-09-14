@@ -15,20 +15,22 @@ export class BodyPart {
   outerLayer: Mesh
   visible: boolean = true
 
-  constructor(layer1UVS: BufferAttribute, layer2UVS: BufferAttribute, pos: Vector3, size: Vector3) {
+  constructor(layer1UVS: BufferAttribute, layer2UVS: BufferAttribute, root: Vector3, offset: Vector3, size: Vector3) {
     const layer1Geometry = new BoxGeometry(size.x, size.y, size.z)
+    layer1Geometry.translate(offset.x, offset.y, offset.z)
     layer1Geometry.setAttribute('uv', layer1UVS)
 
     const layer2Geometry = new BoxGeometry(size.x + 0.5, size.y + 0.5, size.z + 0.5)
+    layer2Geometry.translate(offset.x, offset.y, offset.z)
     layer2Geometry.setAttribute('uv', layer2UVS)
 
     this.innerLayer = new Mesh(layer1Geometry, layer1Mat)
-    this.innerLayer.position.copy(pos)
+    this.innerLayer.position.copy(root)
     innerSkinLayer.push(this.innerLayer)
     scene.add(this.innerLayer)
 
     this.outerLayer = new Mesh(layer2Geometry, layer2Mat)
-    this.outerLayer.position.copy(pos)
+    this.outerLayer.position.copy(root)
     outerSkinLayer.push(this.outerLayer)
     scene.add(this.outerLayer)
   }

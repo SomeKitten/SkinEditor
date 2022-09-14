@@ -63,6 +63,8 @@ import {
   disableAltMode,
   innerSkinLayer,
   updateTexture,
+  setPlayPlayerModelAnimation,
+  playPlayerModelAnimation,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -397,6 +399,11 @@ function onKeyDown(event: KeyboardEvent) {
 
   if (event.key === 'Alt') {
     enableAltMode()
+    event.preventDefault()
+  }
+
+  if (event.code === 'Space') {
+    setPlayPlayerModelAnimation(!playPlayerModelAnimation)
     event.preventDefault()
   }
 
