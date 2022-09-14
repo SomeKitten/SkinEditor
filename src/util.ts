@@ -1,5 +1,6 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { skinName, textureCanvas } from './render'
+import { textureCanvas } from './render'
+import { linkElement, skinName } from './staticElements'
 
 export const camOrbit = new Vector3()
 
@@ -7,8 +8,6 @@ export const targetS = new Spherical()
 export const targetC = { h: 0, s: 0, l: 0 }
 
 export const raycaster = new Raycaster()
-
-const link = document.getElementById('link')!
 
 export function rotateSpherical(spherical: Spherical, angleX: number, angleY: number) {
   spherical.theta -= angleY
@@ -100,9 +99,9 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
 
 // TODO "save as" instead of "save"
 export function download() {
-  link.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
-  link.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-  link.click()
+  linkElement.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
+  linkElement.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+  linkElement.click()
 }
 
 export function rgb2hex(rgb: string, def: number) {

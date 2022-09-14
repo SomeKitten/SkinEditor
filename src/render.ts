@@ -19,6 +19,29 @@ import hotbarSelectImgURL from '../res/hotbar_select.png'
 import { mouse, shift } from './input'
 import { BodyPart } from './bodyPart'
 import { UVSection } from './uvSection'
+import {
+  aCanvas,
+  bCanvas,
+  gCanvas,
+  hCanvas,
+  hotbarCanvas,
+  inputAElement,
+  inputBElement,
+  inputGElement,
+  inputHElement,
+  inputLElement,
+  inputRElement,
+  inputResultElement,
+  inputSElement,
+  layersDiv,
+  lCanvas,
+  rCanvas,
+  resultCanvas,
+  sCanvas,
+  showCanvas,
+  skinName,
+  textureChecker,
+} from './staticElements'
 
 export let width = window.innerWidth
 export let height = window.innerHeight
@@ -30,7 +53,6 @@ export let layer = 0
 
 export const layers: HTMLCanvasElement[] = []
 export const layerCTXs: CanvasRenderingContext2D[] = []
-export const layersDiv = <HTMLDivElement>document.getElementById('layers')
 
 export const undoStacks: HTMLCanvasElement[][] = []
 export const redoStacks: HTMLCanvasElement[][] = []
@@ -48,10 +70,6 @@ highlightCanvas.height = 64
 export const highlightCTX = highlightCanvas.getContext('2d')!
 highlightCTX.fillStyle = 'rgba(255, 255, 0, 0.5)'
 
-export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
-export const saveIcon = <HTMLImageElement>document.getElementById('save')
-
-export const showCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
 export const showCTX = showCanvas.getContext('2d')!
 showCTX.imageSmoothingEnabled = false
 export let showZoom = 1
@@ -189,37 +207,20 @@ renderer.setSize(width, height)
 renderer.domElement.id = 'dom-element'
 document.body.appendChild(renderer.domElement)
 
-export const resultCanvas = <HTMLCanvasElement>document.getElementById('color-result')
 const resultCTX = resultCanvas.getContext('2d')!
 
-export const hCanvas = <HTMLCanvasElement>document.getElementById('color-h')
 const hCTX = hCanvas.getContext('2d')!
-
-export const sCanvas = <HTMLCanvasElement>document.getElementById('color-s')
 const sCTX = sCanvas.getContext('2d')!
-
-export const lCanvas = <HTMLCanvasElement>document.getElementById('color-l')
 const lCTX = lCanvas.getContext('2d')!
-
-export const rCanvas = <HTMLCanvasElement>document.getElementById('color-r')
 const rCTX = rCanvas.getContext('2d')!
-
-export const gCanvas = <HTMLCanvasElement>document.getElementById('color-g')
 const gCTX = gCanvas.getContext('2d')!
-
-export const bCanvas = <HTMLCanvasElement>document.getElementById('color-b')
 const bCTX = bCanvas.getContext('2d')!
-
-export const aCanvas = <HTMLCanvasElement>document.getElementById('color-a')
 const aCTX = aCanvas.getContext('2d')!
-
-export const colorPicker = <HTMLDivElement>document.getElementById('color-picker')
 
 export const hsl = { h: 0, s: 0, l: 0 }
 export const rgb = { r: 0, g: 0, b: 0 }
 
 export let hotbar = 0
-export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
 export const hotbarImg = document.createElement('img')
 hotbarImg.src = hotbarImgURL
 hotbarImg.addEventListener('load', () => {
@@ -431,7 +432,7 @@ export function setWidth(value: number) {
   const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
   showCanvas.width = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
-  ;(<HTMLImageElement>document.getElementById('texture-checker')).width = rightSideWidth
+  textureChecker.width = rightSideWidth
   skinName.parentElement!.style.width = rightSideWidth + 'px'
   skinName.style.width = rightSideWidth - 35 + 'px'
 
@@ -447,7 +448,7 @@ export function setHeight(value: number) {
   const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
   showCanvas.height = rightSideWidth
-  ;(<HTMLImageElement>document.getElementById('texture-checker')).height = rightSideWidth
+  textureChecker.height = rightSideWidth
 
   layersDiv.style.height = rightSideWidth - 37 + 'px'
 
@@ -636,9 +637,7 @@ function updateRGB() {
 }
 
 function updateHEX() {
-  // TODO change the static document.getElementById() to const variables
-  ;(<HTMLInputElement>document.getElementById('input-result')).value =
-    hotbarColors[hotbar].color.getHexString() + hotbarColors[hotbar].alpha.toString(16)
+  inputResultElement.value = hotbarColors[hotbar].color.getHexString() + hotbarColors[hotbar].alpha.toString(16)
 }
 
 function updateH(h: number, s: number, l: number) {
@@ -659,7 +658,7 @@ function updateH(h: number, s: number, l: number) {
   hCTX.moveTo((h * 256) / 360, 0)
   hCTX.lineTo((h * 256) / 360, 32)
   hCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-h')).value = `${h}`
+  inputHElement.value = `${h}`
 }
 
 function updateS(h: number, s: number, l: number) {
@@ -675,7 +674,7 @@ function updateS(h: number, s: number, l: number) {
   sCTX.moveTo((s * 256) / 100, 0)
   sCTX.lineTo((s * 256) / 100, 32)
   sCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-s')).value = `${s}`
+  inputSElement.value = `${s}`
 }
 
 function updateL(h: number, s: number, l: number) {
@@ -692,7 +691,7 @@ function updateL(h: number, s: number, l: number) {
   lCTX.moveTo((l * 256) / 100, 0)
   lCTX.lineTo((l * 256) / 100, 32)
   lCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-l')).value = `${l}`
+  inputLElement.value = `${l}`
 }
 
 function updateR(r: number, g: number, b: number) {
@@ -708,7 +707,7 @@ function updateR(r: number, g: number, b: number) {
   rCTX.moveTo(r, 0)
   rCTX.lineTo(r, 32)
   rCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-r')).value = `${r}`
+  inputRElement.value = `${r}`
 }
 
 function updateG(r: number, g: number, b: number) {
@@ -724,7 +723,7 @@ function updateG(r: number, g: number, b: number) {
   gCTX.moveTo(g, 0)
   gCTX.lineTo(g, 32)
   gCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-g')).value = `${g}`
+  inputGElement.value = `${g}`
 }
 
 function updateB(r: number, g: number, b: number) {
@@ -740,7 +739,7 @@ function updateB(r: number, g: number, b: number) {
   bCTX.moveTo(b, 0)
   bCTX.lineTo(b, 32)
   bCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-b')).value = `${b}`
+  inputBElement.value = `${b}`
 }
 
 function updateA(r: number, g: number, b: number, a: number) {
@@ -758,7 +757,7 @@ function updateA(r: number, g: number, b: number, a: number) {
   aCTX.moveTo(a, 0)
   aCTX.lineTo(a, 32)
   aCTX.stroke()
-  ;(<HTMLInputElement>document.getElementById('input-a')).value = `${a}`
+  inputAElement.value = `${a}`
 }
 
 addLayer()

@@ -17,35 +17,24 @@ import {
   shift,
 } from './input'
 import {
-  aCanvas,
-  bCanvas,
   camera,
-  colorPicker,
-  gCanvas,
-  hCanvas,
   height,
   hotbar,
-  hotbarCanvas,
   hotbarColors,
   hsl,
   layer,
   layerCTXs,
   layers,
-  lCanvas,
   mouseTexture,
-  rCanvas,
   redoStacks,
   renderer,
   rgb,
-  saveIcon,
-  sCanvas,
   scene,
   setAlpha,
   setHeight,
   setHotbar,
   setMouseTexture,
   setWidth,
-  showCanvas,
   showZoom,
   textureCTX,
   textureImage,
@@ -76,6 +65,27 @@ import downURL from '../res/down_arrow.png'
 import downSelectedURL from '../res/down_arrow_selected.png'
 import { clamp } from 'three/src/math/MathUtils'
 import { Intersection, Mesh } from 'three'
+import {
+  aCanvas,
+  bCanvas,
+  colorPicker,
+  gCanvas,
+  hCanvas,
+  hotbarCanvas,
+  inputAElement,
+  inputBElement,
+  inputGElement,
+  inputHElement,
+  inputLElement,
+  inputRElement,
+  inputResultElement,
+  inputSElement,
+  lCanvas,
+  rCanvas,
+  saveIcon,
+  sCanvas,
+  showCanvas,
+} from './staticElements'
 
 export const keys: { [key: string]: boolean } = {}
 export const codes: { [code: string]: boolean } = {}
@@ -580,37 +590,37 @@ function onPickA(value: number) {
   updateColor('rgb', rgb.r, rgb.g, rgb.b)
 }
 
-document.getElementById('input-h')?.addEventListener('input', inputH)
+inputHElement.addEventListener('input', inputH)
 function inputH(this: HTMLInputElement, _event: Event) {
   onPickH(clamp(Number(this.value), 0, 360))
 }
 
-document.getElementById('input-s')?.addEventListener('input', inputS)
+inputSElement.addEventListener('input', inputS)
 function inputS(this: HTMLInputElement, _event: Event) {
   onPickS(clamp(Number(this.value), 0, 100))
 }
 
-document.getElementById('input-l')?.addEventListener('input', inputL)
+inputLElement.addEventListener('input', inputL)
 function inputL(this: HTMLInputElement, _event: Event) {
   onPickL(clamp(Number(this.value), 0, 100))
 }
 
-document.getElementById('input-r')?.addEventListener('input', inputR)
+inputRElement.addEventListener('input', inputR)
 function inputR(this: HTMLInputElement, _event: Event) {
   onPickR(clamp(Number(this.value), 0, 255))
 }
 
-document.getElementById('input-g')?.addEventListener('input', inputG)
+inputGElement.addEventListener('input', inputG)
 function inputG(this: HTMLInputElement, _event: Event) {
   onPickG(clamp(Number(this.value), 0, 255))
 }
 
-document.getElementById('input-b')?.addEventListener('input', inputB)
+inputBElement.addEventListener('input', inputB)
 function inputB(this: HTMLInputElement, _event: Event) {
   onPickB(clamp(Number(this.value), 0, 255))
 }
 
-document.getElementById('input-a')?.addEventListener('input', inputA)
+inputAElement.addEventListener('input', inputA)
 function inputA(this: HTMLInputElement, _event: Event) {
   onPickA(clamp(Number(this.value), 0, 255))
 }
@@ -687,7 +697,8 @@ function downMouseDown(this: HTMLImageElement, _event: Event) {
   }
 }
 
-document.getElementById('input-result')?.addEventListener('input', onResultType)
+// TODO allow pasting/typing in hex
+inputResultElement.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   updateColor('hex', rgb2hex(this.value, hotbarColors[hotbar].color.getHex()), 0, 0)
 }
