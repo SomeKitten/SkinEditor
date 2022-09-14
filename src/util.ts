@@ -98,6 +98,7 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
   return new BufferAttribute(new Float32Array(uvs_all), 2)
 }
 
+// TODO "save as" instead of "save"
 export function download() {
   link.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
   link.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))

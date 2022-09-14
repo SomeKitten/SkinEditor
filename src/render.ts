@@ -40,6 +40,7 @@ textureCanvas.width = 64
 textureCanvas.height = 64
 export const textureCTX = textureCanvas.getContext('2d')!
 
+// TODO test with outline instead of highlight
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
 highlightCanvas.height = 64
@@ -71,6 +72,8 @@ textureImage.addEventListener('load', () => {
 const texture = new CanvasTexture(textureCanvas)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
+
+// TODO make a toggle for shading in the 3d viewport
 
 export const layer1Mat = new MeshBasicMaterial({
   color: 0xffffff,
@@ -149,6 +152,9 @@ export const parts = [
   ),
 ]
 parts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5) // scale head outer layer
+// TODO re-scale/re-position body parts to avoid z-fighting
+// TODO add animation modes (walking, running, attacking, sneaking, looking around etc)
+// TODO take a look at Planet Minecraft's skin viewer for inspiration
 
 disableAltMode()
 
@@ -447,6 +453,7 @@ export function updateTextureHighlight() {
   }
 }
 
+// TODO put grey outline around pixel that will be drawn on
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true

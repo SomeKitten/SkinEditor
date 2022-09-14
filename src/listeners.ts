@@ -406,6 +406,7 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
+// TODO make undo global and not per layer
 function undo() {
   if (undoStacks[layer].length > 0) {
     const undoCanvas = undoStacks[layer].pop()!
@@ -679,7 +680,6 @@ function downMouseDown(this: HTMLImageElement, _event: Event) {
   }
 }
 
-// TODO alpha colour add to hex
 document.getElementById('input-result')?.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   updateColor('hex', rgb2hex(this.value, hotbarColors[hotbar].color.getHex()), 0, 0)
