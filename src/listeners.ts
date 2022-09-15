@@ -36,11 +36,11 @@ import {
   setMouseTexture,
   setWidth,
   showZoom,
-  textureCTX,
+  textureCTX2d,
   textureImage,
   undoStacks,
   updateColor,
-  updateTextureHighlight,
+  updateTexture3D,
   width,
   zoom,
   zoomPos,
@@ -168,7 +168,7 @@ function paint() {
 
     draw(x, y)
 
-    updateTextureHighlight()
+    updateTexture3D()
   }
 }
 
@@ -238,7 +238,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
 }
 
 function eyeDropper2D(x: number, y: number) {
-  const c = textureCTX.getImageData(x, y, 1, 1).data
+  const c = textureCTX2d.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -326,7 +326,7 @@ function onZoom(this: HTMLElement, event: WheelEvent) {
 }
 
 renderer.domElement.addEventListener('mousemove', (_event: MouseEvent) => {
-  updateTextureHighlight()
+  updateTexture3D()
 })
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)

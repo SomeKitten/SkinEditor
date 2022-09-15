@@ -141,7 +141,7 @@ p {
   margin: 3px;
 }
 
-#texture-canvas {
+#show-canvas {
   position: absolute;
   right: 0;
   image-rendering: pixelated;

@@ -57,21 +57,23 @@ export const layerCTXs: CanvasRenderingContext2D[] = []
 export const undoStacks: HTMLCanvasElement[][] = []
 export const redoStacks: HTMLCanvasElement[][] = []
 
-export const textureCanvas = document.createElement('canvas')
-textureCanvas.width = 64
-textureCanvas.height = 64
-export const textureCTX = textureCanvas.getContext('2d')!
+export const textureCanvas2d = document.createElement('canvas')
+textureCanvas2d.width = 512
+textureCanvas2d.height = 512
+export const textureCTX2d = textureCanvas2d.getContext('2d')!
 
-// TODO test with outline instead of highlight
+export const textureCanvas3d = document.createElement('canvas')
+textureCanvas3d.width = 512
+textureCanvas3d.height = 512
+export const textureCTX3d = textureCanvas3d.getContext('2d')!
+
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
 highlightCanvas.height = 64
 
 export const highlightCTX = highlightCanvas.getContext('2d')!
-highlightCTX.fillStyle = 'rgba(255, 255, 0, 0.5)'
 
 export const showCTX = showCanvas.getContext('2d')!
-showCTX.imageSmoothingEnabled = false
 export let showZoom = 1
 export let zoomPos = { x: 0, y: 0 }
 export const mouseTexture = { x: 0, y: 0 }
@@ -87,7 +89,7 @@ textureImage.addEventListener('load', () => {
   }
 })
 
-const texture = new CanvasTexture(textureCanvas)
+const texture = new CanvasTexture(textureCanvas3d)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
 
@@ -392,8 +394,8 @@ export function setHotbar(value: number) {
 }
 
 export function setMouseTexture(x: number, y: number) {
-  mouseTexture.x = x
-  mouseTexture.y = y
+  mouseTexture.x = Math.floor(x)
+  mouseTexture.y = Math.floor(y)
 }
 
 export function zoom(value: number) {
@@ -417,8 +419,8 @@ export function zoom(value: number) {
     y: (y - my) * (showZoom / newZoom) + my,
   }
 
-  zoomPos.x = clamp(zoomPos.x, 0, 64 - newSize)
-  zoomPos.y = clamp(zoomPos.y, 0, 64 - newSize)
+  zoomPos.x = Math.round(clamp(zoomPos.x, 0, 64 - newSize))
+  zoomPos.y = Math.round(clamp(zoomPos.y, 0, 64 - newSize))
 
   showZoom = newZoom
 }
@@ -431,8 +433,9 @@ export function setWidth(value: number) {
 
   const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
-  showCanvas.width = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+  showCanvas.width = rightSideWidth
   textureChecker.width = rightSideWidth
+
   skinName.parentElement!.style.width = rightSideWidth + 'px'
   skinName.style.width = rightSideWidth - 35 + 'px'
 
@@ -470,7 +473,7 @@ function setTexture() {
   updateTexture()
 }
 
-export function updateTextureHighlight() {
+export function updateTexture3D() {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
@@ -491,74 +494,75 @@ export function updateTextureHighlight() {
 
 // TODO put grey outline around pixel that will be drawn on
 export function updateTexture(u?: number, v?: number, highlight?: string) {
+  showCTX.imageSmoothingEnabled = false
+  textureCTX2d.imageSmoothingEnabled = false
+  textureCTX3d.imageSmoothingEnabled = false
+  highlightCTX.imageSmoothingEnabled = false
+
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
-  textureCTX.clearRect(0, 0, 64, 64)
+  textureCTX2d.clearRect(0, 0, textureCanvas2d.width, textureCanvas2d.height)
+  textureCTX3d.clearRect(0, 0, textureCanvas3d.width, textureCanvas3d.height)
   for (const l of layers) {
-    textureCTX.drawImage(l, 0, 0)
+    textureCTX2d.drawImage(l, 0, 0, textureCanvas2d.width, textureCanvas2d.height)
+    textureCTX3d.drawImage(l, 0, 0, textureCanvas3d.width, textureCanvas3d.height)
   }
 
-  highlightCTX.clearRect(0, 0, 64, 64)
-  highlightCTX.drawImage(textureCanvas, 0, 0)
+  showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+  showCTX.drawImage(
+    textureCanvas2d,
+    zoomPos.x * (textureCanvas2d.width / 64),
+    zoomPos.y * (textureCanvas2d.height / 64),
+    textureCanvas2d.width / showZoom,
+    textureCanvas2d.height / showZoom,
+    0,
+    0,
+    showCanvas.width,
+    showCanvas.height,
+  )
 
-  if (typeof u === 'number' && typeof v === 'number') {
-    for (const section of highlightSections) {
-      highlightCTX.fillStyle = 'rgba(255, 255, 0, 0.5)'
-      section.highlight(highlightCTX, u, v)
-    }
-  }
-
-  if (!highlight) {
-    showCTX.imageSmoothingEnabled = false
-    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
-    showCTX.drawImage(
-      textureCanvas,
-      zoomPos.x,
-      zoomPos.y,
-      64 / showZoom,
-      64 / showZoom,
-      0,
-      0,
-      showCanvas.width,
-      showCanvas.height,
-    )
-
-    return
-  }
+  if (!highlight) return
 
   if (highlight === '2d') {
-    showCTX.imageSmoothingEnabled = false
-    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
+    highlightCanvas.width = showCanvas.width * showZoom
+    highlightCanvas.height = showCanvas.height * showZoom
+
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+
+    const scale = highlightCanvas.width / 64
+    highlightCTX.lineWidth = clamp(Math.floor((1 / 8) * scale), 2, 1000)
+    for (const section of highlightSections) {
+      section.highlight(highlightCTX, u!, v!, scale)
+    }
+
     showCTX.drawImage(
       highlightCanvas,
-      zoomPos.x,
-      zoomPos.y,
-      64 / showZoom,
-      64 / showZoom,
+      zoomPos.x * (highlightCanvas.width / 64),
+      zoomPos.y * (highlightCanvas.height / 64),
+      highlightCanvas.width / showZoom,
+      highlightCanvas.height / showZoom,
       0,
       0,
       showCanvas.width,
       showCanvas.height,
     )
   } else {
-    showCTX.imageSmoothingEnabled = false
-    showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
-    showCTX.drawImage(
-      textureCanvas,
-      zoomPos.x,
-      zoomPos.y,
-      64 / showZoom,
-      64 / showZoom,
-      0,
-      0,
-      showCanvas.width,
-      showCanvas.height,
-    )
+    highlightCanvas.width = 512
+    highlightCanvas.height = 512
 
-    textureCTX.imageSmoothingEnabled = false
-    textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.height)
-    textureCTX.drawImage(highlightCanvas, 0, 0, textureCanvas.width, textureCanvas.height)
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+
+    const scale = highlightCanvas.width / 64
+    highlightCTX.lineWidth = 2
+    for (const section of highlightSections) {
+      section.highlight(highlightCTX, u!, v!, scale)
+    }
+
+    // TODO split textureCanvas into two canvases
+    // one intermediate canvas
+    // and one for the material's texture
+    textureCTX3d.drawImage(highlightCanvas, 0, 0, textureCanvas3d.width, textureCanvas3d.height)
   }
 }
 

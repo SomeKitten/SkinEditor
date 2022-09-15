@@ -31,15 +31,35 @@ export class UVSection {
     ]
   }
 
-  highlight(context: CanvasRenderingContext2D, x: number, y: number) {
+  highlight(ctx: CanvasRenderingContext2D, x: number, y: number, scale: number) {
+    let highlight = false
+    ctx.strokeStyle = 'rgb(255, 255, 255)'
     for (const rectangle of this.uvs) {
       if (rectangle[0][0] <= x && x < rectangle[1][0] && rectangle[0][1] <= y && y < rectangle[1][1]) {
-        context.fillRect(
-          rectangle[0][0],
-          64 - rectangle[0][1],
-          rectangle[1][0] - rectangle[0][0],
-          -(rectangle[1][1] - rectangle[0][1]),
+        ctx.strokeRect(
+          rectangle[0][0] * scale + ctx.lineWidth / 2,
+          (64 - rectangle[0][1]) * scale - ctx.lineWidth / 2,
+          (rectangle[1][0] - rectangle[0][0]) * scale - ctx.lineWidth,
+          -(rectangle[1][1] - rectangle[0][1]) * scale + ctx.lineWidth,
         )
+
+        highlight = true
+      }
+    }
+
+    ctx.strokeStyle = 'rgb(0, 0, 0)'
+    if (highlight) {
+      for (const rectangle of this.uvs) {
+        if (!(rectangle[0][0] <= x && x < rectangle[1][0] && rectangle[0][1] <= y && y < rectangle[1][1])) {
+          ctx.strokeRect(
+            rectangle[0][0] * scale + ctx.lineWidth / 2,
+            (64 - rectangle[0][1]) * scale - ctx.lineWidth / 2,
+            (rectangle[1][0] - rectangle[0][0]) * scale - ctx.lineWidth,
+            -(rectangle[1][1] - rectangle[0][1]) * scale + ctx.lineWidth,
+          )
+
+          highlight = true
+        }
       }
     }
   }

@@ -22,7 +22,7 @@ export const layersDiv = <HTMLDivElement>document.getElementById('layers')
 export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
 export const saveIcon = <HTMLImageElement>document.getElementById('save')
 
-export const showCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
+export const showCanvas = <HTMLCanvasElement>document.getElementById('show-canvas')
 export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
 export const textureChecker = <HTMLImageElement>document.getElementById('texture-checker')
 
