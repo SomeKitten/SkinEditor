@@ -33,7 +33,7 @@ export class UVSection {
 
   highlight(ctx: CanvasRenderingContext2D, x: number, y: number, scale: number) {
     let highlight = false
-    ctx.strokeStyle = 'rgb(255, 255, 255)'
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'
     for (const rectangle of this.uvs) {
       if (rectangle[0][0] <= x && x < rectangle[1][0] && rectangle[0][1] <= y && y < rectangle[1][1]) {
         ctx.strokeRect(
@@ -47,7 +47,7 @@ export class UVSection {
       }
     }
 
-    ctx.strokeStyle = 'rgb(0, 0, 0)'
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)'
     if (highlight) {
       for (const rectangle of this.uvs) {
         if (!(rectangle[0][0] <= x && x < rectangle[1][0] && rectangle[0][1] <= y && y < rectangle[1][1])) {

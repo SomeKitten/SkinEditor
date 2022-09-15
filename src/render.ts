@@ -10,7 +10,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { genBlockUVs, raycaster } from './util'
+import { genBlockUVs, raycaster, strokeRect } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
 import defaultHeadURL from '../res/neferupitou.png'
@@ -57,14 +57,18 @@ export const layerCTXs: CanvasRenderingContext2D[] = []
 export const undoStacks: HTMLCanvasElement[][] = []
 export const redoStacks: HTMLCanvasElement[][] = []
 
+const skinTextureSize = 1024
+
+// TODO rename to textureCanvas
 export const textureCanvas2d = document.createElement('canvas')
-textureCanvas2d.width = 512
-textureCanvas2d.height = 512
+textureCanvas2d.width = 64
+textureCanvas2d.height = 64
 export const textureCTX2d = textureCanvas2d.getContext('2d')!
 
+// TODO rename to showCanvas3d
 export const textureCanvas3d = document.createElement('canvas')
-textureCanvas3d.width = 512
-textureCanvas3d.height = 512
+textureCanvas3d.width = skinTextureSize
+textureCanvas3d.height = skinTextureSize
 export const textureCTX3d = textureCanvas3d.getContext('2d')!
 
 export const highlightCanvas = document.createElement('canvas')
@@ -467,6 +471,8 @@ export function setAlpha(value: number) {
 
 // TODO figure out what to do with other layers on import
 // perhaps make a new layer and import into that?
+
+// TODO add name-search skin importing
 function setTexture() {
   layerCTXs[0].clearRect(0, 0, 64, 64)
   layerCTXs[0].drawImage(textureImage, 0, 0)
@@ -492,7 +498,7 @@ export function updateTexture3D() {
   }
 }
 
-// TODO put grey outline around pixel that will be drawn on
+// TODO part outline needs to be dynamic colour
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   showCTX.imageSmoothingEnabled = false
   textureCTX2d.imageSmoothingEnabled = false
@@ -524,46 +530,58 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
 
   if (!highlight) return
 
+  const data = textureCTX2d.getImageData(0, 0, textureCanvas2d.width, textureCanvas2d.height).data
+  const index = (u! + (63 - v!) * 64) * 4
+  let colour = (255 - data[index] + (255 - data[index] + 1) + (255 - data[index] + 2)) / 3
+  if (colour <= 128 && colour > 64) colour = 64
+  if (colour < 192 && colour > 128) colour = 192
+
   if (highlight === '2d') {
     highlightCanvas.width = showCanvas.width * showZoom
     highlightCanvas.height = showCanvas.height * showZoom
 
     highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
 
-    const scale = highlightCanvas.width / 64
+    let scale = highlightCanvas.width / 64
     highlightCTX.lineWidth = clamp(Math.floor((1 / 8) * scale), 2, 1000)
     for (const section of highlightSections) {
       section.highlight(highlightCTX, u!, v!, scale)
     }
 
-    showCTX.drawImage(
-      highlightCanvas,
-      zoomPos.x * (highlightCanvas.width / 64),
-      zoomPos.y * (highlightCanvas.height / 64),
-      highlightCanvas.width / showZoom,
-      highlightCanvas.height / showZoom,
-      0,
-      0,
-      showCanvas.width,
-      showCanvas.height,
-    )
+    textureCTX3d.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
+    scale = textureCanvas3d.width / 64
+    strokeRect(textureCTX3d, u! * scale, (63 - v!) * scale, 16, 16)
   } else {
-    highlightCanvas.width = 512
-    highlightCanvas.height = 512
+    highlightCanvas.width = skinTextureSize
+    highlightCanvas.height = skinTextureSize
 
     highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
 
-    const scale = highlightCanvas.width / 64
+    let scale = highlightCanvas.width / 64
     highlightCTX.lineWidth = 2
     for (const section of highlightSections) {
       section.highlight(highlightCTX, u!, v!, scale)
     }
 
-    // TODO split textureCanvas into two canvases
-    // one intermediate canvas
-    // and one for the material's texture
     textureCTX3d.drawImage(highlightCanvas, 0, 0, textureCanvas3d.width, textureCanvas3d.height)
+
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+    highlightCTX.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
+    scale = highlightCanvas.width / 64
+    strokeRect(highlightCTX, u! * scale, (63 - v!) * scale, 16, 16)
   }
+
+  showCTX.drawImage(
+    highlightCanvas,
+    zoomPos.x * (highlightCanvas.width / 64),
+    zoomPos.y * (highlightCanvas.height / 64),
+    highlightCanvas.width / showZoom,
+    highlightCanvas.height / showZoom,
+    0,
+    0,
+    showCanvas.width,
+    showCanvas.height,
+  )
 }
 
 export function updateColor(type: string, rhhex: number, gs: number, bl: number) {

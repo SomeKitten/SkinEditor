@@ -122,3 +122,10 @@ export function wrap(value: number, min: number, max: number) {
 
   return value
 }
+
+export function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+  ctx.fillRect(x, y, w, 1)
+  ctx.fillRect(x, y + h - 1, w, 1)
+  ctx.fillRect(x, y, 1, h)
+  ctx.fillRect(x + w - 1, y, 1, h)
+}
