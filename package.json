@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "devhost": "vite --host",
     "build": "tsc && vite build && cp CNAME docs",
     "serve": "vite preview"
   },
