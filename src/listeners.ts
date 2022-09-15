@@ -36,7 +36,7 @@ import {
   setMouseTexture,
   setWidth,
   showZoom,
-  textureCTX2d,
+  textureCTX,
   textureImage,
   undoStacks,
   updateColor,
@@ -84,7 +84,7 @@ import {
   rCanvas,
   saveIcon,
   sCanvas,
-  showCanvas,
+  showCanvas2d,
 } from './staticElements'
 
 export const keys: { [key: string]: boolean } = {}
@@ -204,7 +204,7 @@ function intersectDrop(intersect: Intersection): boolean {
   return true
 }
 
-showCanvas.addEventListener('mousemove', onDraw)
+showCanvas2d.addEventListener('mousemove', onDraw)
 function onDraw(this: HTMLElement, event: MouseEvent) {
   drawFromOffset(event.offsetX, event.offsetY)
 }
@@ -238,7 +238,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
 }
 
 function eyeDropper2D(x: number, y: number) {
-  const c = textureCTX2d.getImageData(x, y, 1, 1).data
+  const c = textureCTX.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -264,7 +264,7 @@ function line(x: number, y: number, x1: number, y1: number) {
   }
 }
 
-showCanvas.addEventListener('mousedown', onDrawStart)
+showCanvas2d.addEventListener('mousedown', onDrawStart)
 function onDrawStart(this: HTMLElement, event: MouseEvent) {
   setMouseButton(event.button)
 
@@ -282,8 +282,8 @@ function onContextMenu(event: Event) {
 
 function drawFromOffset(x: number, y: number) {
   setMouseTexture(
-    (x * 64) / showCanvas.width / showZoom + zoomPos.x,
-    (y * 64) / showCanvas.height / showZoom + zoomPos.y,
+    (x * 64) / showCanvas2d.width / showZoom + zoomPos.x,
+    (y * 64) / showCanvas2d.height / showZoom + zoomPos.y,
   )
 
   if (drawing) {
@@ -315,7 +315,7 @@ function onZoom3D(event: WheelEvent) {
   event.preventDefault()
 }
 
-showCanvas.addEventListener('wheel', onZoom)
+showCanvas2d.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
   if (event.ctrlKey) {
     zoom(event.deltaY / -100)

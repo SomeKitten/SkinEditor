@@ -38,7 +38,7 @@ import {
   rCanvas,
   resultCanvas,
   sCanvas,
-  showCanvas,
+  showCanvas2d,
   skinName,
   textureChecker,
 } from './staticElements'
@@ -59,17 +59,15 @@ export const redoStacks: HTMLCanvasElement[][] = []
 
 const skinTextureSize = 1024
 
-// TODO rename to textureCanvas
-export const textureCanvas2d = document.createElement('canvas')
-textureCanvas2d.width = 64
-textureCanvas2d.height = 64
-export const textureCTX2d = textureCanvas2d.getContext('2d')!
+export const textureCanvas = document.createElement('canvas')
+textureCanvas.width = 64
+textureCanvas.height = 64
+export const textureCTX = textureCanvas.getContext('2d')!
 
-// TODO rename to showCanvas3d
-export const textureCanvas3d = document.createElement('canvas')
-textureCanvas3d.width = skinTextureSize
-textureCanvas3d.height = skinTextureSize
-export const textureCTX3d = textureCanvas3d.getContext('2d')!
+export const showCanvas3d = document.createElement('canvas')
+showCanvas3d.width = skinTextureSize
+showCanvas3d.height = skinTextureSize
+export const showCTX3d = showCanvas3d.getContext('2d')!
 
 export const highlightCanvas = document.createElement('canvas')
 highlightCanvas.width = 64
@@ -77,7 +75,7 @@ highlightCanvas.height = 64
 
 export const highlightCTX = highlightCanvas.getContext('2d')!
 
-export const showCTX = showCanvas.getContext('2d')!
+export const showCTX2d = showCanvas2d.getContext('2d')!
 export let showZoom = 1
 export let zoomPos = { x: 0, y: 0 }
 export const mouseTexture = { x: 0, y: 0 }
@@ -93,7 +91,7 @@ textureImage.addEventListener('load', () => {
   }
 })
 
-const texture = new CanvasTexture(textureCanvas3d)
+const texture = new CanvasTexture(showCanvas3d)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
 
@@ -437,7 +435,7 @@ export function setWidth(value: number) {
 
   const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
-  showCanvas.width = rightSideWidth
+  showCanvas2d.width = rightSideWidth
   textureChecker.width = rightSideWidth
 
   skinName.parentElement!.style.width = rightSideWidth + 'px'
@@ -454,7 +452,7 @@ export function setHeight(value: number) {
 
   const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
-  showCanvas.height = rightSideWidth
+  showCanvas2d.height = rightSideWidth
   textureChecker.height = rightSideWidth
 
   layersDiv.style.height = rightSideWidth - 37 + 'px'
@@ -500,45 +498,45 @@ export function updateTexture3D() {
 
 // TODO part outline needs to be dynamic colour
 export function updateTexture(u?: number, v?: number, highlight?: string) {
-  showCTX.imageSmoothingEnabled = false
-  textureCTX2d.imageSmoothingEnabled = false
-  textureCTX3d.imageSmoothingEnabled = false
+  textureCTX.imageSmoothingEnabled = false
+  showCTX2d.imageSmoothingEnabled = false
+  showCTX3d.imageSmoothingEnabled = false
   highlightCTX.imageSmoothingEnabled = false
 
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
-  textureCTX2d.clearRect(0, 0, textureCanvas2d.width, textureCanvas2d.height)
-  textureCTX3d.clearRect(0, 0, textureCanvas3d.width, textureCanvas3d.height)
+  textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.height)
+  showCTX3d.clearRect(0, 0, showCanvas3d.width, showCanvas3d.height)
   for (const l of layers) {
-    textureCTX2d.drawImage(l, 0, 0, textureCanvas2d.width, textureCanvas2d.height)
-    textureCTX3d.drawImage(l, 0, 0, textureCanvas3d.width, textureCanvas3d.height)
+    textureCTX.drawImage(l, 0, 0, textureCanvas.width, textureCanvas.height)
+    showCTX3d.drawImage(l, 0, 0, showCanvas3d.width, showCanvas3d.height)
   }
 
-  showCTX.clearRect(0, 0, showCanvas.width, showCanvas.height)
-  showCTX.drawImage(
-    textureCanvas2d,
-    zoomPos.x * (textureCanvas2d.width / 64),
-    zoomPos.y * (textureCanvas2d.height / 64),
-    textureCanvas2d.width / showZoom,
-    textureCanvas2d.height / showZoom,
+  showCTX2d.clearRect(0, 0, showCanvas2d.width, showCanvas2d.height)
+  showCTX2d.drawImage(
+    textureCanvas,
+    zoomPos.x * (textureCanvas.width / 64),
+    zoomPos.y * (textureCanvas.height / 64),
+    textureCanvas.width / showZoom,
+    textureCanvas.height / showZoom,
     0,
     0,
-    showCanvas.width,
-    showCanvas.height,
+    showCanvas2d.width,
+    showCanvas2d.height,
   )
 
   if (!highlight) return
 
-  const data = textureCTX2d.getImageData(0, 0, textureCanvas2d.width, textureCanvas2d.height).data
+  const data = textureCTX.getImageData(0, 0, textureCanvas.width, textureCanvas.height).data
   const index = (u! + (63 - v!) * 64) * 4
   let colour = (255 - data[index] + (255 - data[index] + 1) + (255 - data[index] + 2)) / 3
   if (colour <= 128 && colour > 64) colour = 64
   if (colour < 192 && colour > 128) colour = 192
 
   if (highlight === '2d') {
-    highlightCanvas.width = showCanvas.width * showZoom
-    highlightCanvas.height = showCanvas.height * showZoom
+    highlightCanvas.width = showCanvas2d.width * showZoom
+    highlightCanvas.height = showCanvas2d.height * showZoom
 
     highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
 
@@ -548,9 +546,9 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
       section.highlight(highlightCTX, u!, v!, scale)
     }
 
-    textureCTX3d.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
-    scale = textureCanvas3d.width / 64
-    strokeRect(textureCTX3d, u! * scale, (63 - v!) * scale, 16, 16)
+    showCTX3d.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
+    scale = showCanvas3d.width / 64
+    strokeRect(showCTX3d, u! * scale, (63 - v!) * scale, 16, 16)
   } else {
     highlightCanvas.width = skinTextureSize
     highlightCanvas.height = skinTextureSize
@@ -563,7 +561,7 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
       section.highlight(highlightCTX, u!, v!, scale)
     }
 
-    textureCTX3d.drawImage(highlightCanvas, 0, 0, textureCanvas3d.width, textureCanvas3d.height)
+    showCTX3d.drawImage(highlightCanvas, 0, 0, showCanvas3d.width, showCanvas3d.height)
 
     highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
     highlightCTX.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
@@ -571,7 +569,7 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
     strokeRect(highlightCTX, u! * scale, (63 - v!) * scale, 16, 16)
   }
 
-  showCTX.drawImage(
+  showCTX2d.drawImage(
     highlightCanvas,
     zoomPos.x * (highlightCanvas.width / 64),
     zoomPos.y * (highlightCanvas.height / 64),
@@ -579,8 +577,8 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
     highlightCanvas.height / showZoom,
     0,
     0,
-    showCanvas.width,
-    showCanvas.height,
+    showCanvas2d.width,
+    showCanvas2d.height,
   )
 }
 
