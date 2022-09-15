@@ -76,8 +76,8 @@ highlightCanvas.height = 64
 export const highlightCTX = highlightCanvas.getContext('2d')!
 
 export const showCTX2d = showCanvas2d.getContext('2d')!
-export let showZoom = 1
-export let zoomPos = { x: 0, y: 0 }
+export let showZoom = 8 / 10
+export let zoomPos = { x: -8, y: -8 }
 export const mouseTexture = { x: 0, y: 0 }
 
 export const textureImage = document.createElement('img')
@@ -401,18 +401,14 @@ export function setMouseTexture(x: number, y: number) {
 }
 
 export function zoom(value: number) {
-  const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 1, 8)
+  const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 8 / 10, 8)
+  console.log(newZoom)
 
   const x = zoomPos.x
   const y = zoomPos.y
 
   let mx = mouseTexture.x
   let my = mouseTexture.y
-
-  if (mx < 8) mx = 0
-  if (mx >= 56) mx = 64
-  if (my < 8) my = 0
-  if (my >= 56) my = 64
 
   const newSize = 64 / newZoom
 
@@ -421,8 +417,8 @@ export function zoom(value: number) {
     y: (y - my) * (showZoom / newZoom) + my,
   }
 
-  zoomPos.x = Math.round(clamp(zoomPos.x, 0, 64 - newSize))
-  zoomPos.y = Math.round(clamp(zoomPos.y, 0, 64 - newSize))
+  zoomPos.x = clamp(zoomPos.x, -8, 64 - newSize + 8)
+  zoomPos.y = clamp(zoomPos.y, -8, 64 - newSize + 8)
 
   showZoom = newZoom
 }
