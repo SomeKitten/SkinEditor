@@ -163,28 +163,21 @@ p {
   border-radius: 0;
 }
 
-#skin-name {
-  width: 30%;
-  left: 0;
-  right: 0;
-  margin-top: 3px;
-}
-
-#skin-name-input {
-  box-sizing: border-box;
-  right: 0;
-  width: 100%;
-  text-align: center;
-  margin: 0;
-}
-
-#skin-name-png {
+#save-div {
   position: absolute;
-  display: inline;
-  right: 0;
-  margin-left: auto;
-  margin-right: 38px;
-  color: white;
+  width: 100%;
+  height: 100%;
+
+  z-index: 100;
+
+  background-color: rgba(30, 30, 30, 0.9);
+
+  text-align: center;
+}
+
+#save-inner-div {
+  margin: auto;
+  margin-top: 40vh;
 }
 
 #save {

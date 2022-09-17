@@ -19,11 +19,12 @@ export const colorPicker = <HTMLDivElement>document.getElementById('color-picker
 
 export const layersDiv = <HTMLDivElement>document.getElementById('layers')
 
-export const skinName = <HTMLInputElement>document.getElementById('skin-name-input')
-export const saveIcon = <HTMLImageElement>document.getElementById('save')
+export const saveDiv = <HTMLDivElement>document.getElementById('save-div')
+export const textureCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
 
 export const showCanvas2d = <HTMLCanvasElement>document.getElementById('show-canvas')
 export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
+export const textureArea = <HTMLImageElement>document.getElementById('texture-area')
 export const textureChecker = <HTMLImageElement>document.getElementById('texture-checker')
 
 export const linkElement = <HTMLAnchorElement>document.getElementById('link')

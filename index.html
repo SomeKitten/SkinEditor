@@ -146,18 +146,20 @@
   <div id="texture-area">
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>
-    <div id="skin-name">
-      <input type="text" id="skin-name-input" placeholder="skin" />
-      <p id="skin-name-png">.png</p>
-      <img src="res/save.png" alt="" id="save" />
-    </div>
   </div>
   <!-- TODO pan for 2d view -->
   <!-- TODO tools such as rectangle fill and rectangle clear (test with double left/right click) -->
   <div id="layers"></div>
-  <!-- TODO add/remove/move layers -->
+  <!-- TODO (high priority) add/remove/move layers -->
+  <div id="save-div" hidden>
+    <div id="save-inner-div">
+      <p>Right-click on the skin texture,<br>then select "save as" to save!</p>
+      <canvas id="texture-canvas" width="64" height="64"></canvas>
+      <p>Left-click anywhere to go back!</p>
+    </div>
+  </div>
   <!-- TODO button that takes you to the skin change page on Minecraft.net -->
-  <!-- TODO add link to github so people can view this source -->
+  <!-- TODO (high priority) add link to github so people can view this source -->
 </body>
 <a id="link"></a>
 

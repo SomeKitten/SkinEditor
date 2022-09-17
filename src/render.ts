@@ -10,7 +10,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { genBlockUVs, raycaster, strokeRect } from './util'
+import { compileLayers, genBlockUVs, raycaster, strokeRect } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
 import defaultHeadURL from '../res/neferupitou.png'
@@ -39,7 +39,7 @@ import {
   resultCanvas,
   sCanvas,
   showCanvas2d,
-  skinName,
+  textureCanvas,
   textureChecker,
 } from './staticElements'
 
@@ -59,9 +59,6 @@ export const redoStacks: HTMLCanvasElement[][] = []
 
 const skinTextureSize = 1024
 
-export const textureCanvas = document.createElement('canvas')
-textureCanvas.width = 64
-textureCanvas.height = 64
 export const textureCTX = textureCanvas.getContext('2d')!
 
 export const showCanvas3d = document.createElement('canvas')
@@ -150,7 +147,7 @@ export const parts = [
     new Vector3(0, 0, 0),
     new Vector3(8, 12, 4),
   ),
-  // TODO add slim/wide toggle
+  // TODO (high priority) add slim/wide toggle
   new BodyPart( // right arm
     genBlockUVs(40, 48, 3, 12, 4, 64, 64),
     genBlockUVs(40, 32, 3, 12, 4, 64, 64),
@@ -158,7 +155,6 @@ export const parts = [
     new Vector3(0, -4, 0),
     new Vector3(3, 12, 4),
   ),
-  // TODO add slim/wide toggle
   new BodyPart( // left arm
     genBlockUVs(32, 16, 3, 12, 4, 64, 64),
     genBlockUVs(48, 16, 3, 12, 4, 64, 64),
@@ -259,7 +255,7 @@ export function setPlayPlayerModelAnimation(value: boolean) {
   animatePlayerModel()
 }
 
-// TODO add more animation modes (walking, running, attacking, sneaking, looking around etc)
+// TODO (high priority) add more animation modes (walking, running, attacking, sneaking, looking around etc)
 // TODO take a look at Planet Minecraft's skin viewer for inspiration
 // TODO make walking animation more accurate, currently uses arbitrary values
 export function animatePlayerModel() {
@@ -434,9 +430,6 @@ export function setWidth(value: number) {
   showCanvas2d.width = rightSideWidth
   textureChecker.width = rightSideWidth
 
-  skinName.parentElement!.style.width = rightSideWidth + 'px'
-  skinName.style.width = rightSideWidth - 35 + 'px'
-
   layersDiv.style.width = rightSideWidth + 6 + 'px'
 
   setHotbar(hotbar)
@@ -451,7 +444,7 @@ export function setHeight(value: number) {
   showCanvas2d.height = rightSideWidth
   textureChecker.height = rightSideWidth
 
-  layersDiv.style.height = rightSideWidth - 37 + 'px'
+  layersDiv.style.height = rightSideWidth - 6 + 'px'
 
   updateTexture()
 }
@@ -463,10 +456,10 @@ export function setAlpha(value: number) {
   hotbarColors[hotbar].alpha = value
 }
 
-// TODO figure out what to do with other layers on import
+// TODO (high priority) figure out what to do with other layers on import
 // perhaps make a new layer and import into that?
 
-// TODO add name-search skin importing
+// TODO (high priority) add name-search skin importing
 function setTexture() {
   layerCTXs[0].clearRect(0, 0, 64, 64)
   layerCTXs[0].drawImage(textureImage, 0, 0)
@@ -492,7 +485,7 @@ export function updateTexture3D() {
   }
 }
 
-// TODO part outline needs to be dynamic colour
+// TODO (high priority) part outline needs to be dynamic colour
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   textureCTX.imageSmoothingEnabled = false
   showCTX2d.imageSmoothingEnabled = false
@@ -504,10 +497,9 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
 
   textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.height)
   showCTX3d.clearRect(0, 0, showCanvas3d.width, showCanvas3d.height)
-  for (const l of layers) {
-    textureCTX.drawImage(l, 0, 0, textureCanvas.width, textureCanvas.height)
-    showCTX3d.drawImage(l, 0, 0, showCanvas3d.width, showCanvas3d.height)
-  }
+
+  compileLayers(textureCTX, layers)
+  compileLayers(showCTX3d, layers)
 
   showCTX2d.clearRect(0, 0, showCanvas2d.width, showCanvas2d.height)
   showCTX2d.drawImage(

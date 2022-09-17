@@ -82,7 +82,7 @@ import {
   inputSElement,
   lCanvas,
   rCanvas,
-  saveIcon,
+  saveDiv,
   sCanvas,
   showCanvas2d,
 } from './staticElements'
@@ -275,9 +275,16 @@ function onDrawStart(this: HTMLElement, event: MouseEvent) {
   }
 }
 
+saveDiv.addEventListener('mousedown', exitSave)
+function exitSave(event: Event) {
+  if (event instanceof MouseEvent && event.button === 2) return
+
+  saveDiv.hidden = true
+}
+
 document.addEventListener('contextmenu', onContextMenu)
 function onContextMenu(event: Event) {
-  event.preventDefault()
+  if (saveDiv.hidden) event.preventDefault()
 }
 
 function drawFromOffset(x: number, y: number) {
@@ -376,6 +383,11 @@ function onMouseUp(_event: MouseEvent) {
 
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
+  if (!saveDiv.hidden) {
+    saveDiv.hidden = true
+    return
+  }
+
   if (event.ctrlKey) {
     if (event.code === 'KeyS') {
       download()
@@ -423,7 +435,8 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
-// TODO make undo global and not per layer
+// TODO (high priority) make undo global and not per layer
+// TODO (high priority) stop undo spam when drawing outside of texture
 function undo() {
   if (undoStacks[layer].length > 0) {
     const undoCanvas = undoStacks[layer].pop()!
@@ -495,16 +508,6 @@ document.addEventListener('drop', (event: DragEvent) => {
       fileReader.readAsDataURL(file)
     }
   }
-})
-
-saveIcon.addEventListener('mouseenter', (_event: MouseEvent) => {
-  saveIcon.src = saveSelected
-})
-saveIcon.addEventListener('mouseleave', (_event: MouseEvent) => {
-  saveIcon.src = saveNormal
-})
-saveIcon.addEventListener('mousedown', (_event: MouseEvent) => {
-  download()
 })
 
 hotbarCanvas.addEventListener('mousedown', hotbarClick)
@@ -697,7 +700,7 @@ function downMouseDown(this: HTMLImageElement, _event: Event) {
   }
 }
 
-// TODO allow pasting/typing in hex
+// TODO (high priority) allow pasting/typing in hex
 inputResultElement.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   updateColor('hex', rgb2hex(this.value, hotbarColors[hotbar].color.getHex()), 0, 0)

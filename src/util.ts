@@ -1,6 +1,5 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { textureCanvas } from './render'
-import { linkElement, skinName } from './staticElements'
+import { saveDiv } from './staticElements'
 
 export const camOrbit = new Vector3()
 
@@ -97,11 +96,8 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
   return new BufferAttribute(new Float32Array(uvs_all), 2)
 }
 
-// TODO "save as" instead of "save"
 export function download() {
-  linkElement.setAttribute('download', (skinName.value.trim() === '' ? 'skin' : skinName.value) + '.png')
-  linkElement.setAttribute('href', textureCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-  linkElement.click()
+  saveDiv.hidden = false
 }
 
 export function rgb2hex(rgb: string, def: number) {
@@ -128,4 +124,11 @@ export function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.fillRect(x, y + h - 1, w, 1)
   ctx.fillRect(x, y, 1, h)
   ctx.fillRect(x + w - 1, y, 1, h)
+}
+
+export function compileLayers(ctx: CanvasRenderingContext2D, layers: HTMLCanvasElement[]) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  for (let layer of layers) {
+    ctx.drawImage(layer, 0, 0, ctx.canvas.width, ctx.canvas.height)
+  }
 }
