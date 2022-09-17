@@ -354,9 +354,6 @@ export function addLayer() {
   })
 
   layersDiv.prepend(layerDiv)
-
-  undoStacks.push([])
-  redoStacks.push([])
 }
 
 export function setLayer(value: number) {

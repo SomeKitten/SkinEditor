@@ -26,7 +26,7 @@ import {
   layerCTXs,
   layers,
   mouseTexture,
-  redoStacks,
+  redoStacks as redoStack,
   renderer,
   rgb,
   scene,
@@ -38,7 +38,7 @@ import {
   showZoom,
   textureCTX,
   textureImage,
-  undoStacks,
+  undoStacks as undoStack,
   updateColor,
   updateTexture3D,
   width,
@@ -57,8 +57,6 @@ import {
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
-import saveNormal from '../res/save.png'
-import saveSelected from '../res/save_selected.png'
 import upURL from '../res/up_arrow.png'
 import upSelectedURL from '../res/up_arrow_selected.png'
 import downURL from '../res/down_arrow.png'
@@ -215,8 +213,8 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     prevDraw.x = x
     prevDraw.y = y
 
-    newCanvasState(undoStacks[layer])
-    redoStacks[layer] = []
+    newCanvasState(undoStack)
+    redoStack.length = 0
   }
 
   layerCTXs[layer].clearRect(x, y, 1, 1)
@@ -435,31 +433,36 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
-// TODO (high priority) make undo global and not per layer
 function undo() {
-  if (undoStacks[layer].length > 0) {
-    const undoCanvas = undoStacks[layer].pop()!
-    newCanvasState(redoStacks[layer], undoCanvas)
+  if (undoStack.length > 0) {
+    const undoLayers = undoStack.pop()!
+    newCanvasState(redoStack, undoLayers)
   }
 }
 
 function redo() {
-  if (redoStacks[layer].length > 0) {
-    const redoCanvas = redoStacks[layer].pop()!
-    newCanvasState(undoStacks[layer], redoCanvas)
+  if (redoStack.length > 0) {
+    const redoLayers = redoStack.pop()!
+    newCanvasState(undoStack, redoLayers)
   }
 }
 
-function newCanvasState(stack: HTMLCanvasElement[], newCanvas?: HTMLCanvasElement) {
-  const oldCanvas = document.createElement('canvas')
-  oldCanvas.width = 64
-  oldCanvas.height = 64
-  oldCanvas.getContext('2d')?.drawImage(layers[layer], 0, 0)
-  stack.push(oldCanvas)
+function newCanvasState(stack: HTMLCanvasElement[][], newLayers?: HTMLCanvasElement[]) {
+  const stackElement: HTMLCanvasElement[] = []
+  for (let l = 0; l < layers.length; l++) {
+    const oldCanvas = document.createElement('canvas')
+    oldCanvas.width = 64
+    oldCanvas.height = 64
+    oldCanvas.getContext('2d')?.drawImage(layers[l], 0, 0)
+    stackElement.push(oldCanvas)
+  }
+  stack.push(stackElement)
 
-  if (newCanvas) {
-    layerCTXs[layer].clearRect(0, 0, 64, 64)
-    layerCTXs[layer].drawImage(newCanvas, 0, 0)
+  if (newLayers) {
+    for (let l = 0; l < layers.length; l++) {
+      layerCTXs[l].clearRect(0, 0, 64, 64)
+      layerCTXs[l].drawImage(newLayers[l], 0, 0)
+    }
   }
 }
 
