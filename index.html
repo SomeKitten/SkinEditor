@@ -10,8 +10,12 @@
 
 <body>
   <script type="module" src="/src/main.ts"></script>
+  <!-- TODO cache current state of layers for when returning to page -->
+  <!-- TODO add new skin button / option -->
+  <!-- TODO on new skin, force classic / slim selection -->
   <!-- TODO option to change background colour -->
   <!-- TODO create more todos based on https://www.planetminecraft.com/pmcskin3d/ features -->
+  <!-- TODO create a basic colour picker alternative -->
   <div id="color-picker">
     <div class="color-value">
       <p class="color-label">HUE</p>
@@ -81,6 +85,7 @@
       <input type="text" id="input-result" />
     </div>
   </div>
+  <!-- TODO (high priority) make this pop up from the bottom with hover -->
   <div id="controls">
     <table>
       <tr>
@@ -144,6 +149,9 @@
   <img src="res/checkerboard.png" alt="" id="alpha-checker" />
   <img src="res/checkerboard.png" alt="" id="result-checker" />
   <div id="texture-area">
+    <!-- TODO skin toggle above 2D canvas -->
+    <!-- TODO skin toggle hover will make outlines appear on 2D canvas -->
+    <!-- TODO change the outside of the skin to be blank instead of a checker -->
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>
   </div>
@@ -154,6 +162,7 @@
   <div id="save-div" hidden>
     <div id="save-inner-div">
       <p>Right-click on the skin texture,<br>then select "save as" to save!</p>
+      <!-- TODO make skin preview larger (using img element) -->
       <canvas id="texture-canvas" width="64" height="64"></canvas>
       <p>Left-click anywhere to go back!</p>
     </div>
