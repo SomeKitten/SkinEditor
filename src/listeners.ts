@@ -207,7 +207,6 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
   drawFromOffset(event.offsetX, event.offsetY)
 }
 
-// TODO (high priority) transparent pixels will sometimes darken each-other
 function draw(x: number, y: number, connectPrev: boolean = false) {
   // if starting to draw...
   if (prevDraw.x === undefined || prevDraw.y === undefined) {
@@ -218,16 +217,20 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     redoStack.length = 0
   }
 
-  layerCTXs[layer].clearRect(x, y, 1, 1)
-  if (connectPrev) clearLine(x, y, prevDraw.x, prevDraw.y)
-
   if (mouseButton === 0) {
     layerCTXs[layer].fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
 
-    if (connectPrev) line(x, y, prevDraw.x, prevDraw.y)
+    layerCTXs[layer].clearRect(x, y, 1, 1)
     layerCTXs[layer].fillRect(x, y, 1, 1)
+
+    if (connectPrev) {
+      line(x, y, prevDraw.x, prevDraw.y)
+    }
+  } else {
+    layerCTXs[layer].clearRect(x, y, 1, 1)
+    clearLine(x, y, prevDraw.x, prevDraw.y)
   }
 
   prevDraw.x = x
@@ -259,6 +262,7 @@ function line(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
+    layerCTXs[layer].clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
     layerCTXs[layer].fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
