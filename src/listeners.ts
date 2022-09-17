@@ -90,7 +90,7 @@ import {
 export const keys: { [key: string]: boolean } = {}
 export const codes: { [code: string]: boolean } = {}
 
-const prevDraw = { x: -1, y: -1 }
+const prevDraw: { x: undefined | number; y: undefined | number } = { x: undefined, y: undefined }
 
 window.addEventListener('blur', () => {
   setCameraMove(false)
@@ -211,7 +211,7 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
 
 function draw(x: number, y: number, connectPrev: boolean = false) {
   // if starting to draw...
-  if (prevDraw.x < 0 || prevDraw.y < 0) {
+  if (prevDraw.x === undefined || prevDraw.y === undefined) {
     prevDraw.x = x
     prevDraw.y = y
 
@@ -377,8 +377,8 @@ function onMouseUp(_event: MouseEvent) {
   setDrawing(false)
   setPicking('')
 
-  prevDraw.x = -1
-  prevDraw.y = -1
+  prevDraw.x = undefined
+  prevDraw.y = undefined
 }
 
 document.addEventListener('keydown', onKeyDown)
@@ -436,7 +436,6 @@ function onKeyDown(event: KeyboardEvent) {
 }
 
 // TODO (high priority) make undo global and not per layer
-// TODO (high priority) stop undo spam when drawing outside of texture
 function undo() {
   if (undoStacks[layer].length > 0) {
     const undoCanvas = undoStacks[layer].pop()!
