@@ -100,12 +100,11 @@ export function download() {
   saveDiv.hidden = false
 }
 
+// def: default
 export function rgb2hex(rgb: string, def: number) {
-  if (rgb.length !== 6) {
-    return def
-  }
-
-  return Number('0x' + rgb)
+  const rgbNum = Number('0x' + rgb)
+  if (rgb.length !== 8 || !rgbNum) return def
+  return rgbNum
 }
 
 export function wrap(value: number, min: number, max: number) {

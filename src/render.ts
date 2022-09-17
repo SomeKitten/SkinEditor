@@ -483,6 +483,7 @@ export function updateTexture3D() {
 }
 
 // TODO (high priority) part outline needs to be dynamic colour
+// TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   textureCTX.imageSmoothingEnabled = false
   showCTX2d.imageSmoothingEnabled = false
@@ -567,6 +568,10 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   )
 }
 
+// rhhex: red / hue / hex
+// gs: green / saturation
+// bl: blue / lightness
+// TODO (refactor) split into different functions
 export function updateColor(type: string, rhhex: number, gs: number, bl: number) {
   rhhex = Math.floor(rhhex)
   gs = Math.floor(gs)
@@ -595,7 +600,8 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
       hsl.l = Math.floor(100 * hsl.l)
       break
     case 'hex':
-      hotbarColors[hotbar].color.set(rhhex)
+      hotbarColors[hotbar].color.set(rhhex >> 8)
+      setAlpha(rhhex & 0xff)
 
       hotbarColors[hotbar].color.getHSL(hsl)
       hsl.h = Math.floor(360 * hsl.h)
@@ -626,7 +632,7 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
     hotbarColors[hotbar].color.b,
     hotbarColors[hotbar].alpha,
   )
-  updateHEX()
+  if (type !== 'hex') updateHEX()
 }
 
 function updateHSL() {

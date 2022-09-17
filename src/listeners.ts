@@ -207,6 +207,7 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
   drawFromOffset(event.offsetX, event.offsetY)
 }
 
+// TODO (high priority) transparent pixels will sometimes darken each-other
 function draw(x: number, y: number, connectPrev: boolean = false) {
   // if starting to draw...
   if (prevDraw.x === undefined || prevDraw.y === undefined) {
@@ -702,10 +703,10 @@ function downMouseDown(this: HTMLImageElement, _event: Event) {
   }
 }
 
-// TODO (high priority) allow pasting/typing in hex
 inputResultElement.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
-  updateColor('hex', rgb2hex(this.value, hotbarColors[hotbar].color.getHex()), 0, 0)
+  const bar = hotbarColors[hotbar]
+  updateColor('hex', rgb2hex(this.value, (bar.color.getHex() << 8) + (bar.alpha & 0xff)), 0, 0)
 }
 
 const imgs = document.getElementsByTagName('img')

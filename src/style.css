@@ -1,3 +1,5 @@
+/* TODO make scaling relative to work on smaller screens */
+
 :root {
   --background: rgb(30, 30, 30);
 }
@@ -226,12 +228,9 @@ input {
   outline: none;
   margin-left: 3px;
   height: 32px;
-  width: 99px;
+  width: 110px;
   line-height: 32px;
   font-size: 24px;
-  vertical-align: top;
-  left: 0;
-  right: auto;
   background-color: var(--background);
   color: white;
   border-radius: 3px;
