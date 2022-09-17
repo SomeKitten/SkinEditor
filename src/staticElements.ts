@@ -27,4 +27,6 @@ export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
 export const textureArea = <HTMLImageElement>document.getElementById('texture-area')
 export const textureChecker = <HTMLImageElement>document.getElementById('texture-checker')
 
-export const linkElement = <HTMLAnchorElement>document.getElementById('link')
+export const skinTypeSelect = <HTMLDivElement>document.getElementById('skin-type-select')
+export const skinTypeClassic = <HTMLDivElement>document.getElementById('skin-type-classic')
+export const skinTypeSlim = <HTMLDivElement>document.getElementById('skin-type-slim')

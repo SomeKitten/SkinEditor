@@ -26,13 +26,9 @@ export class BodyPart {
 
     this.innerLayer = new Mesh(layer1Geometry, layer1Mat)
     this.innerLayer.position.copy(root)
-    innerSkinLayer.push(this.innerLayer)
-    scene.add(this.innerLayer)
 
     this.outerLayer = new Mesh(layer2Geometry, layer2Mat)
     this.outerLayer.position.copy(root)
-    outerSkinLayer.push(this.outerLayer)
-    scene.add(this.outerLayer)
   }
 
   enableAltMode() {
@@ -63,5 +59,21 @@ export class BodyPart {
     } else {
       this.innerLayer.material = blackMat
     }
+  }
+
+  addToScene() {
+    scene.add(this.innerLayer)
+    scene.add(this.outerLayer)
+
+    innerSkinLayer.push(this.innerLayer)
+    outerSkinLayer.push(this.outerLayer)
+  }
+
+  removeFromScene() {
+    scene.remove(this.innerLayer)
+    scene.remove(this.outerLayer)
+
+    innerSkinLayer.splice(innerSkinLayer.indexOf(this.innerLayer), 1)
+    outerSkinLayer.splice(outerSkinLayer.indexOf(this.outerLayer), 1)
   }
 }

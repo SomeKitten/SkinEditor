@@ -10,7 +10,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { compileLayers, genBlockUVs, raycaster, strokeRect } from './util'
+import { compileLayers, dragEnd, genBlockUVs, raycaster, strokeRect } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
 import defaultHeadURL from '../res/neferupitou.png'
@@ -77,16 +77,25 @@ export let showZoom = 8 / 10
 export let zoomPos = { x: -8, y: -8 }
 export const mouseTexture = { x: 0, y: 0 }
 
-export const textureImage = document.createElement('img')
+const textureImage = document.createElement('img')
 textureImage.src = defaultHeadURL
 textureImage.addEventListener('load', () => {
   if (textureImage.width === 64 && textureImage.height === 64) {
-    setTexture()
+    setTexture(textureImage)
   } else {
     // TODO better alert
     alert('Skin texture must be 64x64')
   }
 })
+
+const fileReader = new FileReader()
+fileReader.addEventListener(
+  'load',
+  function () {
+    textureImage.src = <string>fileReader.result
+  },
+  false,
+)
 
 const texture = new CanvasTexture(showCanvas3d)
 texture.minFilter = NearestFilter
@@ -127,12 +136,10 @@ export const blackMat = new MeshBasicMaterial({
 
 export let outerLayerVisible: boolean = true
 
-export const innerSkinLayer: Mesh[] = []
-export const outerSkinLayer: Mesh[] = []
-
 const EPS = 0.01
 
-export const parts = [
+// TODO fix transparent pixels cutting through other pixels
+const classicParts = [
   new BodyPart( // head
     genBlockUVs(0, 64, 8, 8, 8, 64, 64),
     genBlockUVs(32, 64, 8, 8, 8, 64, 64),
@@ -147,7 +154,53 @@ export const parts = [
     new Vector3(0, 0, 0),
     new Vector3(8, 12, 4),
   ),
-  // TODO (high priority) add slim/wide toggle
+  new BodyPart( // right arm
+    genBlockUVs(40, 48, 4, 12, 4, 64, 64),
+    genBlockUVs(40, 32, 4, 12, 4, 64, 64),
+    new Vector3(-6 + EPS * 4, 6 + EPS * 4, 0 + EPS * 4),
+    new Vector3(0, -4, 0),
+    new Vector3(4, 12, 4),
+  ),
+  new BodyPart( // left arm
+    genBlockUVs(32, 16, 4, 12, 4, 64, 64),
+    genBlockUVs(48, 16, 4, 12, 4, 64, 64),
+    new Vector3(6 + EPS * 4, 6 + EPS * 4, 0 + EPS * 4),
+    new Vector3(0, -4, 0),
+    new Vector3(4, 12, 4),
+  ),
+  new BodyPart( // right leg
+    genBlockUVs(0, 48, 4, 12, 4, 64, 64),
+    genBlockUVs(0, 32, 4, 12, 4, 64, 64),
+    new Vector3(-2 + EPS * 2, -4 + EPS * 2, 0 + EPS * 2),
+    new Vector3(0, -6, 0),
+    new Vector3(4, 12, 4),
+  ),
+  new BodyPart( // left leg
+    genBlockUVs(16, 16, 4, 12, 4, 64, 64),
+    genBlockUVs(0, 16, 4, 12, 4, 64, 64),
+    new Vector3(2 + EPS * 3, -4 + EPS * 3, 0 + EPS * 3),
+    new Vector3(0, -6, 0),
+    new Vector3(4, 12, 4),
+  ),
+]
+// scale head outer layer
+classicParts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5)
+
+const slimParts = [
+  new BodyPart( // head
+    genBlockUVs(0, 64, 8, 8, 8, 64, 64),
+    genBlockUVs(32, 64, 8, 8, 8, 64, 64),
+    new Vector3(0, 12, 0),
+    new Vector3(0, 0, 0),
+    new Vector3(8, 8, 8),
+  ),
+  new BodyPart( // torso
+    genBlockUVs(16, 48, 8, 12, 4, 64, 64),
+    genBlockUVs(16, 32, 8, 12, 4, 64, 64),
+    new Vector3(0 + EPS, 2 + EPS, 0 + EPS),
+    new Vector3(0, 0, 0),
+    new Vector3(8, 12, 4),
+  ),
   new BodyPart( // right arm
     genBlockUVs(40, 48, 3, 12, 4, 64, 64),
     genBlockUVs(40, 32, 3, 12, 4, 64, 64),
@@ -177,13 +230,37 @@ export const parts = [
     new Vector3(4, 12, 4),
   ),
 ]
-
 // scale head outer layer
-parts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5)
+slimParts[0].outerLayer.geometry.scale(9 / 8.5, 9 / 8.5, 9 / 8.5)
+
+export let parts = slimParts
+
+export const innerSkinLayer: Mesh[] = []
+export const outerSkinLayer: Mesh[] = []
+
+for (const part of parts) {
+  part.visible = true
+  part.addToScene()
+}
 
 disableAltMode()
 
-const highlightSections = [
+const classicSections = [
+  new UVSection(0, 64, 8, 8, 8),
+  new UVSection(32, 64, 8, 8, 8),
+  new UVSection(16, 48, 8, 12, 4),
+  new UVSection(16, 32, 8, 12, 4),
+  new UVSection(40, 48, 4, 12, 4),
+  new UVSection(40, 32, 4, 12, 4),
+  new UVSection(32, 16, 4, 12, 4),
+  new UVSection(48, 16, 4, 12, 4),
+  new UVSection(0, 48, 4, 12, 4),
+  new UVSection(0, 32, 4, 12, 4),
+  new UVSection(16, 16, 4, 12, 4),
+  new UVSection(0, 16, 4, 12, 4),
+]
+
+const slimSections = [
   new UVSection(0, 64, 8, 8, 8),
   new UVSection(32, 64, 8, 8, 8),
   new UVSection(16, 48, 8, 12, 4),
@@ -197,6 +274,46 @@ const highlightSections = [
   new UVSection(16, 16, 4, 12, 4),
   new UVSection(0, 16, 4, 12, 4),
 ]
+
+let highlightSections = slimSections
+
+document.addEventListener('drop', (event: DragEvent) => {
+  dragEnd()
+
+  for (const part of parts) {
+    part.removeFromScene()
+  }
+
+  if (event.clientX < width / 2) {
+    parts = classicParts
+    highlightSections = classicSections
+  } else {
+    parts = slimParts
+    highlightSections = slimSections
+  }
+
+  for (const part of parts) {
+    part.visible = true
+    part.addToScene()
+  }
+
+  disableAltMode()
+
+  event.preventDefault()
+  if (event.dataTransfer?.items) {
+    if (event.dataTransfer.items[0].kind === 'file') {
+      const file = event.dataTransfer.items[0].getAsFile()
+      if (file?.name.endsWith('.png')) {
+        fileReader.readAsDataURL(file)
+      }
+    }
+  } else {
+    const file = event.dataTransfer!.files[0]
+    if (file.name.endsWith('png')) {
+      fileReader.readAsDataURL(file)
+    }
+  }
+})
 
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
 camera.rotation.order = 'ZYX'
@@ -457,9 +574,9 @@ export function setAlpha(value: number) {
 // perhaps make a new layer and import into that?
 
 // TODO (high priority) add name-search skin importing
-function setTexture() {
+function setTexture(image: HTMLImageElement) {
   layerCTXs[0].clearRect(0, 0, 64, 64)
-  layerCTXs[0].drawImage(textureImage, 0, 0)
+  layerCTXs[0].drawImage(image, 0, 0)
   updateTexture()
 }
 

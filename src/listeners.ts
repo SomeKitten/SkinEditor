@@ -37,7 +37,6 @@ import {
   setWidth,
   showZoom,
   textureCTX,
-  textureImage,
   undoStacks as undoStack,
   updateColor,
   updateTexture3D,
@@ -55,7 +54,7 @@ import {
   setPlayPlayerModelAnimation,
   playPlayerModelAnimation,
 } from './render'
-import { download, raycaster, rgb2hex, wrap } from './util'
+import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
 import upURL from '../res/up_arrow.png'
 import upSelectedURL from '../res/up_arrow_selected.png'
@@ -83,6 +82,9 @@ import {
   saveDiv,
   sCanvas,
   showCanvas2d,
+  skinTypeClassic,
+  skinTypeSelect,
+  skinTypeSlim,
 } from './staticElements'
 
 export const keys: { [key: string]: boolean } = {}
@@ -103,6 +105,8 @@ window.addEventListener('blur', () => {
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
+  dragEnd()
+
   mouse.x = (event.clientX / width) * 2 - 1
   mouse.y = -(event.clientY / height) * 2 + 1
 
@@ -489,33 +493,21 @@ function onKeyUp(event: KeyboardEvent) {
 }
 
 document.addEventListener('dragover', (event: DragEvent) => {
+  skinTypeSelect.hidden = false
+
+  if (event.clientX < width / 2) {
+    skinTypeClassic.style.backgroundColor = 'var(--background-select)'
+    skinTypeSlim.style.backgroundColor = 'var(--background)'
+  } else {
+    skinTypeClassic.style.backgroundColor = 'var(--background)'
+    skinTypeSlim.style.backgroundColor = 'var(--background-select)'
+  }
+
   event.preventDefault()
 })
 
-const fileReader = new FileReader()
-fileReader.addEventListener(
-  'load',
-  function () {
-    textureImage.src = <string>fileReader.result
-  },
-  false,
-)
-document.addEventListener('drop', (event: DragEvent) => {
-  event.preventDefault()
-  if (event.dataTransfer?.items) {
-    if (event.dataTransfer.items[0].kind === 'file') {
-      const file = event.dataTransfer.items[0].getAsFile()
-      if (file?.name.endsWith('.png')) {
-        fileReader.readAsDataURL(file)
-      }
-    }
-  } else {
-    const file = event.dataTransfer!.files[0]
-    if (file.name.endsWith('png')) {
-      fileReader.readAsDataURL(file)
-    }
-  }
-})
+document.addEventListener('dragleave', dragEnd)
+document.addEventListener('dragend', dragEnd)
 
 hotbarCanvas.addEventListener('mousedown', hotbarClick)
 

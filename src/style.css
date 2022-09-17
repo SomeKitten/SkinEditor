@@ -2,6 +2,7 @@
 
 :root {
   --background: rgb(30, 30, 30);
+  --background-select: rgb(56, 56, 56);
 }
 
 body {
@@ -250,4 +251,46 @@ input {
   margin-bottom: 2px;
   height: 14px;
   cursor: pointer;
+}
+
+#skin-type-select {
+  z-index: 101;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  text-align: center;
+}
+
+#skin-type-classic {
+  float: left;
+  width: 50%;
+  height: 100%;
+}
+
+#type-classic-inner {
+  position: absolute;
+  left: 25%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#skin-type-slim {
+  float: right;
+  width: 50%;
+  height: 100%;
+}
+
+#type-slim-inner {
+  position: absolute;
+  left: 75%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#skin-type-select p {
+  background-color: rgb(100, 100, 100);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 50px;
 }
