@@ -67,30 +67,6 @@ p {
   color: white;
 }
 
-#layers {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-}
-
-.layer {
-  margin: 3px;
-  border-radius: 3px;
-  padding: 3px;
-  background-color: var(--background);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.layer:hover {
-  cursor: pointer;
-}
-
-.layer-canvas {
-  float: right;
-}
-
 #hotbar {
   display: block;
   position: absolute;
@@ -147,23 +123,41 @@ p {
   position: absolute;
   top: 0;
   right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr;
   margin: 3px;
 }
 
 #show-canvas {
-  position: absolute;
-  right: 0;
+  grid-row-start: 1;
+  grid-column-start: 1;
   image-rendering: pixelated;
   border-radius: 0;
 }
 
 #texture-checker {
-  right: 0;
+  grid-row-start: 1;
+  grid-column-start: 1;
   image-rendering: pixelated;
   border-radius: 0;
+}
+
+.layer {
+  margin-top: 3px;
+  border-radius: 3px;
+  padding: 3px;
+  background-color: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.layer:hover {
+  cursor: pointer;
+}
+
+.layer-canvas {
+  float: right;
 }
 
 #save-div {

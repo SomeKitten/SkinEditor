@@ -127,7 +127,7 @@ export function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, 
 
 export function compileLayers(ctx: CanvasRenderingContext2D, layers: HTMLCanvasElement[]) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-  for (let layer of layers) {
+  for (const layer of layers) {
     ctx.drawImage(layer, 0, 0, ctx.canvas.width, ctx.canvas.height)
   }
 }

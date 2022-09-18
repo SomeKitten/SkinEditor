@@ -53,6 +53,9 @@ import {
   updateTexture,
   setPlayPlayerModelAnimation,
   playPlayerModelAnimation,
+  draggingLayerDiv,
+  dragLayer,
+  stopDragging,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
@@ -106,6 +109,7 @@ window.addEventListener('blur', () => {
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
   dragEnd()
+  if (draggingLayerDiv) dragLayer(event)
 
   mouse.x = (event.clientX / width) * 2 - 1
   mouse.y = -(event.clientY / height) * 2 + 1
@@ -383,6 +387,8 @@ function onMouseUp(_event: MouseEvent) {
   setPainting(false)
   setDrawing(false)
   setPicking('')
+
+  if (draggingLayerDiv) stopDragging()
 
   prevDraw.x = undefined
   prevDraw.y = undefined

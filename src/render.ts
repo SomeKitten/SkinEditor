@@ -50,6 +50,12 @@ export const scene = new Scene()
 scene.background = new Color(0x383838)
 
 export let layer = 0
+export let draggingLayerDiv: HTMLDivElement | null = null
+export let draggingOrigin: { x: number; y: number } = { x: 0, y: 0 }
+export let prevDragPos: { x: number; y: number } = { x: 0, y: 0 }
+const draggingSpacer = document.createElement('div')
+draggingSpacer.style.height = '73px'
+let draggingLayer: HTMLCanvasElement
 
 export const layers: HTMLCanvasElement[] = []
 export const layerCTXs: CanvasRenderingContext2D[] = []
@@ -372,7 +378,7 @@ export function setPlayPlayerModelAnimation(value: boolean) {
   animatePlayerModel()
 }
 
-// TODO (high priority) add more animation modes (walking, running, attacking, sneaking, looking around etc)
+// TODO add more animation modes (walking, running, attacking, sneaking, looking around etc)
 // TODO take a look at Planet Minecraft's skin viewer for inspiration
 // TODO make walking animation more accurate, currently uses arbitrary values
 export function animatePlayerModel() {
@@ -444,6 +450,83 @@ export function togglePart(partIndex: number) {
   part.setVisible(!part.visible)
 }
 
+function startDragging(layerDiv: HTMLDivElement, x: number, y: number) {
+  if (draggingLayerDiv) {
+    draggingLayerDiv.style.position = 'static'
+    draggingLayerDiv.style.zIndex = '0'
+  }
+
+  layerDiv.style.position = 'absolute'
+  layerDiv.style.zIndex = '50'
+
+  const rect = layerDiv.getBoundingClientRect()
+  const rect2 = layerDiv.parentElement!.getBoundingClientRect()
+  const rect3 = layerDiv.parentElement!.parentElement!.getBoundingClientRect()
+  draggingOrigin = { x: x - (rect.left - rect2.left), y: y - (rect.top - rect2.top) }
+  prevDragPos = { x: x - draggingOrigin.x, y: y - draggingOrigin.y + rect2.top - rect3.top - 3 }
+
+  layerDiv.style.left = `${prevDragPos.x}px`
+  layerDiv.style.top = `${prevDragPos.y}px`
+
+  draggingLayerDiv = layerDiv
+
+  layersDiv.removeChild(draggingLayerDiv)
+  layersDiv.appendChild(draggingLayerDiv)
+
+  const index = clamp(Math.floor((prevDragPos.y - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+
+  draggingLayer = layers.splice(layers.length - index - 1, 1)[0]
+
+  if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
+  layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
+}
+
+export function dragLayer(event: MouseEvent) {
+  if (!draggingLayerDiv) return
+
+  let x = event.clientX
+  let y = event.clientY
+
+  const rect = draggingLayerDiv.parentElement!.getBoundingClientRect()
+  const rect2 = draggingLayerDiv.parentElement!.parentElement!.getBoundingClientRect()
+
+  x = x - draggingOrigin.x
+  y = y - draggingOrigin.y + rect.top - rect2.top - 3
+
+  // TODO (high priority) (refactor) remove x from calculations and just assume its 0
+  x = 0
+
+  draggingLayerDiv.style.left = `${x}px`
+  draggingLayerDiv.style.top = `${y}px`
+
+  prevDragPos = { x, y }
+
+  const index = Math.floor((y - rightSideWidth + layerHeight / 2) / layerHeight)
+  if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
+  layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
+}
+
+export function stopDragging() {
+  if (!draggingLayerDiv) return
+
+  draggingLayerDiv.style.position = ''
+  draggingLayerDiv.style.zIndex = ''
+  draggingLayerDiv.style.left = ''
+  draggingLayerDiv.style.top = ''
+
+  const index = clamp(Math.floor((prevDragPos.y - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+
+  layers.splice(layers.length - index, 0, draggingLayer)
+
+  layersDiv.removeChild(draggingSpacer)
+  layersDiv.removeChild(draggingLayerDiv)
+  layersDiv.insertBefore(draggingLayerDiv, layersDiv.children[index])
+
+  draggingLayerDiv = null
+
+  updateTexture()
+}
+
 export function addLayer() {
   layers.push(document.createElement('canvas'))
   layers[layers.length - 1].width = 64
@@ -466,8 +549,10 @@ export function addLayer() {
   layerDiv.appendChild(layers[layers.length - 1])
 
   const l = layers.length - 1
-  layerDiv.addEventListener('mousedown', (_event: MouseEvent) => {
+  layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
     setLayer(l)
+    startDragging(layerDiv, event.clientX, event.clientY)
+    dragLayer(event)
   })
 
   layersDiv.prepend(layerDiv)
@@ -536,15 +621,17 @@ export function zoom(value: number) {
 const textureHeight = 0.5
 const textureWidth = 0.3
 
+let rightSideWidth = 0
+
 export function setWidth(value: number) {
   width = value
 
-  const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+  rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
   showCanvas2d.width = rightSideWidth
   textureChecker.width = rightSideWidth
 
-  layersDiv.style.width = rightSideWidth + 6 + 'px'
+  for (const layer of layersDiv.children) (layer as HTMLDivElement).style.width = `${rightSideWidth - 6}px`
 
   setHotbar(hotbar)
   updateTexture()
@@ -553,18 +640,13 @@ export function setWidth(value: number) {
 export function setHeight(value: number) {
   height = value
 
-  const rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
+  rightSideWidth = Math.min(window.innerWidth * textureWidth, window.innerHeight * textureHeight)
 
   showCanvas2d.height = rightSideWidth
   textureChecker.height = rightSideWidth
 
-  layersDiv.style.height = rightSideWidth - 6 + 'px'
-
   updateTexture()
 }
-
-setWidth(window.innerWidth)
-setHeight(window.innerHeight)
 
 export function setAlpha(value: number) {
   hotbarColors[hotbar].alpha = value
@@ -573,7 +655,7 @@ export function setAlpha(value: number) {
 // TODO (high priority) figure out what to do with other layers on import
 // perhaps make a new layer and import into that?
 
-// TODO (high priority) add name-search skin importing
+// TODO add name-search skin importing
 function setTexture(image: HTMLImageElement) {
   layerCTXs[0].clearRect(0, 0, 64, 64)
   layerCTXs[0].drawImage(image, 0, 0)
@@ -891,5 +973,12 @@ function updateA(r: number, g: number, b: number, a: number) {
 addLayer()
 addLayer()
 addLayer()
+addLayer()
+
+const layerMarginVert = 3
+const layerHeight = layersDiv.children[0].getBoundingClientRect().height + layerMarginVert
+
+setWidth(window.innerWidth)
+setHeight(window.innerHeight)
 
 setLayer(0)

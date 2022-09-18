@@ -16,6 +16,7 @@
   <!-- TODO option to change background colour -->
   <!-- TODO create more todos based on https://www.planetminecraft.com/pmcskin3d/ features -->
   <!-- TODO create a basic colour picker alternative -->
+  <!-- TODO make colour picker appear above hotbar selection when hovering -->
   <div id="color-picker">
     <div class="color-value">
       <p class="color-label">HUE</p>
@@ -154,11 +155,12 @@
     <!-- TODO change the outside of the skin to be blank instead of a checker -->
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>
+
+    <div id="layers"></div>
+    <!-- TODO (high priority) add/remove layers -->
   </div>
   <!-- TODO pan for 2d view -->
   <!-- TODO tools such as rectangle fill and rectangle clear (test with double left/right click) -->
-  <div id="layers"></div>
-  <!-- TODO (high priority) add/remove/move layers -->
   <div id="save-div" hidden>
     <div id="save-inner-div">
       <p>Right-click on the skin texture,<br>then select "save as" to save!</p>
