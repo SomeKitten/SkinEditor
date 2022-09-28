@@ -59,8 +59,8 @@ let draggingLayer: HTMLCanvasElement
 
 export const layers: HTMLCanvasElement[] = []
 
-export const undoStacks: HTMLCanvasElement[][] = []
-export const redoStacks: HTMLCanvasElement[][] = []
+export const undoStacks: { [key: string]: HTMLCanvasElement }[] = []
+export const redoStacks: { [key: string]: HTMLCanvasElement }[] = []
 
 const skinTextureSize = 1024
 
@@ -453,7 +453,7 @@ export function getLayerCtx(layer: number) {
   return layers[layer].getContext('2d')!
 }
 
-function startDragging(layerDiv: HTMLDivElement, x: number, y: number) {
+function startDragging(layerDiv: HTMLDivElement, y: number) {
   if (draggingLayerDiv) {
     draggingLayerDiv.style.position = 'static'
     draggingLayerDiv.style.zIndex = '0'
@@ -552,7 +552,7 @@ export function addLayer() {
   const l = layers[layers.length - 1]
   layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
     setLayer(l)
-    startDragging(layerDiv, event.clientX, event.clientY)
+    startDragging(layerDiv, event.clientY)
     dragLayer(event)
   })
 
@@ -563,10 +563,7 @@ export function setLayer(l: HTMLCanvasElement) {
   // ! must match CSS --background
   layers[layer].parentElement!.style.backgroundColor = 'rgb(30, 30, 30)'
 
-  console.log(layers)
-  console.log(layer)
   layer = layers.indexOf(l)
-  console.log(layer)
 
   l.parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
@@ -601,7 +598,6 @@ export function setMouseTexture(x: number, y: number) {
 
 export function zoom(value: number) {
   const newZoom = clamp(showZoom * Math.pow(Math.pow(2, 1 / 4), value), 8 / 10, 8)
-  console.log(newZoom)
 
   const x = zoomPos.x
   const y = zoomPos.y

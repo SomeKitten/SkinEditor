@@ -462,21 +462,26 @@ function redo() {
   }
 }
 
-function newCanvasState(stack: HTMLCanvasElement[][], newLayers?: HTMLCanvasElement[]) {
-  const stackElement: HTMLCanvasElement[] = []
+function newCanvasState(
+  stack: { [key: string]: HTMLCanvasElement }[],
+  newLayers?: { [key: string]: HTMLCanvasElement },
+) {
+  const stackElement: { [key: string]: HTMLCanvasElement } = {}
   for (let l = 0; l < layers.length; l++) {
     const oldCanvas = document.createElement('canvas')
     oldCanvas.width = 64
     oldCanvas.height = 64
     oldCanvas.getContext('2d')?.drawImage(layers[l], 0, 0)
-    stackElement.push(oldCanvas)
+    stackElement[layers[l].id] = oldCanvas
   }
   stack.push(stackElement)
 
   if (newLayers) {
-    for (let l = 0; l < layers.length; l++) {
-      getLayerCtx(l).clearRect(0, 0, 64, 64)
-      getLayerCtx(l).drawImage(newLayers[l], 0, 0)
+    for (const newLayer in newLayers) {
+      const canvas = document.getElementById(newLayer) as HTMLCanvasElement
+      const ctx = canvas.getContext('2d')!
+      ctx.clearRect(0, 0, 64, 64)
+      ctx.drawImage(newLayers[newLayer], 0, 0)
     }
   }
 }
