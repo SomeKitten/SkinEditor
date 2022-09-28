@@ -51,14 +51,13 @@ scene.background = new Color(0x383838)
 
 export let layer = 0
 export let draggingLayerDiv: HTMLDivElement | null = null
-export let draggingOrigin: { x: number; y: number } = { x: 0, y: 0 }
-export let prevDragPos: { x: number; y: number } = { x: 0, y: 0 }
+export let draggingOrigin: number = 0
+export let prevDragPos: number = 0
 const draggingSpacer = document.createElement('div')
 draggingSpacer.style.height = '73px'
 let draggingLayer: HTMLCanvasElement
 
 export const layers: HTMLCanvasElement[] = []
-export const layerCTXs: CanvasRenderingContext2D[] = []
 
 export const undoStacks: HTMLCanvasElement[][] = []
 export const redoStacks: HTMLCanvasElement[][] = []
@@ -450,6 +449,10 @@ export function togglePart(partIndex: number) {
   part.setVisible(!part.visible)
 }
 
+export function getLayerCtx(layer: number) {
+  return layers[layer].getContext('2d')!
+}
+
 function startDragging(layerDiv: HTMLDivElement, x: number, y: number) {
   if (draggingLayerDiv) {
     draggingLayerDiv.style.position = 'static'
@@ -462,20 +465,17 @@ function startDragging(layerDiv: HTMLDivElement, x: number, y: number) {
   const rect = layerDiv.getBoundingClientRect()
   const rect2 = layerDiv.parentElement!.getBoundingClientRect()
   const rect3 = layerDiv.parentElement!.parentElement!.getBoundingClientRect()
-  draggingOrigin = { x: x - (rect.left - rect2.left), y: y - (rect.top - rect2.top) }
-  prevDragPos = { x: x - draggingOrigin.x, y: y - draggingOrigin.y + rect2.top - rect3.top - 3 }
+  draggingOrigin = y - (rect.top - rect2.top)
+  prevDragPos = y - draggingOrigin + rect2.top - rect3.top - 3
 
-  layerDiv.style.left = `${prevDragPos.x}px`
-  layerDiv.style.top = `${prevDragPos.y}px`
+  layerDiv.style.top = `${prevDragPos}px`
 
   draggingLayerDiv = layerDiv
 
   layersDiv.removeChild(draggingLayerDiv)
   layersDiv.appendChild(draggingLayerDiv)
 
-  const index = clamp(Math.floor((prevDragPos.y - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
-
-  draggingLayer = layers.splice(layers.length - index - 1, 1)[0]
+  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
 
   if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
@@ -484,26 +484,30 @@ function startDragging(layerDiv: HTMLDivElement, x: number, y: number) {
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
-  let x = event.clientX
+  let index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+  draggingLayer = layers.splice(layers.length - index - 1, 1)[0]
+
   let y = event.clientY
 
   const rect = draggingLayerDiv.parentElement!.getBoundingClientRect()
   const rect2 = draggingLayerDiv.parentElement!.parentElement!.getBoundingClientRect()
 
-  x = x - draggingOrigin.x
-  y = y - draggingOrigin.y + rect.top - rect2.top - 3
+  y = y - draggingOrigin + rect.top - rect2.top - 3
 
-  // TODO (high priority) (refactor) remove x from calculations and just assume its 0
-  x = 0
-
-  draggingLayerDiv.style.left = `${x}px`
   draggingLayerDiv.style.top = `${y}px`
 
-  prevDragPos = { x, y }
+  prevDragPos = y
 
-  const index = Math.floor((y - rightSideWidth + layerHeight / 2) / layerHeight)
+  index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+
+  layers.splice(layers.length - index, 0, draggingLayer)
+
   if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
+
+  setLayer(draggingLayer)
+
+  updateTexture()
 }
 
 export function stopDragging() {
@@ -514,9 +518,7 @@ export function stopDragging() {
   draggingLayerDiv.style.left = ''
   draggingLayerDiv.style.top = ''
 
-  const index = clamp(Math.floor((prevDragPos.y - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
-
-  layers.splice(layers.length - index, 0, draggingLayer)
+  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
 
   layersDiv.removeChild(draggingSpacer)
   layersDiv.removeChild(draggingLayerDiv)
@@ -528,13 +530,12 @@ export function stopDragging() {
 }
 
 export function addLayer() {
-  layers.push(document.createElement('canvas'))
-  layers[layers.length - 1].width = 64
-  layers[layers.length - 1].height = 64
-  layers[layers.length - 1].id = 'layer' + (layers.length - 1) + '-canvas'
-  layers[layers.length - 1].className = 'layer-canvas'
-
-  layerCTXs.push(layers[layers.length - 1].getContext('2d')!)
+  const newLayer = document.createElement('canvas')
+  layers.push(newLayer)
+  newLayer.width = 64
+  newLayer.height = 64
+  newLayer.id = 'layer' + (layers.length - 1) + '-canvas'
+  newLayer.className = 'layer-canvas'
 
   const layerDiv = document.createElement('div')
   layerDiv.id = 'layer' + (layers.length - 1)
@@ -548,7 +549,7 @@ export function addLayer() {
   layerDiv.appendChild(layerLabel)
   layerDiv.appendChild(layers[layers.length - 1])
 
-  const l = layers.length - 1
+  const l = layers[layers.length - 1]
   layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
     setLayer(l)
     startDragging(layerDiv, event.clientX, event.clientY)
@@ -558,13 +559,16 @@ export function addLayer() {
   layersDiv.prepend(layerDiv)
 }
 
-export function setLayer(value: number) {
+export function setLayer(l: HTMLCanvasElement) {
   // ! must match CSS --background
   layers[layer].parentElement!.style.backgroundColor = 'rgb(30, 30, 30)'
 
-  layer = value
+  console.log(layers)
+  console.log(layer)
+  layer = layers.indexOf(l)
+  console.log(layer)
 
-  layers[layer].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
+  l.parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
 
 export function setHotbar(value: number) {
@@ -657,8 +661,8 @@ export function setAlpha(value: number) {
 
 // TODO add name-search skin importing
 function setTexture(image: HTMLImageElement) {
-  layerCTXs[0].clearRect(0, 0, 64, 64)
-  layerCTXs[0].drawImage(image, 0, 0)
+  getLayerCtx(0).clearRect(0, 0, 64, 64)
+  getLayerCtx(0).drawImage(image, 0, 0)
   updateTexture()
 }
 
@@ -981,4 +985,4 @@ const layerHeight = layersDiv.children[0].getBoundingClientRect().height + layer
 setWidth(window.innerWidth)
 setHeight(window.innerHeight)
 
-setLayer(0)
+setLayer(layers[0])

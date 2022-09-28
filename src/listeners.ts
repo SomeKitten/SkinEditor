@@ -23,7 +23,6 @@ import {
   hotbarColors,
   hsl,
   layer,
-  layerCTXs,
   layers,
   mouseTexture,
   redoStacks as redoStack,
@@ -56,6 +55,7 @@ import {
   draggingLayerDiv,
   dragLayer,
   stopDragging,
+  getLayerCtx,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
@@ -199,7 +199,7 @@ function intersectDrop(intersect: Intersection): boolean {
   const x = Math.floor(intersect.uv!.x * 64)
   const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-  const c = layerCTXs[layer].getImageData(x, y, 1, 1).data
+  const c = getLayerCtx(layer).getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])
@@ -226,18 +226,18 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
   }
 
   if (mouseButton === 0) {
-    layerCTXs[layer].fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
+    getLayerCtx(layer).fillStyle = `rgb(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
       hotbarColors[hotbar].color.b * 255
     }, ${hotbarColors[hotbar].alpha / 255})`
 
-    layerCTXs[layer].clearRect(x, y, 1, 1)
-    layerCTXs[layer].fillRect(x, y, 1, 1)
+    getLayerCtx(layer).clearRect(x, y, 1, 1)
+    getLayerCtx(layer).fillRect(x, y, 1, 1)
 
     if (connectPrev) {
       line(x, y, prevDraw.x, prevDraw.y)
     }
   } else {
-    layerCTXs[layer].clearRect(x, y, 1, 1)
+    getLayerCtx(layer).clearRect(x, y, 1, 1)
     clearLine(x, y, prevDraw.x, prevDraw.y)
   }
 
@@ -260,7 +260,7 @@ function clearLine(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    layerCTXs[layer].clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    getLayerCtx(layer).clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
@@ -270,8 +270,8 @@ function line(x: number, y: number, x1: number, y1: number) {
   const steps = Math.sqrt(distX * distX + distY * distY)
 
   for (let i = 0; i < steps; i++) {
-    layerCTXs[layer].clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
-    layerCTXs[layer].fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    getLayerCtx(layer).clearRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
+    getLayerCtx(layer).fillRect(Math.floor(x + (distX * i) / steps), Math.floor(y + (distY * i) / steps), 1, 1)
   }
 }
 
@@ -475,8 +475,8 @@ function newCanvasState(stack: HTMLCanvasElement[][], newLayers?: HTMLCanvasElem
 
   if (newLayers) {
     for (let l = 0; l < layers.length; l++) {
-      layerCTXs[l].clearRect(0, 0, 64, 64)
-      layerCTXs[l].drawImage(newLayers[l], 0, 0)
+      getLayerCtx(l).clearRect(0, 0, 64, 64)
+      getLayerCtx(l).drawImage(newLayers[l], 0, 0)
     }
   }
 }
