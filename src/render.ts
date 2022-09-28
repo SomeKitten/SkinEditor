@@ -58,6 +58,8 @@ draggingSpacer.style.height = '73px'
 let draggingLayer: HTMLCanvasElement
 
 export const layers: HTMLCanvasElement[] = []
+// layerCount is used to keep track of what layers have existed before
+let layerCount = 0
 
 export const undoStacks: { [key: string]: HTMLCanvasElement }[] = []
 export const redoStacks: { [key: string]: HTMLCanvasElement }[] = []
@@ -475,7 +477,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
   layersDiv.removeChild(draggingLayerDiv)
   layersDiv.appendChild(draggingLayerDiv)
 
-  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
 
   if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
@@ -484,7 +486,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
-  let index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+  let index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
   draggingLayer = layers.splice(layers.length - index - 1, 1)[0]
 
   let y = event.clientY
@@ -498,7 +500,7 @@ export function dragLayer(event: MouseEvent) {
 
   prevDragPos = y
 
-  index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+  index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
 
   layers.splice(layers.length - index, 0, draggingLayer)
 
@@ -518,7 +520,7 @@ export function stopDragging() {
   draggingLayerDiv.style.left = ''
   draggingLayerDiv.style.top = ''
 
-  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2) / layerHeight), 0, layers.length)
+  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
 
   layersDiv.removeChild(draggingSpacer)
   layersDiv.removeChild(draggingLayerDiv)
@@ -529,27 +531,32 @@ export function stopDragging() {
   updateTexture()
 }
 
-export function addLayer() {
+export function addLayer(layerid?: string) {
+  if (!layerid) layerid = 'layer' + layerCount++
+  console.log('add layer', layerid)
+
   const newLayer = document.createElement('canvas')
   layers.push(newLayer)
   newLayer.width = 64
   newLayer.height = 64
-  newLayer.id = 'layer' + (layers.length - 1) + '-canvas'
+  newLayer.id = layerid + '-canvas'
   newLayer.className = 'layer-canvas'
 
   const layerDiv = document.createElement('div')
-  layerDiv.id = 'layer' + (layers.length - 1)
+  layerDiv.style.width = `${rightSideWidth - 6}px`
+  layerDiv.id = layerid
   layerDiv.className = 'layer'
 
   const layerLabel = document.createElement('p')
-  layerLabel.innerHTML = 'Layer ' + (layers.length - 1)
-  layerLabel.id = 'layer' + (layers.length - 1) + '-label'
+  layerLabel.innerHTML = 'Layer ' + layerid.slice(5)
+  layerLabel.id = layerid + '-label'
   layerLabel.className = 'layer-label'
 
   layerDiv.appendChild(layerLabel)
-  layerDiv.appendChild(layers[layers.length - 1])
+  layerDiv.appendChild(newLayer)
 
-  const l = layers[layers.length - 1]
+  // TODO is making a new variable necessary?
+  const l = newLayer
   layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
     setLayer(l)
     startDragging(layerDiv, event.clientY)
@@ -557,6 +564,32 @@ export function addLayer() {
   })
 
   layersDiv.prepend(layerDiv)
+}
+
+export function removeLayer(oldLayer?: HTMLCanvasElement) {
+  let index = 0
+  let div = draggingLayerDiv
+
+  if (!oldLayer) {
+    if (layers.length === 1 || !draggingLayerDiv) return
+
+    index = layers.indexOf(draggingLayer)
+
+    stopDragging()
+  } else {
+    console.log('remove layer', oldLayer.id)
+    index = layers.indexOf(oldLayer!)
+    div = oldLayer.parentElement as HTMLDivElement
+  }
+
+  layersDiv.removeChild(div!)
+  layers.splice(index, 1)
+
+  updateTexture()
+
+  // TODO make a function to reset layer selection
+  layer = 0
+  layers[0].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
 
 export function setLayer(l: HTMLCanvasElement) {
@@ -621,7 +654,7 @@ export function zoom(value: number) {
 const textureHeight = 0.5
 const textureWidth = 0.3
 
-let rightSideWidth = 0
+export let rightSideWidth = 0
 
 export function setWidth(value: number) {
   width = value
@@ -970,9 +1003,6 @@ function updateA(r: number, g: number, b: number, a: number) {
   inputAElement.value = `${a}`
 }
 
-addLayer()
-addLayer()
-addLayer()
 addLayer()
 
 const layerMarginVert = 3

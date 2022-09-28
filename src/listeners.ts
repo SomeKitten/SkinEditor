@@ -25,7 +25,7 @@ import {
   layer,
   layers,
   mouseTexture,
-  redoStacks as redoStack,
+  redoStacks,
   renderer,
   rgb,
   scene,
@@ -36,7 +36,7 @@ import {
   setWidth,
   showZoom,
   textureCTX,
-  undoStacks as undoStack,
+  undoStacks,
   updateColor,
   updateTexture3D,
   width,
@@ -56,6 +56,9 @@ import {
   dragLayer,
   stopDragging,
   getLayerCtx,
+  addLayer,
+  removeLayer,
+  rightSideWidth,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
@@ -67,6 +70,7 @@ import { clamp } from 'three/src/math/MathUtils'
 import { Intersection, Mesh } from 'three'
 import {
   aCanvas,
+  addLayerDiv,
   bCanvas,
   colorPicker,
   gCanvas,
@@ -221,8 +225,8 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     prevDraw.x = x
     prevDraw.y = y
 
-    newCanvasState(undoStack)
-    redoStack.length = 0
+    newCanvasState(undoStacks)
+    redoStacks.length = 0
   }
 
   if (mouseButton === 0) {
@@ -381,13 +385,17 @@ function onMouseDown(event: MouseEvent) {
 }
 
 document.addEventListener('mouseup', onMouseUp)
-function onMouseUp(_event: MouseEvent) {
+function onMouseUp(event: MouseEvent) {
   setCameraMove(false)
   setMouseDown(false)
   setPainting(false)
   setDrawing(false)
   setPicking('')
 
+  if (event.clientX < width - rightSideWidth) {
+    newCanvasState(undoStacks)
+    removeLayer()
+  }
   if (draggingLayerDiv) stopDragging()
 
   prevDraw.x = undefined
@@ -448,37 +456,53 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
+// TODO fix undo flooding when moving camera in 3D view
 function undo() {
-  if (undoStack.length > 0) {
-    const undoLayers = undoStack.pop()!
-    newCanvasState(redoStack, undoLayers)
+  if (undoStacks.length > 0) {
+    const undoLayers = undoStacks.pop()!
+    newCanvasState(redoStacks, undoLayers)
   }
 }
 
 function redo() {
-  if (redoStack.length > 0) {
-    const redoLayers = redoStack.pop()!
-    newCanvasState(undoStack, redoLayers)
+  if (redoStacks.length > 0) {
+    const redoLayers = redoStacks.pop()!
+    newCanvasState(undoStacks, redoLayers)
   }
 }
 
-function newCanvasState(
+export function newCanvasState(
   stack: { [key: string]: HTMLCanvasElement }[],
   newLayers?: { [key: string]: HTMLCanvasElement },
 ) {
+  console.log('newCanvasState', undoStacks)
+  console.log('newCanvasState', redoStacks)
+
   const stackElement: { [key: string]: HTMLCanvasElement } = {}
   for (let l = 0; l < layers.length; l++) {
     const oldCanvas = document.createElement('canvas')
     oldCanvas.width = 64
     oldCanvas.height = 64
     oldCanvas.getContext('2d')?.drawImage(layers[l], 0, 0)
-    stackElement[layers[l].id] = oldCanvas
+    stackElement[layers[l].id.slice(0, -7)] = oldCanvas
   }
   stack.push(stackElement)
 
   if (newLayers) {
+    console.log('newLayers', newLayers)
+    console.log('layers', layers)
+
+    for (const l in layers) {
+      if (!newLayers[layers[l].id.slice(0, -7)]) removeLayer(layers[l])
+    }
+
     for (const newLayer in newLayers) {
-      const canvas = document.getElementById(newLayer) as HTMLCanvasElement
+      let canvas = document.getElementById(newLayer + '-canvas') as HTMLCanvasElement
+      if (!canvas) {
+        addLayer(newLayer)
+        canvas = document.getElementById(newLayer + '-canvas') as HTMLCanvasElement
+      }
+
       const ctx = canvas.getContext('2d')!
       ctx.clearRect(0, 0, 64, 64)
       ctx.drawImage(newLayers[newLayer], 0, 0)
@@ -539,6 +563,13 @@ function onWindowResize() {
   camera.aspect = width / height
   camera.updateProjectionMatrix()
 }
+
+addLayerDiv.addEventListener('mousedown', () => {
+  if (layers.length >= 4) return
+
+  newCanvasState(undoStacks)
+  addLayer()
+})
 
 hCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('h')

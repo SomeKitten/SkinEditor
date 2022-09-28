@@ -30,3 +30,6 @@ export const textureChecker = <HTMLImageElement>document.getElementById('texture
 export const skinTypeSelect = <HTMLDivElement>document.getElementById('skin-type-select')
 export const skinTypeClassic = <HTMLDivElement>document.getElementById('skin-type-classic')
 export const skinTypeSlim = <HTMLDivElement>document.getElementById('skin-type-slim')
+
+export const addLayerDiv = <HTMLDivElement>document.getElementById('add-layer')
+export const removeLayerDiv = <HTMLDivElement>document.getElementById('remove-layer')
