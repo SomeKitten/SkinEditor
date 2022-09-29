@@ -532,7 +532,7 @@ export function stopDragging() {
 }
 
 export function addLayer(layerid?: string) {
-  if (!layerid) layerid = 'layer' + layerCount++
+  if (!layerid) layerid = 'layer' + ++layerCount
 
   const newLayer = document.createElement('canvas')
   layers.push(newLayer)
