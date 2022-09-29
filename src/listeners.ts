@@ -1,3 +1,4 @@
+import defaultHeadURL from '../res/neferupitou.png'
 import {
   cameraControls,
   cameraMove,
@@ -58,7 +59,8 @@ import {
   getLayerCtx,
   addLayer,
   removeLayer,
-  rightSideWidth,
+  setLayer,
+  setClassicSlimModel,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
@@ -746,6 +748,67 @@ function onResultType(this: HTMLInputElement, _event: Event) {
   const bar = hotbarColors[hotbar]
   updateColor('hex', rgb2hex(this.value, (bar.color.getHex() << 8) + (bar.alpha & 0xff)), 0, 0)
 }
+
+const textureImage = document.createElement('img')
+textureImage.src = defaultHeadURL
+textureImage.addEventListener('load', () => {
+  if (textureImage.width === 64 && textureImage.height === 64) {
+    setTexture(textureImage)
+  } else {
+    // TODO better alert
+    alert('Skin texture must be 64x64')
+  }
+})
+
+const fileReader = new FileReader()
+fileReader.addEventListener(
+  'load',
+  function () {
+    textureImage.src = <string>fileReader.result
+  },
+  false,
+)
+
+// TODO add name-search skin importing
+function setTexture(image: HTMLImageElement) {
+  const newLayer = addLayer()
+  const newCtx = newLayer.getContext('2d')!
+  newCtx.clearRect(0, 0, 64, 64)
+  newCtx.drawImage(image, 0, 0)
+
+  setLayer(newLayer)
+  updateTexture()
+}
+
+document.addEventListener('drop', (event: DragEvent) => {
+  dragEnd()
+
+  if (event.clientX < width / 2) {
+    setClassicSlimModel('classic')
+  } else {
+    setClassicSlimModel('slim')
+  }
+
+  disableAltMode()
+
+  event.preventDefault()
+
+  if (layers.length >= 4) return
+
+  if (event.dataTransfer?.items) {
+    if (event.dataTransfer.items[0].kind === 'file') {
+      const file = event.dataTransfer.items[0].getAsFile()
+      if (file?.name.endsWith('png')) {
+        fileReader.readAsDataURL(file)
+      }
+    }
+  } else {
+    const file = event.dataTransfer!.files[0]
+    if (file.name.endsWith('png')) {
+      fileReader.readAsDataURL(file)
+    }
+  }
+})
 
 const imgs = document.getElementsByTagName('img')
 

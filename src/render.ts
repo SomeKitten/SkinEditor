@@ -10,10 +10,9 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { compileLayers, dragEnd, genBlockUVs, raycaster, strokeRect } from './util'
+import { compileLayers, genBlockUVs, raycaster, strokeRect } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
-import defaultHeadURL from '../res/neferupitou.png'
 import hotbarImgURL from '../res/hotbar.png'
 import hotbarSelectImgURL from '../res/hotbar_select.png'
 import { mouse, shift } from './input'
@@ -83,26 +82,6 @@ export const showCTX2d = showCanvas2d.getContext('2d')!
 export let showZoom = 8 / 10
 export let zoomPos = { x: -8, y: -8 }
 export const mouseTexture = { x: 0, y: 0 }
-
-const textureImage = document.createElement('img')
-textureImage.src = defaultHeadURL
-textureImage.addEventListener('load', () => {
-  if (textureImage.width === 64 && textureImage.height === 64) {
-    setTexture(textureImage)
-  } else {
-    // TODO better alert
-    alert('Skin texture must be 64x64')
-  }
-})
-
-const fileReader = new FileReader()
-fileReader.addEventListener(
-  'load',
-  function () {
-    textureImage.src = <string>fileReader.result
-  },
-  false,
-)
 
 const texture = new CanvasTexture(showCanvas3d)
 texture.minFilter = NearestFilter
@@ -284,44 +263,6 @@ const slimSections = [
 
 let highlightSections = slimSections
 
-document.addEventListener('drop', (event: DragEvent) => {
-  dragEnd()
-
-  for (const part of parts) {
-    part.removeFromScene()
-  }
-
-  if (event.clientX < width / 2) {
-    parts = classicParts
-    highlightSections = classicSections
-  } else {
-    parts = slimParts
-    highlightSections = slimSections
-  }
-
-  for (const part of parts) {
-    part.visible = true
-    part.addToScene()
-  }
-
-  disableAltMode()
-
-  event.preventDefault()
-  if (event.dataTransfer?.items) {
-    if (event.dataTransfer.items[0].kind === 'file') {
-      const file = event.dataTransfer.items[0].getAsFile()
-      if (file?.name.endsWith('.png')) {
-        fileReader.readAsDataURL(file)
-      }
-    }
-  } else {
-    const file = event.dataTransfer!.files[0]
-    if (file.name.endsWith('png')) {
-      fileReader.readAsDataURL(file)
-    }
-  }
-})
-
 export const camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
 camera.rotation.order = 'ZYX'
 camera.position.set(24, 24, 24)
@@ -377,6 +318,27 @@ export function setPlayPlayerModelAnimation(value: boolean) {
 
   playerModelAnimationTime = Date.now()
   animatePlayerModel()
+}
+
+export function setClassicSlimModel(type: string) {
+  for (const part of parts) {
+    part.removeFromScene()
+  }
+
+  if (type === 'classic') {
+    parts = classicParts
+    highlightSections = classicSections
+  } else if (type === 'slim') {
+    parts = slimParts
+    highlightSections = slimSections
+  } else {
+    throw new Error('Invalid model type')
+  }
+
+  for (const part of parts) {
+    part.visible = true
+    part.addToScene()
+  }
 }
 
 // TODO add more animation modes (walking, running, attacking, sneaking, looking around etc)
@@ -563,6 +525,8 @@ export function addLayer(layerid?: string) {
   })
 
   layersDiv.prepend(layerDiv)
+
+  return newLayer
 }
 
 export function removeLayer(oldLayer: HTMLCanvasElement) {
@@ -670,16 +634,6 @@ export function setHeight(value: number) {
 
 export function setAlpha(value: number) {
   hotbarColors[hotbar].alpha = value
-}
-
-// TODO (high priority) figure out what to do with other layers on import
-// perhaps make a new layer and import into that?
-
-// TODO add name-search skin importing
-function setTexture(image: HTMLImageElement) {
-  getLayerCtx(0).clearRect(0, 0, 64, 64)
-  getLayerCtx(0).drawImage(image, 0, 0)
-  updateTexture()
 }
 
 export function updateTexture3D() {
@@ -990,12 +944,8 @@ function updateA(r: number, g: number, b: number, a: number) {
   inputAElement.value = `${a}`
 }
 
-addLayer()
-
 const layerMarginVert = 3
-const layerHeight = layersDiv.children[0].getBoundingClientRect().height + layerMarginVert
+const layerHeight = 64 + layerMarginVert
 
 setWidth(window.innerWidth)
 setHeight(window.innerHeight)
-
-setLayer(layers[0])
