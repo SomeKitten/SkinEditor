@@ -83,6 +83,13 @@ export let showZoom = 8 / 10
 export let zoomPos = { x: -8, y: -8 }
 export const mouseTexture = { x: 0, y: 0 }
 
+const maskCanvas = document.createElement('canvas')
+maskCanvas.width = 64
+maskCanvas.height = 64
+const maskCTX = maskCanvas.getContext('2d')!
+maskCTX.fillStyle = 'black'
+maskCTX.fillRect(0, 0, 64, 64)
+
 const texture = new CanvasTexture(showCanvas3d)
 texture.minFilter = NearestFilter
 texture.magFilter = NearestFilter
@@ -686,6 +693,7 @@ export function updateTexture3D() {
 
 // TODO (high priority) part outline needs to be dynamic colour
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
+// TODO (refactor) simplify math by using only width, not height
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   textureCTX.imageSmoothingEnabled = false
   showCTX2d.imageSmoothingEnabled = false
@@ -701,7 +709,23 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   compileLayers(textureCTX, layers)
   compileLayers(showCTX3d, layers)
 
-  showCTX2d.clearRect(0, 0, showCanvas2d.width, showCanvas2d.height)
+  showCTX2d.fillStyle = 'rgb(30, 30, 30)'
+  showCTX2d.fillRect(0, 0, showCanvas2d.width, showCanvas2d.height)
+
+  showCTX2d.globalCompositeOperation = 'destination-out'
+  showCTX2d.drawImage(
+    maskCanvas,
+    zoomPos.x * (textureCanvas.width / 64),
+    zoomPos.y * (textureCanvas.height / 64),
+    textureCanvas.width / showZoom,
+    textureCanvas.height / showZoom,
+    0,
+    0,
+    showCanvas2d.width,
+    showCanvas2d.height,
+  )
+  showCTX2d.globalCompositeOperation = 'source-over'
+
   showCTX2d.drawImage(
     textureCanvas,
     zoomPos.x * (textureCanvas.width / 64),
