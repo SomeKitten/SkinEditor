@@ -62,7 +62,7 @@ import {
   setLayer,
   toggleClassicSlimModel,
 } from './render'
-import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
+import { download, raycaster, rgb2hex, wrap } from './util'
 
 import upURL from '../res/up_arrow.png'
 import upSelectedURL from '../res/up_arrow_selected.png'
@@ -526,8 +526,12 @@ document.addEventListener('dragover', (event: DragEvent) => {
   event.preventDefault()
 })
 
-document.addEventListener('dragleave', dragEnd)
-document.addEventListener('dragend', dragEnd)
+dragOverlay.addEventListener('dragleave', () => {
+  dragOverlay.hidden = true
+})
+document.addEventListener('dragend', () => {
+  dragOverlay.hidden = true
+})
 
 hotbarCanvas.addEventListener('mousedown', hotbarClick)
 
@@ -772,9 +776,8 @@ function setTexture(image: HTMLImageElement) {
 
 toggleSkinType.addEventListener('click', toggleClassicSlimModel)
 
-// TODO (high priority) fix flicker on google chrome
 document.addEventListener('drop', (event: DragEvent) => {
-  dragEnd()
+  dragOverlay.hidden = true
   disableAltMode()
 
   event.preventDefault()
