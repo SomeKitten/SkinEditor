@@ -206,7 +206,7 @@ function intersectDrop(intersect: Intersection): boolean {
   const x = Math.floor(intersect.uv!.x * 64)
   const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
 
-  const c = getLayerCtx(layer).getImageData(x, y, 1, 1).data
+  const c = textureCTX.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
   updateColor('rgb', c![0], c![1], c![2])

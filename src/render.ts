@@ -445,6 +445,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
 }
 
+// TODO don't allow layers to be dragged too high
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
@@ -543,6 +544,7 @@ export function removeLayer(oldLayer: HTMLCanvasElement) {
   layers[0].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
 
+// TODO figure out how and why multiple layers can have the dark background sometimes
 export function setLayer(l: HTMLCanvasElement) {
   // ! must match CSS --background
   layers[layer].parentElement!.style.backgroundColor = 'rgb(30, 30, 30)'
