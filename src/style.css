@@ -11,6 +11,7 @@ body {
   font-family: Tahoma, sans-serif;
   font-size: 24px;
   color: white;
+  overflow: hidden;
 }
 
 img {
@@ -76,6 +77,8 @@ p {
   bottom: 0;
   left: 0;
   right: 0;
+  padding-top: 35px;
+  padding-left: 35px;
 }
 
 #dom-element {
@@ -90,6 +93,14 @@ p {
 #controls {
   position: absolute;
   bottom: 0;
+  transition-property: transform;
+  transition-duration: 0.2s;
+  transform: translateY(87%);
+}
+
+#controls:hover {
+  transform: translateY(0%);
+  z-index: 1;
 }
 
 #color-picker {
