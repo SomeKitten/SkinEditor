@@ -339,6 +339,16 @@ export function setClassicSlimModel(type: string) {
     part.visible = true
     part.addToScene()
   }
+
+  disableAltMode()
+}
+
+export function toggleClassicSlimModel() {
+  if (parts === classicParts) {
+    setClassicSlimModel('slim')
+  } else {
+    setClassicSlimModel('classic')
+  }
 }
 
 // TODO add more animation modes (walking, running, attacking, sneaking, looking around etc)
@@ -439,7 +449,11 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
   layersDiv.removeChild(draggingLayerDiv)
   layersDiv.appendChild(draggingLayerDiv)
 
-  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
+  const index = clamp(
+    Math.floor((prevDragPos - rightSideHeight + layerHeight / 2 - 40) / layerHeight),
+    0,
+    layers.length,
+  )
 
   if (draggingSpacer.parentElement) layersDiv.removeChild(draggingSpacer)
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
@@ -449,7 +463,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
-  let index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
+  let index = clamp(Math.floor((prevDragPos - rightSideHeight + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
   draggingLayer = layers.splice(layers.length - index - 1, 1)[0]
 
   let y = event.clientY
@@ -463,7 +477,7 @@ export function dragLayer(event: MouseEvent) {
 
   prevDragPos = y
 
-  index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
+  index = clamp(Math.floor((prevDragPos - rightSideHeight + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
 
   layers.splice(layers.length - index, 0, draggingLayer)
 
@@ -483,7 +497,11 @@ export function stopDragging() {
   draggingLayerDiv.style.left = ''
   draggingLayerDiv.style.top = ''
 
-  const index = clamp(Math.floor((prevDragPos - rightSideWidth + layerHeight / 2 - 40) / layerHeight), 0, layers.length)
+  const index = clamp(
+    Math.floor((prevDragPos - rightSideHeight + layerHeight / 2 - 40) / layerHeight),
+    0,
+    layers.length,
+  )
 
   layersDiv.removeChild(draggingSpacer)
   layersDiv.removeChild(draggingLayerDiv)
@@ -608,6 +626,7 @@ const textureHeight = 0.5
 const textureWidth = 0.3
 
 export let rightSideWidth = 0
+export let rightSideHeight = 0
 
 export function setWidth(value: number) {
   width = value
@@ -618,6 +637,9 @@ export function setWidth(value: number) {
   textureChecker.width = rightSideWidth
 
   for (const layer of layersDiv.children) (layer as HTMLDivElement).style.width = `${rightSideWidth - 6}px`
+
+  // TODO un-hardcode this to the height of  everything above the layer div
+  rightSideHeight = rightSideWidth + 35
 
   setHotbar(hotbar)
   updateTexture()
@@ -630,6 +652,11 @@ export function setHeight(value: number) {
 
   showCanvas2d.height = rightSideWidth
   textureChecker.height = rightSideWidth
+
+  for (const layer of layersDiv.children) (layer as HTMLDivElement).style.width = `${rightSideWidth - 6}px`
+
+  // TODO un-hardcode this to the height of  everything above the layer div
+  rightSideHeight = rightSideWidth + 35
 
   updateTexture()
 }

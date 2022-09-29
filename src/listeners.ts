@@ -61,6 +61,7 @@ import {
   removeLayer,
   setLayer,
   setClassicSlimModel,
+  toggleClassicSlimModel,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
 
@@ -95,6 +96,7 @@ import {
   skinTypeClassic,
   skinTypeSelect,
   skinTypeSlim,
+  toggleSkinType,
 } from './staticElements'
 
 export const keys: { [key: string]: boolean } = {}
@@ -456,7 +458,7 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
-// TODO fix undo flooding when moving camera in 3D view
+// TODO (high priority) fix undo flooding when moving camera in 3D view
 function undo() {
   if (undoStacks.length > 0) {
     const undoLayers = undoStacks.pop()!
@@ -780,6 +782,9 @@ function setTexture(image: HTMLImageElement) {
   updateTexture()
 }
 
+toggleSkinType.addEventListener('click', toggleClassicSlimModel)
+
+// TODO (high priority) fix flicker on google chrome
 document.addEventListener('drop', (event: DragEvent) => {
   dragEnd()
 

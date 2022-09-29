@@ -86,7 +86,6 @@
       <input type="text" id="input-result" />
     </div>
   </div>
-  <!-- TODO (high priority) make this pop up from the bottom with hover -->
   <div id="controls">
     <table>
       <tr>
@@ -125,11 +124,11 @@
       </tr>
       <tr>
         <td class="controls-left">Tab</td>
-        <td class="controls-right">Toggle second layer</td>
+        <td class="controls-right">Toggle outer layer</td>
       </tr>
       <tr>
         <td class="controls-left">Shift</td>
-        <td class="controls-right">Paint under second layer</td>
+        <td class="controls-right">Paint under outer layer</td>
       </tr>
       <tr>
         <td class="controls-left">Alt</td>
@@ -153,9 +152,11 @@
   <img src="res/checkerboard.png" alt="" id="alpha-checker" />
   <img src="res/checkerboard.png" alt="" id="result-checker" />
   <div id="texture-area">
-    <!-- TODO skin toggle above 2D canvas -->
     <!-- TODO skin toggle hover will make outlines appear on 2D canvas -->
-    <!-- TODO change the outside of the skin to be blank instead of a checker -->
+    <!-- TODO change the outside of the 2D skin view to be blank instead of a checker -->
+
+    <div id="toggle-skin-type" class="generic-button">Toggle Skin Type</div>
+
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>
 
@@ -164,6 +165,7 @@
       <div id="remove-layer" class="layer-option">Remove Layer</div>
     </div>
     <!-- TODO allow scrolling if layers go below screen -->
+    <!-- TODO allow toggling layer visibility -->
     <div id="layers"></div>
   </div>
   <!-- TODO pan for 2d view -->

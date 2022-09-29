@@ -25,6 +25,7 @@ export const textureCanvas = <HTMLCanvasElement>document.getElementById('texture
 export const showCanvas2d = <HTMLCanvasElement>document.getElementById('show-canvas')
 export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
 export const textureArea = <HTMLImageElement>document.getElementById('texture-area')
+export const toggleSkinType = <HTMLImageElement>document.getElementById('toggle-skin-type')
 export const textureChecker = <HTMLImageElement>document.getElementById('texture-checker')
 
 export const skinTypeSelect = <HTMLDivElement>document.getElementById('skin-type-select')

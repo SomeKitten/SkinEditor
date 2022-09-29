@@ -90,6 +90,7 @@ p {
   z-index: -1;
 }
 
+/* TODO fix slide on page refresh */
 #controls {
   position: absolute;
   bottom: 0;
@@ -139,15 +140,33 @@ p {
   margin: 3px;
 }
 
-#show-canvas {
+#toggle-skin-type {
   grid-row-start: 1;
+  grid-column-start: 1;
+  text-align: center;
+  background-color: var(--background);
+  border-radius: 3px;
+  margin-bottom: 3px;
+  padding: 3px;
+}
+
+#toggle-skin-type:hover {
+  cursor: pointer;
+}
+
+#toggle-skin-type:active {
+  background-color: rgb(10, 10, 10);
+}
+
+#show-canvas {
+  grid-row-start: 2;
   grid-column-start: 1;
   image-rendering: pixelated;
   border-radius: 0;
 }
 
 #texture-checker {
-  grid-row-start: 1;
+  grid-row-start: 2;
   grid-column-start: 1;
   image-rendering: pixelated;
   border-radius: 0;
@@ -181,10 +200,10 @@ p {
 
 .layer-option {
   background-color: var(--background);
-  flex-grow: 1;
   border-radius: 3px;
   margin-top: 3px;
   padding: 3px;
+  flex-grow: 1;
   display: inline-block;
   text-align: center;
 }
