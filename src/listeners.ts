@@ -60,7 +60,6 @@ import {
   addLayer,
   removeLayer,
   setLayer,
-  setClassicSlimModel,
   toggleClassicSlimModel,
 } from './render'
 import { download, dragEnd, raycaster, rgb2hex, wrap } from './util'
@@ -76,6 +75,7 @@ import {
   addLayerDiv,
   bCanvas,
   colorPicker,
+  dragOverlay,
   gCanvas,
   hCanvas,
   hotbarCanvas,
@@ -93,9 +93,6 @@ import {
   saveDiv,
   sCanvas,
   showCanvas2d,
-  skinTypeClassic,
-  skinTypeSelect,
-  skinTypeSlim,
   toggleSkinType,
 } from './staticElements'
 
@@ -117,7 +114,6 @@ window.addEventListener('blur', () => {
 
 document.addEventListener('mousemove', onMouseMove)
 function onMouseMove(event: MouseEvent) {
-  dragEnd()
   if (draggingLayerDiv) dragLayer(event)
 
   mouse.x = (event.clientX / width) * 2 - 1
@@ -525,15 +521,7 @@ function onKeyUp(event: KeyboardEvent) {
 }
 
 document.addEventListener('dragover', (event: DragEvent) => {
-  skinTypeSelect.hidden = false
-
-  if (event.clientX < width / 2) {
-    skinTypeClassic.style.backgroundColor = 'var(--background-select)'
-    skinTypeSlim.style.backgroundColor = 'var(--background)'
-  } else {
-    skinTypeClassic.style.backgroundColor = 'var(--background)'
-    skinTypeSlim.style.backgroundColor = 'var(--background-select)'
-  }
+  dragOverlay.hidden = false
 
   event.preventDefault()
 })
@@ -787,18 +775,13 @@ toggleSkinType.addEventListener('click', toggleClassicSlimModel)
 // TODO (high priority) fix flicker on google chrome
 document.addEventListener('drop', (event: DragEvent) => {
   dragEnd()
-
-  if (event.clientX < width / 2) {
-    setClassicSlimModel('classic')
-  } else {
-    setClassicSlimModel('slim')
-  }
-
   disableAltMode()
 
   event.preventDefault()
 
   if (layers.length >= 4) return
+
+  newCanvasState(undoStacks)
 
   if (event.dataTransfer?.items) {
     if (event.dataTransfer.items[0].kind === 'file') {

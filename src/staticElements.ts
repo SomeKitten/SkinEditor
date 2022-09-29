@@ -32,5 +32,7 @@ export const skinTypeSelect = <HTMLDivElement>document.getElementById('skin-type
 export const skinTypeClassic = <HTMLDivElement>document.getElementById('skin-type-classic')
 export const skinTypeSlim = <HTMLDivElement>document.getElementById('skin-type-slim')
 
+export const dragOverlay = <HTMLDivElement>document.getElementById('drag-overlay')
+
 export const addLayerDiv = <HTMLDivElement>document.getElementById('add-layer')
 export const removeLayerDiv = <HTMLDivElement>document.getElementById('remove-layer')

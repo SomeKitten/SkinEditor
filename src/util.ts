@@ -1,5 +1,5 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { saveDiv, skinTypeSelect } from './staticElements'
+import { dragOverlay, saveDiv } from './staticElements'
 
 export const camOrbit = new Vector3()
 
@@ -133,5 +133,5 @@ export function compileLayers(ctx: CanvasRenderingContext2D, layers: HTMLCanvasE
 }
 
 export function dragEnd() {
-  skinTypeSelect.hidden = true
+  dragOverlay.hidden = true
 }
