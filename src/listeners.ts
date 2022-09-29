@@ -86,6 +86,7 @@ import {
   inputSElement,
   lCanvas,
   rCanvas,
+  removeLayerDiv,
   saveDiv,
   sCanvas,
   showCanvas2d,
@@ -225,6 +226,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     prevDraw.x = x
     prevDraw.y = y
 
+    // TODO (high priority) fix undo flooding when drawing out of bounds
     newCanvasState(undoStacks)
     redoStacks.length = 0
   }
@@ -385,17 +387,13 @@ function onMouseDown(event: MouseEvent) {
 }
 
 document.addEventListener('mouseup', onMouseUp)
-function onMouseUp(event: MouseEvent) {
+function onMouseUp(_event: MouseEvent) {
   setCameraMove(false)
   setMouseDown(false)
   setPainting(false)
   setDrawing(false)
   setPicking('')
 
-  if (event.clientX < width - rightSideWidth) {
-    newCanvasState(undoStacks)
-    removeLayer()
-  }
   if (draggingLayerDiv) stopDragging()
 
   prevDraw.x = undefined
@@ -471,6 +469,7 @@ function redo() {
   }
 }
 
+// TODO keep layer order when undoing/redoing
 export function newCanvasState(
   stack: { [key: string]: HTMLCanvasElement }[],
   newLayers?: { [key: string]: HTMLCanvasElement },
@@ -563,6 +562,13 @@ addLayerDiv.addEventListener('mousedown', () => {
 
   newCanvasState(undoStacks)
   addLayer()
+})
+
+removeLayerDiv.addEventListener('mousedown', () => {
+  if (layers.length <= 1) return
+
+  newCanvasState(undoStacks)
+  removeLayer(layers[layer])
 })
 
 hCanvas.addEventListener('mousedown', (event: MouseEvent) => {

@@ -565,20 +565,9 @@ export function addLayer(layerid?: string) {
   layersDiv.prepend(layerDiv)
 }
 
-export function removeLayer(oldLayer?: HTMLCanvasElement) {
-  let index = 0
-  let div = draggingLayerDiv
-
-  if (!oldLayer) {
-    if (layers.length === 1 || !draggingLayerDiv) return
-
-    index = layers.indexOf(draggingLayer)
-
-    stopDragging()
-  } else {
-    index = layers.indexOf(oldLayer!)
-    div = oldLayer.parentElement as HTMLDivElement
-  }
+export function removeLayer(oldLayer: HTMLCanvasElement) {
+  const index = layers.indexOf(oldLayer!)
+  const div = oldLayer.parentElement as HTMLDivElement
 
   layersDiv.removeChild(div!)
   layers.splice(index, 1)
