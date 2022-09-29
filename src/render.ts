@@ -58,7 +58,7 @@ draggingSpacer.style.height = '73px'
 let draggingLayer: HTMLCanvasElement
 
 export const layers: HTMLCanvasElement[] = []
-// layerCount is used to keep track of what layers have existed before
+// ? layerCount is used to keep track of what layers have existed before
 let layerCount = 0
 
 export const undoStacks: { [key: string]: HTMLCanvasElement }[] = []
@@ -533,7 +533,6 @@ export function stopDragging() {
 
 export function addLayer(layerid?: string) {
   if (!layerid) layerid = 'layer' + layerCount++
-  console.log('add layer', layerid)
 
   const newLayer = document.createElement('canvas')
   layers.push(newLayer)
@@ -577,7 +576,6 @@ export function removeLayer(oldLayer?: HTMLCanvasElement) {
 
     stopDragging()
   } else {
-    console.log('remove layer', oldLayer.id)
     index = layers.indexOf(oldLayer!)
     div = oldLayer.parentElement as HTMLDivElement
   }

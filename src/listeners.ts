@@ -475,9 +475,6 @@ export function newCanvasState(
   stack: { [key: string]: HTMLCanvasElement }[],
   newLayers?: { [key: string]: HTMLCanvasElement },
 ) {
-  console.log('newCanvasState', undoStacks)
-  console.log('newCanvasState', redoStacks)
-
   const stackElement: { [key: string]: HTMLCanvasElement } = {}
   for (let l = 0; l < layers.length; l++) {
     const oldCanvas = document.createElement('canvas')
@@ -489,9 +486,6 @@ export function newCanvasState(
   stack.push(stackElement)
 
   if (newLayers) {
-    console.log('newLayers', newLayers)
-    console.log('layers', layers)
-
     for (const l in layers) {
       if (!newLayers[layers[l].id.slice(0, -7)]) removeLayer(layers[l])
     }
