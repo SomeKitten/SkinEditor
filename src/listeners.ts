@@ -218,7 +218,11 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
 }
 
 function draw(x: number, y: number, connectPrev: boolean = false) {
-  if (x < 0 || y < 0 || x > 63 || y > 63) return
+  if (x < 0 || y < 0 || x > 63 || y > 63) {
+    prevDraw.x = undefined
+    prevDraw.y = undefined
+    return
+  }
 
   // if starting to draw...
   if (prevDraw.x === undefined || prevDraw.y === undefined) {
