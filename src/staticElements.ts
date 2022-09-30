@@ -36,3 +36,14 @@ export const dragOverlay = <HTMLDivElement>document.getElementById('drag-overlay
 
 export const addLayerDiv = <HTMLDivElement>document.getElementById('add-layer')
 export const removeLayerDiv = <HTMLDivElement>document.getElementById('remove-layer')
+
+export const undoButton = <HTMLDivElement>document.getElementById('top-bar-undo')
+export const redoButton = <HTMLDivElement>document.getElementById('top-bar-redo')
+export const toggleOuterButton = <HTMLDivElement>document.getElementById('top-bar-toggle-outer')
+
+export const toggleHeadButton = <HTMLDivElement>document.getElementById('toggle-part-head')
+export const toggleBodyButton = <HTMLDivElement>document.getElementById('toggle-part-body')
+export const toggleLeftArmButton = <HTMLDivElement>document.getElementById('toggle-part-left-arm')
+export const toggleRightArmButton = <HTMLDivElement>document.getElementById('toggle-part-right-arm')
+export const toggleLeftLegButton = <HTMLDivElement>document.getElementById('toggle-part-left-leg')
+export const toggleRightLegButton = <HTMLDivElement>document.getElementById('toggle-part-right-leg')

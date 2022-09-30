@@ -61,7 +61,7 @@ export class BodyPart {
     }
   }
 
-  addToScene() {
+  addToSceneAlt() {
     scene.add(this.innerLayer)
     scene.add(this.outerLayer)
 
@@ -69,11 +69,27 @@ export class BodyPart {
     outerSkinLayer.push(this.outerLayer)
   }
 
-  removeFromScene() {
+  addToScene() {
+    scene.add(this.innerLayer)
+
+    if (outerLayerVisible) {
+      scene.add(this.outerLayer)
+    }
+  }
+
+  removeFromSceneAlt() {
     scene.remove(this.innerLayer)
     scene.remove(this.outerLayer)
 
     innerSkinLayer.splice(innerSkinLayer.indexOf(this.innerLayer), 1)
     outerSkinLayer.splice(outerSkinLayer.indexOf(this.outerLayer), 1)
+  }
+
+  removeFromScene() {
+    scene.remove(this.innerLayer)
+
+    if (outerLayerVisible) {
+      scene.remove(this.outerLayer)
+    }
   }
 }

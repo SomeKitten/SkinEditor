@@ -46,7 +46,7 @@ import {
   outerLayerVisible,
   outerSkinLayer,
   toggleOuterLayer,
-  togglePart,
+  togglePartAlt,
   enableAltMode,
   disableAltMode,
   innerSkinLayer,
@@ -61,6 +61,7 @@ import {
   removeLayer,
   setLayer,
   toggleClassicSlimModel,
+  togglePart,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -89,11 +90,20 @@ import {
   inputSElement,
   lCanvas,
   rCanvas,
+  redoButton,
   removeLayerDiv,
   saveDiv,
   sCanvas,
   showCanvas2d,
+  toggleBodyButton,
+  toggleHeadButton,
+  toggleLeftArmButton,
+  toggleLeftLegButton,
+  toggleOuterButton,
+  toggleRightArmButton,
+  toggleRightLegButton,
   toggleSkinType,
+  undoButton,
 } from './staticElements'
 
 const prevDraw: { x: undefined | number; y: undefined | number } = { x: undefined, y: undefined }
@@ -368,7 +378,7 @@ function onSceneMouseDown(event: MouseEvent) {
       let index = innerSkinLayer.indexOf(intersects[0].object as Mesh)
       if (index === -1) return
 
-      togglePart(index)
+      togglePartAlt(index)
     } else {
       setPainting(true)
       if (event.button === 0 || event.button === 2) {
@@ -401,6 +411,29 @@ function onMouseUp(_event: MouseEvent) {
   prevDraw.x = undefined
   prevDraw.y = undefined
 }
+
+undoButton.addEventListener('click', undo)
+redoButton.addEventListener('click', redo)
+toggleOuterButton.addEventListener('click', toggleOuterLayer)
+
+toggleHeadButton.addEventListener('click', () => {
+  togglePart(0)
+})
+toggleBodyButton.addEventListener('click', () => {
+  togglePart(1)
+})
+toggleRightArmButton.addEventListener('click', () => {
+  togglePart(2)
+})
+toggleLeftArmButton.addEventListener('click', () => {
+  togglePart(3)
+})
+toggleRightLegButton.addEventListener('click', () => {
+  togglePart(4)
+})
+toggleLeftLegButton.addEventListener('click', () => {
+  togglePart(5)
+})
 
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
@@ -461,6 +494,8 @@ function undo() {
     const undoLayers = undoStacks.pop()!
     newCanvasState(redoStacks, undoLayers)
   }
+
+  updateTexture()
 }
 
 function redo() {
@@ -468,6 +503,8 @@ function redo() {
     const redoLayers = redoStacks.pop()!
     newCanvasState(undoStacks, redoLayers)
   }
+
+  updateTexture()
 }
 
 // TODO keep layer order when undoing/redoing

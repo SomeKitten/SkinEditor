@@ -233,7 +233,7 @@ export const outerSkinLayer: Mesh[] = []
 
 for (const part of parts) {
   part.visible = true
-  part.addToScene()
+  part.addToSceneAlt()
 }
 
 disableAltMode()
@@ -329,7 +329,7 @@ export function setPlayPlayerModelAnimation(value: boolean) {
 
 export function setClassicSlimModel(type: string) {
   for (const part of parts) {
-    part.removeFromScene()
+    part.removeFromSceneAlt()
   }
 
   if (type === 'classic') {
@@ -344,7 +344,7 @@ export function setClassicSlimModel(type: string) {
 
   for (const part of parts) {
     part.visible = true
-    part.addToScene()
+    part.addToSceneAlt()
   }
 
   disableAltMode()
@@ -399,6 +399,10 @@ export function disableAltMode() {
     part.disableAltMode()
   }
 
+  centerModel()
+}
+
+export function centerModel() {
   const center = new Vector3(0, 0, 0)
   let visibleCount = 0
   for (const part of parts) {
@@ -416,7 +420,7 @@ export function disableAltMode() {
   }
 }
 
-export function togglePart(partIndex: number) {
+export function togglePartAlt(partIndex: number) {
   let visibleCount = 0
   for (const part of parts) {
     if (part.visible) {
@@ -428,6 +432,28 @@ export function togglePart(partIndex: number) {
 
   const part = parts[partIndex]
   part.setVisible(!part.visible)
+}
+
+export function togglePart(partIndex: number) {
+  let visibleCount = 0
+  for (const part of parts) {
+    if (part.visible) {
+      visibleCount++
+    }
+  }
+
+  if (visibleCount === 1 && parts[partIndex].visible) return
+
+  const part = parts[partIndex]
+  part.visible = !part.visible
+
+  if (part.visible) {
+    part.addToScene()
+  } else {
+    part.removeFromScene()
+  }
+
+  centerModel()
 }
 
 export function getLayerCtx(layer: number) {
@@ -572,7 +598,7 @@ export function removeLayer(oldLayer: HTMLCanvasElement) {
 
   updateTexture()
 
-  // TODO make a function to reset layer selection
+  // TODO (refactor) make a function to reset layer selection
   layer = 0
   layers[0].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
@@ -698,7 +724,7 @@ export function updateTexture3D() {
   }
 }
 
-// TODO (high priority) part outline needs to be dynamic colour
+// TODO part outline needs to be dynamic colour
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
 // TODO (refactor) simplify math by using only width, not height
 export function updateTexture(u?: number, v?: number, highlight?: string) {

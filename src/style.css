@@ -90,6 +90,91 @@ a:visited {
   padding-left: 35px;
 }
 
+#top-bar {
+  display: flex;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3px;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  justify-content: center;
+  gap: 3px;
+}
+
+.top-bar-element {
+  display: inline-block;
+  padding: 5px;
+  border-radius: 3px;
+  background-color: var(--background);
+  height: fit-content;
+}
+
+.top-bar-element:active {
+  background-color: rgb(10, 10, 10);
+}
+
+.top-bar-element:hover {
+  cursor: pointer;
+}
+
+#top-bar-toggle-parts {
+  background-color: transparent;
+  padding: 0;
+}
+
+#top-bar-toggle-parts:hover {
+  cursor: unset;
+}
+
+#toggle-parts-info {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: var(--background);
+
+  position: relative;
+  top: 0;
+  z-index: 10;
+}
+
+.toggle-part {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: var(--background);
+
+  transition-property: transform;
+  transition-duration: 0.2s;
+}
+
+.toggle-part:active {
+  background-color: rgb(10, 10, 10);
+}
+
+.toggle-part:hover {
+  cursor: pointer;
+}
+
+#toggle-parts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  position: absolute;
+  top: -209px;
+
+  clip-path: polygon(0 209px, 100% 209px, 100% 500px, 0 500px);
+}
+
+#toggle-parts-container:hover {
+  height: 500px;
+}
+
+#top-bar-toggle-parts:hover #toggle-parts-container .toggle-part {
+  transform: translateY(251px);
+}
+
 #dom-element {
   position: absolute;
   top: 0;
@@ -102,15 +187,13 @@ a:visited {
 /* TODO fix slide on page refresh */
 #controls {
   position: absolute;
-  bottom: 0;
+  bottom: -550px;
   transition-property: transform;
   transition-duration: 0.2s;
-  /*  */
-  transform: translateY(88.23%);
 }
 
 #controls:hover {
-  transform: translateY(0%);
+  transform: translateY(-88.23%);
   z-index: 2;
 }
 

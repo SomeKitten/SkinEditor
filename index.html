@@ -17,6 +17,7 @@
   <!-- TODO create more todos based on https://www.planetminecraft.com/pmcskin3d/ features -->
   <!-- TODO create a basic colour picker alternative -->
   <!-- TODO make colour picker appear above hotbar selection when hovering -->
+  <!-- TODO (high priority) buttons for common operations as alternative to keybinds -->
   <div id="color-picker">
     <div class="color-value">
       <p class="color-label">HUE</p>
@@ -84,6 +85,23 @@
     <div class="color-value">
       <canvas id="color-result" class="color-canvas" width="256" height="32"></canvas>
       <input type="text" id="input-result" />
+    </div>
+  </div>
+  <!-- TODO icons instead of text -->
+  <div id="top-bar">
+    <div id="top-bar-undo" class="top-bar-element">Undo</div>
+    <div id="top-bar-redo" class="top-bar-element">Redo</div>
+    <div id="top-bar-toggle-outer" class="top-bar-element">Toggle Outer Layer</div>
+    <div id="top-bar-toggle-parts" class="top-bar-element">
+      <div id="toggle-parts-info">Toggle Body Parts</div>
+      <div id="toggle-parts-container">
+        <div id="toggle-part-head" class="toggle-part">Head</div>
+        <div id="toggle-part-body" class="toggle-part">Body</div>
+        <div id="toggle-part-left-arm" class="toggle-part">Left Arm</div>
+        <div id="toggle-part-right-arm" class="toggle-part">Right Arm</div>
+        <div id="toggle-part-left-leg" class="toggle-part">Left Leg</div>
+        <div id="toggle-part-right-leg" class="toggle-part">Right Leg</div>
+      </div>
     </div>
   </div>
   <div id="controls">
