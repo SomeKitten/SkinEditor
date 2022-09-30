@@ -746,7 +746,7 @@ function onResultType(this: HTMLInputElement, _event: Event) {
 const textureImage = document.createElement('img')
 textureImage.src = defaultHeadURL
 textureImage.addEventListener('load', () => {
-  if (textureImage.width === 64 && textureImage.height === 64) {
+  if (textureImage.width === 64 && (textureImage.height === 64 || textureImage.height === 32)) {
     setTexture(textureImage)
   } else {
     // TODO alert about skin size

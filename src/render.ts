@@ -466,6 +466,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
 }
 
+// TODO re-do layer dragging to work better on all browsers
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
@@ -480,7 +481,12 @@ export function dragLayer(event: MouseEvent) {
   y = y - draggingOrigin + rect.top - rect2.top - 3
 
   const minY = rightSideHeight + 43
-  y = clamp(y, minY, minY + layers.length * layerHeight)
+
+  if (navigator.userAgent.indexOf('Chrome') != -1) {
+    y = clamp(y, minY, minY + layers.length * layerHeight + 6)
+  } else {
+    y = clamp(y, minY, minY + layers.length * layerHeight)
+  }
 
   draggingLayerDiv.style.top = `${y}px`
 
