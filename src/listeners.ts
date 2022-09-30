@@ -443,7 +443,8 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
-  if (eventKey === 'space') {
+  // space key
+  if (eventKey === ' ') {
     setPlayPlayerModelAnimation(!playPlayerModelAnimation)
     event.preventDefault()
   }
