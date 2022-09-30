@@ -553,6 +553,7 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
 }
 
+// TODO remove layer limit and add scrolling
 addLayerDiv.addEventListener('mousedown', () => {
   if (layers.length >= 4) return
 
@@ -561,7 +562,10 @@ addLayerDiv.addEventListener('mousedown', () => {
 })
 
 removeLayerDiv.addEventListener('mousedown', () => {
-  if (layers.length <= 1) return
+  if (layers.length <= 1) {
+    // TODO display message that you can't remove the last layer
+    return
+  }
 
   newCanvasState(undoStacks)
   removeLayer(layers[layer])
@@ -749,8 +753,7 @@ textureImage.addEventListener('load', () => {
   if (textureImage.width === 64 && textureImage.height === 64) {
     setTexture(textureImage)
   } else {
-    // TODO better alert
-    alert('Skin texture must be 64x64')
+    // TODO alert about skin size
   }
 })
 
