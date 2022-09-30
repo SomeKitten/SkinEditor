@@ -13,9 +13,7 @@ body {
   font-size: 24px;
   color: white;
   overflow: hidden;
-}
 
-img {
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -28,7 +26,9 @@ img {
   -moz-user-drag: none;
   -o-user-drag: none;
   -ms-user-drag: none;
+}
 
+img {
   border-radius: 3px;
 
   image-rendering: -moz-crisp-edges;
@@ -56,17 +56,25 @@ td {
   background-color: var(--background);
 }
 
+p {
+  margin: 0;
+  color: white;
+}
+
+a {
+  color: cyan;
+}
+
+a:visited {
+  color: white;
+}
+
 .controls-left {
   text-align: left;
 }
 
 .controls-right {
   text-align: right;
-}
-
-p {
-  margin: 0;
-  color: white;
 }
 
 #hotbar {
@@ -97,7 +105,8 @@ p {
   bottom: 0;
   transition-property: transform;
   transition-duration: 0.2s;
-  transform: translateY(87%);
+  /*  */
+  transform: translateY(88.23%);
 }
 
 #controls:hover {

@@ -645,7 +645,7 @@ export function setWidth(value: number) {
 
   for (const layer of layersDiv.children) (layer as HTMLDivElement).style.width = `${rightSideWidth - 6}px`
 
-  // TODO un-hardcode this to the height of  everything above the layer div
+  // TODO (refactor) un-hardcode this to the height of  everything above the layer div
   rightSideHeight = rightSideWidth + 35
 
   setHotbar(hotbar)
@@ -662,7 +662,7 @@ export function setHeight(value: number) {
 
   for (const layer of layersDiv.children) (layer as HTMLDivElement).style.width = `${rightSideWidth - 6}px`
 
-  // TODO un-hardcode this to the height of  everything above the layer div
+  // TODO (refactor) un-hardcode this to the height of  everything above the layer div
   rightSideHeight = rightSideWidth + 35
 
   updateTexture()
