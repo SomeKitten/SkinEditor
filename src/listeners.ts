@@ -221,12 +221,13 @@ function onDraw(this: HTMLElement, event: MouseEvent) {
 }
 
 function draw(x: number, y: number, connectPrev: boolean = false) {
+  if (x < 0 || y < 0 || x > 63 || y > 63) return
+
   // if starting to draw...
   if (prevDraw.x === undefined || prevDraw.y === undefined) {
     prevDraw.x = x
     prevDraw.y = y
 
-    // TODO (high priority) fix undo flooding when drawing out of bounds
     newCanvasState(undoStacks)
     redoStacks.length = 0
   }
@@ -454,7 +455,6 @@ function onKeyDown(event: KeyboardEvent) {
   codes[event.code] = true
 }
 
-// TODO (high priority) fix undo flooding when moving camera in 3D view
 function undo() {
   if (undoStacks.length > 0) {
     const undoLayers = undoStacks.pop()!
