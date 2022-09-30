@@ -1,4 +1,4 @@
-A head editor for Minecraft. Currently hosted on https://somekitten.github.io/HeadEditor.
+A skin editor for Minecraft. Currently available at https://www.cutekitten.space.
 
 Run dev server (with automatic updates on save) using `npm run dev`
 
