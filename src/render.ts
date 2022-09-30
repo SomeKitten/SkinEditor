@@ -466,7 +466,7 @@ function startDragging(layerDiv: HTMLDivElement, y: number) {
   layersDiv.insertBefore(draggingSpacer, layersDiv.children[index])
 }
 
-// TODO don't allow layers to be dragged too high
+// TODO (high priority) don't allow layers to be dragged too high
 export function dragLayer(event: MouseEvent) {
   if (!draggingLayerDiv) return
 
@@ -542,7 +542,7 @@ export function addLayer(layerid?: string) {
   layerDiv.appendChild(layerLabel)
   layerDiv.appendChild(newLayer)
 
-  // TODO is making a new variable necessary?
+  // TODO (refactor) is making a new variable necessary?
   const l = newLayer
   layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
     setLayer(l)
@@ -569,7 +569,7 @@ export function removeLayer(oldLayer: HTMLCanvasElement) {
   layers[0].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }
 
-// TODO figure out how and why multiple layers can have the dark background sometimes
+// TODO (high priority) figure out how and why multiple layers can have the dark background sometimes
 export function setLayer(l: HTMLCanvasElement) {
   // ! must match CSS --background
   layers[layer].parentElement!.style.backgroundColor = 'rgb(30, 30, 30)'

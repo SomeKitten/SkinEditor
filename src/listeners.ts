@@ -96,9 +96,6 @@ import {
   toggleSkinType,
 } from './staticElements'
 
-export const keys: { [key: string]: boolean } = {}
-export const codes: { [code: string]: boolean } = {}
-
 const prevDraw: { x: undefined | number; y: undefined | number } = { x: undefined, y: undefined }
 
 window.addEventListener('blur', () => {
@@ -403,18 +400,20 @@ function onMouseUp(_event: MouseEvent) {
 
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
+  const eventKey = event.key.toLowerCase()
+
   if (!saveDiv.hidden) {
     saveDiv.hidden = true
     return
   }
 
   if (event.ctrlKey) {
-    if (event.code === 'KeyS') {
+    if (eventKey === 's') {
       download()
       event.preventDefault()
     }
 
-    if (event.code === 'KeyZ') {
+    if (eventKey === 'z') {
       if (event.shiftKey) {
         redo()
       } else {
@@ -423,36 +422,33 @@ function onKeyDown(event: KeyboardEvent) {
       event.preventDefault()
     }
 
-    if (event.ctrlKey && event.code === 'KeyY') {
+    if (event.ctrlKey && eventKey === 'y') {
       redo()
       event.preventDefault()
     }
   }
 
-  if (event.code === 'Tab') {
+  if (eventKey === 'tab') {
     toggleOuterLayer()
     event.preventDefault()
   }
 
-  if (event.key === 'Shift') {
+  if (eventKey === 'shift') {
     setShift(true)
     event.preventDefault()
   }
 
-  if (event.key === 'Alt') {
+  if (eventKey === 'alt') {
     enableAltMode()
     event.preventDefault()
   }
 
-  if (event.code === 'Space') {
+  if (eventKey === 'space') {
     setPlayPlayerModelAnimation(!playPlayerModelAnimation)
     event.preventDefault()
   }
 
   updateTexture()
-
-  keys[event.key] = true
-  codes[event.code] = true
 }
 
 function undo() {
@@ -505,19 +501,18 @@ export function newCanvasState(
 
 document.addEventListener('keyup', onKeyUp)
 function onKeyUp(event: KeyboardEvent) {
-  if (event.key === 'Shift') {
+  const eventKey = event.key.toLowerCase()
+
+  if (eventKey === 'shift') {
     setShift(false)
   }
 
-  if (event.key === 'Alt') {
+  if (eventKey === 'alt') {
     disableAltMode()
     event.preventDefault()
   }
 
   updateTexture()
-
-  keys[event.key] = false
-  codes[event.code] = false
 }
 
 document.addEventListener('dragover', (event: DragEvent) => {
