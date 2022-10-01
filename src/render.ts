@@ -576,10 +576,8 @@ export function addLayer(layerid?: string) {
   layerDiv.appendChild(layerLabel)
   layerDiv.appendChild(newLayer)
 
-  // TODO (refactor) is making a new variable necessary?
-  const l = newLayer
   layerDiv.addEventListener('mousedown', (event: MouseEvent) => {
-    setLayer(l)
+    setLayer(newLayer)
     startDragging(layerDiv, event.clientY)
     dragLayer(event)
   })
@@ -598,7 +596,6 @@ export function removeLayer(oldLayer: HTMLCanvasElement) {
 
   updateTexture()
 
-  // TODO (refactor) make a function to reset layer selection
   layer = 0
   layers[0].parentElement!.style.backgroundColor = 'rgb(10, 10, 10)'
 }

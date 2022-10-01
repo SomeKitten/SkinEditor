@@ -12,7 +12,6 @@
   <script type="module" src="/src/main.ts"></script>
   <!-- TODO cache current state of layers for when returning to page -->
   <!-- TODO add new skin button / option -->
-  <!-- TODO on new skin, force classic / slim selection -->
   <!-- TODO option to change background colour -->
   <!-- TODO create more todos based on https://www.planetminecraft.com/pmcskin3d/ features -->
   <!-- TODO create a basic colour picker alternative -->
@@ -201,7 +200,8 @@
     </div>
   </div>
   <div id="drag-overlay" hidden>DRAG AND DROP TO LOAD IMAGE TO NEW LAYER</div>
-  <div id="skin-type-select" hidden>
+  <div id="skin-type-select">
+    <p id="skin-type-select-info">Please Select a Skin Type</p>
     <div id="skin-type-classic" class="skin-type">
       <div id="type-classic-inner">
         <p>CLASSIC</p>

@@ -62,6 +62,7 @@ import {
   setLayer,
   toggleClassicSlimModel,
   togglePart,
+  setClassicSlimModel,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -95,6 +96,9 @@ import {
   saveDiv,
   sCanvas,
   showCanvas2d,
+  skinTypeClassic,
+  skinTypeSelect,
+  skinTypeSlim,
   toggleBodyButton,
   toggleHeadButton,
   toggleLeftArmButton,
@@ -816,6 +820,15 @@ function setTexture(image: HTMLImageElement) {
 
 toggleSkinType.addEventListener('click', toggleClassicSlimModel)
 
+skinTypeClassic.addEventListener('click', () => {
+  setClassicSlimModel('classic')
+  skinTypeSelect.hidden = true
+})
+skinTypeSlim.addEventListener('click', () => {
+  setClassicSlimModel('slim')
+  skinTypeSelect.hidden = true
+})
+
 document.addEventListener('drop', (event: DragEvent) => {
   dragOverlay.hidden = true
   disableAltMode()
@@ -844,10 +857,8 @@ document.addEventListener('drop', (event: DragEvent) => {
 const imgs = document.getElementsByTagName('img')
 
 // ! FIREFOX DRAG FIX
-// loop through fetched images
 for (const img of imgs) {
-  // and define onmousedown event handler
-  img.onmousedown = disableDragging
+  img.ondragstart = disableDragging
 }
 
 function disableDragging(e: Event) {

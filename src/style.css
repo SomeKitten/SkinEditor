@@ -438,11 +438,14 @@ input {
   margin-bottom: 50px;
 }
 
-.skin-type:hover {
-  cursor: pointer;
+#skin-type-select-info {
+  width: fit-content;
+  margin: auto;
+  margin-top: 50px;
 }
 
-.skin-type:active {
+.skin-type:hover {
+  cursor: pointer;
   background-color: rgb(10, 10, 10);
 }
 
