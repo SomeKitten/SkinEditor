@@ -1,3 +1,7 @@
+import outerLayerURL from '../res/toggle_skin_outer.png'
+import outerLayer2URL from '../res/toggle_skin_outer2.png'
+import outerLayerBlueURL from '../res/toggle_skin_outer_blue.png'
+import outerLayer2BlueURL from '../res/toggle_skin_outer2_blue.png'
 import {
   CanvasTexture,
   Color,
@@ -39,6 +43,7 @@ import {
   sCanvas,
   showCanvas2d,
   textureChecker,
+  toggleOuterButton,
 } from './staticElements'
 
 export let width = window.innerWidth
@@ -379,13 +384,27 @@ export function animatePlayerModel() {
   parts[5].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
 }
 
-export function toggleOuterLayer() {
+export function toggleOuterLayer(blue?: boolean) {
   outerLayerVisible = !outerLayerVisible
   for (const part of parts) {
     if (part.visible && outerLayerVisible) {
       scene.add(part.outerLayer)
     } else {
       scene.remove(part.outerLayer)
+    }
+  }
+
+  if (blue) {
+    if (outerLayerVisible) {
+      ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
+    } else {
+      ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerBlueURL
+    }
+  } else {
+    if (outerLayerVisible) {
+      ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2URL
+    } else {
+      ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
     }
   }
 }

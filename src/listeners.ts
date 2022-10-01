@@ -8,6 +8,10 @@ import undoURL from '../res/undo.png'
 import redoURL from '../res/redo.png'
 import undoSelectedURL from '../res/undo_selected.png'
 import redoSelectedURL from '../res/redo_selected.png'
+import outerLayerURL from '../res/toggle_skin_outer.png'
+import outerLayer2URL from '../res/toggle_skin_outer2.png'
+import outerLayerBlueURL from '../res/toggle_skin_outer_blue.png'
+import outerLayer2BlueURL from '../res/toggle_skin_outer2_blue.png'
 import {
   cameraControls,
   cameraMove,
@@ -429,7 +433,29 @@ function onMouseUp(_event: MouseEvent) {
 
 undoButton.addEventListener('click', undo)
 redoButton.addEventListener('click', redo)
-toggleOuterButton.addEventListener('click', toggleOuterLayer)
+
+let toggleOuterButtonHover = false
+toggleOuterButton.addEventListener('click', () => {
+  toggleOuterLayer(toggleOuterButtonHover)
+})
+toggleOuterButton.addEventListener('mouseleave', () => {
+  toggleOuterButtonHover = false
+
+  if (outerLayerVisible) {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2URL
+  } else {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
+  }
+})
+toggleOuterButton.addEventListener('mouseenter', () => {
+  toggleOuterButtonHover = true
+
+  if (outerLayerVisible) {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
+  } else {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerBlueURL
+  }
+})
 
 toggleHeadButton.addEventListener('click', () => {
   togglePart(0)
