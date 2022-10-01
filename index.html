@@ -194,8 +194,9 @@
   <div id="save-div" hidden>
     <div id="save-inner-div">
       <p>Right-click on the skin texture,<br>then select "save as" to save!</p>
-      <!-- TODO make skin preview larger (using img element) -->
-      <canvas id="texture-canvas" width="64" height="64"></canvas>
+      <!-- TODO (refactor) remove this and generate it via code -->
+      <canvas id="texture-canvas" width="64" height="64" hidden></canvas>
+      <img id="texture-image" width="256" height="256" src="" alt="">
       <p>Left-click anywhere to go back!</p>
     </div>
   </div>
@@ -215,7 +216,6 @@
       </div>
     </div>
   </div>
-  <!-- TODO button that takes you to the skin change page on Minecraft.net -->
 </body>
 
 </html>

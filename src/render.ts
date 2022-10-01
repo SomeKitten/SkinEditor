@@ -825,6 +825,7 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   )
 }
 
+// TODO (refactor) put all colour picker related code in its own file
 export function updateColorHex(hex: number) {
   hex = Math.floor(hex)
 

@@ -1,5 +1,5 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { saveDiv } from './staticElements'
+import { saveDiv, textureCanvas, textureImage } from './staticElements'
 
 export const camOrbit = new Vector3()
 
@@ -98,6 +98,7 @@ export function genBlockUVs(u: number, v: number, x: number, y: number, z: numbe
 
 export function download() {
   saveDiv.hidden = false
+  textureImage.src = textureCanvas.toDataURL()
 }
 
 // def: default
