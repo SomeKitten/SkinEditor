@@ -624,8 +624,7 @@ export function setHotbar(value: number) {
     hotbarCTX.fillRect(i * 20 + 4, 4, 16, 16)
   }
 
-  updateColor(
-    'rgb',
+  updateColorRGB(
     hotbarColors[hotbar].color.r * 255,
     hotbarColors[hotbar].color.g * 255,
     hotbarColors[hotbar].color.b * 255,
@@ -723,7 +722,6 @@ export function updateTexture3D() {
 
 // TODO part outline needs to be dynamic colour
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
-// TODO (refactor) simplify math by using only width, not height
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   textureCTX.imageSmoothingEnabled = false
   showCTX2d.imageSmoothingEnabled = false
@@ -733,44 +731,44 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
-  textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.height)
-  showCTX3d.clearRect(0, 0, showCanvas3d.width, showCanvas3d.height)
+  textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.width)
+  showCTX3d.clearRect(0, 0, showCanvas3d.width, showCanvas3d.width)
 
   compileLayers(textureCTX, layers)
   compileLayers(showCTX3d, layers)
 
   showCTX2d.fillStyle = 'rgb(30, 30, 30)'
-  showCTX2d.fillRect(0, 0, showCanvas2d.width, showCanvas2d.height)
+  showCTX2d.fillRect(0, 0, showCanvas2d.width, showCanvas2d.width)
 
   showCTX2d.globalCompositeOperation = 'destination-out'
   showCTX2d.drawImage(
     maskCanvas,
     zoomPos.x * (textureCanvas.width / 64),
-    zoomPos.y * (textureCanvas.height / 64),
+    zoomPos.y * (textureCanvas.width / 64),
     textureCanvas.width / showZoom,
-    textureCanvas.height / showZoom,
+    textureCanvas.width / showZoom,
     0,
     0,
     showCanvas2d.width,
-    showCanvas2d.height,
+    showCanvas2d.width,
   )
   showCTX2d.globalCompositeOperation = 'source-over'
 
   showCTX2d.drawImage(
     textureCanvas,
     zoomPos.x * (textureCanvas.width / 64),
-    zoomPos.y * (textureCanvas.height / 64),
+    zoomPos.y * (textureCanvas.width / 64),
     textureCanvas.width / showZoom,
-    textureCanvas.height / showZoom,
+    textureCanvas.width / showZoom,
     0,
     0,
     showCanvas2d.width,
-    showCanvas2d.height,
+    showCanvas2d.width,
   )
 
   if (!highlight) return
 
-  const data = textureCTX.getImageData(0, 0, textureCanvas.width, textureCanvas.height).data
+  const data = textureCTX.getImageData(0, 0, textureCanvas.width, textureCanvas.width).data
   const index = (u! + (63 - v!) * 64) * 4
   let colour = (255 - data[index] + (255 - data[index] + 1) + (255 - data[index] + 2)) / 3
   if (colour <= 128 && colour > 64) colour = 64
@@ -778,9 +776,9 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
 
   if (highlight === '2d') {
     highlightCanvas.width = showCanvas2d.width * showZoom
-    highlightCanvas.height = showCanvas2d.height * showZoom
+    highlightCanvas.height = showCanvas2d.width * showZoom
 
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
 
     let scale = highlightCanvas.width / 64
     highlightCTX.lineWidth = clamp(Math.floor((1 / 8) * scale), 2, 1000)
@@ -795,7 +793,7 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
     highlightCanvas.width = skinTextureSize
     highlightCanvas.height = skinTextureSize
 
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
 
     let scale = highlightCanvas.width / 64
     highlightCTX.lineWidth = 2
@@ -803,9 +801,9 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
       section.highlight(highlightCTX, u!, v!, scale)
     }
 
-    showCTX3d.drawImage(highlightCanvas, 0, 0, showCanvas3d.width, showCanvas3d.height)
+    showCTX3d.drawImage(highlightCanvas, 0, 0, showCanvas3d.width, showCanvas3d.width)
 
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height)
+    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
     highlightCTX.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
     scale = highlightCanvas.width / 64
     strokeRect(highlightCTX, u! * scale, (63 - v!) * scale, 16, 16)
@@ -814,62 +812,72 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   showCTX2d.drawImage(
     highlightCanvas,
     zoomPos.x * (highlightCanvas.width / 64),
-    zoomPos.y * (highlightCanvas.height / 64),
+    zoomPos.y * (highlightCanvas.width / 64),
     highlightCanvas.width / showZoom,
-    highlightCanvas.height / showZoom,
+    highlightCanvas.width / showZoom,
     0,
     0,
     showCanvas2d.width,
-    showCanvas2d.height,
+    showCanvas2d.width,
   )
 }
 
-// rhhex: red / hue / hex
-// gs: green / saturation
-// bl: blue / lightness
-// TODO (refactor) split into different functions
-export function updateColor(type: string, rhhex: number, gs: number, bl: number) {
-  rhhex = Math.floor(rhhex)
-  gs = Math.floor(gs)
-  bl = Math.floor(bl)
+export function updateColorHex(hex: number) {
+  hex = Math.floor(hex)
 
-  switch (type) {
-    case 'hsl':
-      hsl.h = rhhex
-      hsl.s = gs
-      hsl.l = bl
+  hotbarColors[hotbar].color.set(hex >> 8)
+  setAlpha(hex & 0xff)
 
-      hotbarColors[hotbar].color.set(`hsl(${rhhex}, ${gs}%, ${bl}%)`)
-      rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
-      rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
-      rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
-      break
-    case 'rgb':
-      rgb.r = rhhex
-      rgb.g = gs
-      rgb.b = bl
+  hotbarColors[hotbar].color.getHSL(hsl)
+  hsl.h = Math.floor(360 * hsl.h)
+  hsl.s = Math.floor(100 * hsl.s)
+  hsl.l = Math.floor(100 * hsl.l)
 
-      hotbarColors[hotbar].color.set(`rgb(${rhhex}, ${gs}, ${bl})`)
-      hotbarColors[hotbar].color.getHSL(hsl)
-      hsl.h = Math.floor(360 * hsl.h)
-      hsl.s = Math.floor(100 * hsl.s)
-      hsl.l = Math.floor(100 * hsl.l)
-      break
-    case 'hex':
-      hotbarColors[hotbar].color.set(rhhex >> 8)
-      setAlpha(rhhex & 0xff)
+  rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
+  rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
+  rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
 
-      hotbarColors[hotbar].color.getHSL(hsl)
-      hsl.h = Math.floor(360 * hsl.h)
-      hsl.s = Math.floor(100 * hsl.s)
-      hsl.l = Math.floor(100 * hsl.l)
+  updateColor()
+}
 
-      rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
-      rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
-      rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
-      break
-  }
+export function updateColorHSL(h: number, s: number, l: number) {
+  h = Math.floor(h)
+  s = Math.floor(s)
+  l = Math.floor(l)
 
+  hsl.h = h
+  hsl.s = s
+  hsl.l = l
+
+  hotbarColors[hotbar].color.set(`hsl(${h}, ${s}%, ${l}%)`)
+  rgb.r = Math.floor(hotbarColors[hotbar].color.r * 255)
+  rgb.g = Math.floor(hotbarColors[hotbar].color.g * 255)
+  rgb.b = Math.floor(hotbarColors[hotbar].color.b * 255)
+
+  updateColor()
+  updateHEX()
+}
+
+export function updateColorRGB(r: number, g: number, b: number) {
+  r = Math.floor(r)
+  g = Math.floor(g)
+  b = Math.floor(b)
+
+  rgb.r = r
+  rgb.g = g
+  rgb.b = b
+
+  hotbarColors[hotbar].color.set(`rgb(${r}, ${g}, ${b})`)
+  hotbarColors[hotbar].color.getHSL(hsl)
+  hsl.h = Math.floor(360 * hsl.h)
+  hsl.s = Math.floor(100 * hsl.s)
+  hsl.l = Math.floor(100 * hsl.l)
+
+  updateColor()
+  updateHEX()
+}
+
+export function updateColor() {
   resultCTX.clearRect(0, 0, resultCanvas.width, resultCanvas.height)
 
   resultCTX.fillStyle = `rgba(${hotbarColors[hotbar].color.r * 255}, ${hotbarColors[hotbar].color.g * 255}, ${
@@ -888,7 +896,6 @@ export function updateColor(type: string, rhhex: number, gs: number, bl: number)
     hotbarColors[hotbar].color.b,
     hotbarColors[hotbar].alpha,
   )
-  if (type !== 'hex') updateHEX()
 }
 
 function updateHSL() {

@@ -184,7 +184,6 @@ a:visited {
   z-index: -1;
 }
 
-/* TODO fix slide on page refresh */
 #controls {
   position: absolute;
   bottom: -550px;

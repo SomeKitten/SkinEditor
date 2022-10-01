@@ -1,4 +1,4 @@
-import defaultSkinURLClassic from '../res/steve.png'
+import defaultSkinURLClassic from '../res/shauapufu.png'
 import defaultSkinURLSlim from '../res/neferupitou.png'
 import {
   cameraControls,
@@ -39,7 +39,6 @@ import {
   showZoom,
   textureCTX,
   undoStacks,
-  updateColor,
   updateTexture3D,
   width,
   zoom,
@@ -64,6 +63,9 @@ import {
   toggleClassicSlimModel,
   togglePart,
   setClassicSlimModel,
+  updateColorRGB,
+  updateColorHSL,
+  updateColorHex,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -219,7 +221,7 @@ function intersectDrop(intersect: Intersection): boolean {
   const c = textureCTX.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
-  updateColor('rgb', c![0], c![1], c![2])
+  updateColorRGB(c![0], c![1], c![2])
 
   if (hotbarColors[hotbar].alpha === 0) {
     return false
@@ -274,7 +276,7 @@ function eyeDropper2D(x: number, y: number) {
   const c = textureCTX.getImageData(x, y, 1, 1).data
 
   setAlpha(c![3])
-  updateColor('rgb', c![0], c![1], c![2])
+  updateColorRGB(c![0], c![1], c![2])
 }
 
 function clearLine(x: number, y: number, x1: number, y1: number) {
@@ -648,32 +650,32 @@ function onPickN(func: Function, value: number, n: number) {
 }
 
 function onPickH(value: number) {
-  updateColor('hsl', value, hsl.s, hsl.l)
+  updateColorHSL(value, hsl.s, hsl.l)
 }
 
 function onPickS(value: number) {
-  updateColor('hsl', hsl.h, value, hsl.l)
+  updateColorHSL(hsl.h, value, hsl.l)
 }
 
 function onPickL(value: number) {
-  updateColor('hsl', hsl.h, hsl.s, value)
+  updateColorHSL(hsl.h, hsl.s, value)
 }
 
 function onPickR(value: number) {
-  updateColor('rgb', value, rgb.g, rgb.b)
+  updateColorRGB(value, rgb.g, rgb.b)
 }
 
 function onPickG(value: number) {
-  updateColor('rgb', rgb.r, value, rgb.b)
+  updateColorRGB(rgb.r, value, rgb.b)
 }
 
 function onPickB(value: number) {
-  updateColor('rgb', rgb.r, rgb.g, value)
+  updateColorRGB(rgb.r, rgb.g, value)
 }
 
 function onPickA(value: number) {
   setAlpha(Math.floor(value))
-  updateColor('rgb', rgb.r, rgb.g, rgb.b)
+  updateColorRGB(rgb.r, rgb.g, rgb.b)
 }
 
 inputHElement.addEventListener('input', inputH)
@@ -786,7 +788,7 @@ function downMouseDown(this: HTMLImageElement, _event: Event) {
 inputResultElement.addEventListener('input', onResultType)
 function onResultType(this: HTMLInputElement, _event: Event) {
   const bar = hotbarColors[hotbar]
-  updateColor('hex', rgb2hex(this.value, (bar.color.getHex() << 8) + (bar.alpha & 0xff)), 0, 0)
+  updateColorHex(rgb2hex(this.value, (bar.color.getHex() << 8) + (bar.alpha & 0xff)))
 }
 
 const textureImage = document.createElement('img')
