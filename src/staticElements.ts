@@ -20,7 +20,6 @@ export const colorPicker = <HTMLDivElement>document.getElementById('color-picker
 export const layersDiv = <HTMLDivElement>document.getElementById('layers')
 
 export const saveDiv = <HTMLDivElement>document.getElementById('save-div')
-export const textureCanvas = <HTMLCanvasElement>document.getElementById('texture-canvas')
 export const textureImage = <HTMLImageElement>document.getElementById('texture-image')
 
 export const showCanvas2d = <HTMLCanvasElement>document.getElementById('show-canvas')

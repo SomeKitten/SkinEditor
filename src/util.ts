@@ -1,5 +1,6 @@
 import { BufferAttribute, PerspectiveCamera, Raycaster, Spherical, Vector3 } from 'three'
-import { saveDiv, textureCanvas, textureImage } from './staticElements'
+import { textureCanvas } from './render'
+import { saveDiv, textureImage } from './staticElements'
 
 export const camOrbit = new Vector3()
 

@@ -38,7 +38,6 @@ import {
   resultCanvas,
   sCanvas,
   showCanvas2d,
-  textureCanvas,
   textureChecker,
 } from './staticElements'
 
@@ -65,6 +64,9 @@ export const redoStacks: { [key: string]: HTMLCanvasElement }[] = []
 
 const skinTextureSize = 1024
 
+export const textureCanvas = document.createElement('canvas')
+textureCanvas.width = 64
+textureCanvas.height = 64
 export const textureCTX = textureCanvas.getContext('2d')!
 
 export const showCanvas3d = document.createElement('canvas')
