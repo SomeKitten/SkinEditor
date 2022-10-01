@@ -720,7 +720,10 @@ export function updateTexture3D() {
   }
 }
 
+// TODO make outlines have a set thickness irrelevant of zoom
+// TODO experiment with synced outlines in 2D and 3D
 // TODO part outline needs to be dynamic colour
+// TODO face outline in 3D view when hovering over face
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
 export function updateTexture(u?: number, v?: number, highlight?: string) {
   textureCTX.imageSmoothingEnabled = false

@@ -104,12 +104,21 @@ a:visited {
   gap: 3px;
 }
 
+#top-bar img {
+  width: 30px;
+  height: 30px;
+  margin-top: -3px;
+  margin-bottom: -6px;
+}
+
 .top-bar-element {
   display: inline-block;
   padding: 5px;
   border-radius: 3px;
   background-color: var(--background);
   height: fit-content;
+  min-width: 30px;
+  min-height: 30px;
 }
 
 .top-bar-element:active {
@@ -298,6 +307,11 @@ a:visited {
   flex-grow: 1;
   display: inline-block;
   text-align: center;
+}
+
+.layer-option img {
+  width: 30px;
+  height: 30px;
 }
 
 .layer-option:hover {

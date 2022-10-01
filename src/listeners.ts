@@ -1,5 +1,13 @@
 import defaultSkinURLClassic from '../res/shauapufu.png'
 import defaultSkinURLSlim from '../res/neferupitou.png'
+import plusURL from '../res/plus.png'
+import minusURL from '../res/minus.png'
+import plusSelectedURL from '../res/plus_selected.png'
+import minusSelectedURL from '../res/minus_selected.png'
+import undoURL from '../res/undo.png'
+import redoURL from '../res/redo.png'
+import undoSelectedURL from '../res/undo_selected.png'
+import redoSelectedURL from '../res/redo_selected.png'
 import {
   cameraControls,
   cameraMove,
@@ -856,6 +864,34 @@ document.addEventListener('drop', (event: DragEvent) => {
       fileReader.readAsDataURL(file)
     }
   }
+})
+
+addLayerDiv.addEventListener('mouseleave', () => {
+  ;(addLayerDiv.children[0] as HTMLImageElement).src = plusURL
+})
+addLayerDiv.addEventListener('mouseenter', () => {
+  ;(addLayerDiv.children[0] as HTMLImageElement).src = plusSelectedURL
+})
+
+removeLayerDiv.addEventListener('mouseleave', () => {
+  ;(removeLayerDiv.children[0] as HTMLImageElement).src = minusURL
+})
+removeLayerDiv.addEventListener('mouseenter', () => {
+  ;(removeLayerDiv.children[0] as HTMLImageElement).src = minusSelectedURL
+})
+
+undoButton.addEventListener('mouseleave', () => {
+  ;(undoButton.children[0] as HTMLImageElement).src = undoURL
+})
+undoButton.addEventListener('mouseenter', () => {
+  ;(undoButton.children[0] as HTMLImageElement).src = undoSelectedURL
+})
+
+redoButton.addEventListener('mouseleave', () => {
+  ;(redoButton.children[0] as HTMLImageElement).src = redoURL
+})
+redoButton.addEventListener('mouseenter', () => {
+  ;(redoButton.children[0] as HTMLImageElement).src = redoSelectedURL
 })
 
 const imgs = document.getElementsByTagName('img')
