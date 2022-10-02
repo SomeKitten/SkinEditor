@@ -17,6 +17,7 @@
   <!-- TODO create a basic colour picker alternative -->
   <!-- TODO make colour picker appear above hotbar selection when hovering -->
   <!-- TODO (high priority) buttons for common operations as alternative to keybinds -->
+  <!-- TODO organize res folder -->
   <div id="color-picker">
     <div class="color-value">
       <p class="color-label">HUE</p>
@@ -102,6 +103,9 @@
         <div id="toggle-part-right-leg" class="toggle-part">Right Leg</div>
       </div>
     </div>
+    <div id="top-bar-toggle-animate" class="top-bar-element">Play</div>
+    <div class="top-bar-divider"></div>
+    <div id="top-bar-save" class="top-bar-element"><img src="res/save.png" alt=""></div>
   </div>
   <div id="controls">
     <table>
@@ -176,7 +180,10 @@
   <div id="texture-area">
     <!-- TODO skin toggle hover will make outlines appear on 2D canvas -->
 
-    <div id="toggle-skin-type" class="generic-button">Toggle Skin Type</div>
+    <div id="texture-skin-type-container">
+      <div id="texture-skin-type-classic" class="texture-skin-type">Skin Type Classic</div>
+      <div id="texture-skin-type-slim" class="texture-skin-type">Skin Type Slim</div>
+    </div>
 
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>

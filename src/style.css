@@ -111,6 +111,11 @@ a:visited {
   margin-bottom: -6px;
 }
 
+.top-bar-divider {
+  display: inline-block;
+  width: 40px;
+}
+
 .top-bar-element {
   display: inline-block;
   padding: 5px;
@@ -241,21 +246,28 @@ a:visited {
   margin: 3px;
 }
 
-#toggle-skin-type {
+#texture-skin-type-container {
+  display: flex;
   grid-row-start: 1;
   grid-column-start: 1;
   text-align: center;
-  background-color: var(--background);
-  border-radius: 3px;
   margin-bottom: 3px;
-  padding: 3px;
+  gap: 3px;
 }
 
-#toggle-skin-type:hover {
+.texture-skin-type {
+  display: inline-block;
+  background-color: var(--background);
+  border-radius: 3px;
+  padding: 3px;
+  flex-grow: 1;
+}
+
+.texture-skin-type:hover {
   cursor: pointer;
 }
 
-#toggle-skin-type:active {
+.texture-skin-type:active {
   background-color: rgb(10, 10, 10);
 }
 

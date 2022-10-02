@@ -12,6 +12,8 @@ import outerLayerURL from '../res/toggle_skin_outer.png'
 import outerLayer2URL from '../res/toggle_skin_outer2.png'
 import outerLayerBlueURL from '../res/toggle_skin_outer_blue.png'
 import outerLayer2BlueURL from '../res/toggle_skin_outer2_blue.png'
+import saveButtonURL from '../res/save.png'
+import saveButtonSelectedURL from '../res/save_selected.png'
 import {
   cameraControls,
   cameraMove,
@@ -72,7 +74,6 @@ import {
   addLayer,
   removeLayer,
   setLayer,
-  toggleClassicSlimModel,
   togglePart,
   setClassicSlimModel,
   updateColorRGB,
@@ -108,12 +109,16 @@ import {
   rCanvas,
   redoButton,
   removeLayerDiv,
+  saveButton,
   saveDiv,
   sCanvas,
   showCanvas2d,
   skinTypeClassic,
   skinTypeSelect,
   skinTypeSlim,
+  textureSkinTypeClassic,
+  textureSkinTypeSlim,
+  toggleAnimateButton,
   toggleBodyButton,
   toggleHeadButton,
   toggleLeftArmButton,
@@ -121,7 +126,6 @@ import {
   toggleOuterButton,
   toggleRightArmButton,
   toggleRightLegButton,
-  toggleSkinType,
   undoButton,
 } from './staticElements'
 
@@ -431,51 +435,6 @@ function onMouseUp(_event: MouseEvent) {
   prevDraw.y = undefined
 }
 
-undoButton.addEventListener('click', undo)
-redoButton.addEventListener('click', redo)
-
-let toggleOuterButtonHover = false
-toggleOuterButton.addEventListener('click', () => {
-  toggleOuterLayer(toggleOuterButtonHover)
-})
-toggleOuterButton.addEventListener('mouseleave', () => {
-  toggleOuterButtonHover = false
-
-  if (outerLayerVisible) {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2URL
-  } else {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
-  }
-})
-toggleOuterButton.addEventListener('mouseenter', () => {
-  toggleOuterButtonHover = true
-
-  if (outerLayerVisible) {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
-  } else {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerBlueURL
-  }
-})
-
-toggleHeadButton.addEventListener('click', () => {
-  togglePart(0)
-})
-toggleBodyButton.addEventListener('click', () => {
-  togglePart(1)
-})
-toggleRightArmButton.addEventListener('click', () => {
-  togglePart(2)
-})
-toggleLeftArmButton.addEventListener('click', () => {
-  togglePart(3)
-})
-toggleRightLegButton.addEventListener('click', () => {
-  togglePart(4)
-})
-toggleLeftLegButton.addEventListener('click', () => {
-  togglePart(5)
-})
-
 document.addEventListener('keydown', onKeyDown)
 function onKeyDown(event: KeyboardEvent) {
   const eventKey = event.key.toLowerCase()
@@ -507,7 +466,7 @@ function onKeyDown(event: KeyboardEvent) {
   }
 
   if (eventKey === 'tab') {
-    toggleOuterLayer()
+    toggleOuterLayer(toggleOuterButtonHover)
     event.preventDefault()
   }
 
@@ -614,10 +573,17 @@ document.addEventListener('dragend', () => {
 hotbarCanvas.addEventListener('mousedown', hotbarClick)
 
 function hotbarClick(event: MouseEvent) {
-  const offset = hotbarCanvas.clientWidth * (1 / 184)
-  const size = hotbarCanvas.clientWidth * (20 / 184)
+  const clientWidth = hotbarCanvas.clientWidth - 35 // padding
+  const offsetX = event.offsetX - 35 // padding
 
-  setHotbar(clamp(Math.floor((event.offsetX - offset) / size), 0, 8))
+  console.log(clientWidth)
+  console.log(offsetX)
+
+  const border = clientWidth * (2 / 184)
+  const innerWidth = clientWidth - border * 2
+  const size = innerWidth * (1 / 9)
+
+  setHotbar(clamp(Math.floor((offsetX - border) / size), 0, 8))
 }
 
 window.addEventListener('resize', onWindowResize)
@@ -630,24 +596,6 @@ function onWindowResize() {
   camera.aspect = width / height
   camera.updateProjectionMatrix()
 }
-
-// TODO remove layer limit and add scrolling
-addLayerDiv.addEventListener('mousedown', () => {
-  if (layers.length >= 4) return
-
-  newCanvasState(undoStacks)
-  addLayer()
-})
-
-removeLayerDiv.addEventListener('mousedown', () => {
-  if (layers.length <= 1) {
-    // TODO display message that you can't remove the last layer
-    return
-  }
-
-  newCanvasState(undoStacks)
-  removeLayer(layers[layer])
-})
 
 hCanvas.addEventListener('mousedown', (event: MouseEvent) => {
   setPicking('h')
@@ -854,7 +802,12 @@ function setTexture(image: HTMLImageElement) {
   updateTexture()
 }
 
-toggleSkinType.addEventListener('click', toggleClassicSlimModel)
+textureSkinTypeClassic.addEventListener('click', () => {
+  setClassicSlimModel('classic')
+})
+textureSkinTypeSlim.addEventListener('click', () => {
+  setClassicSlimModel('slim')
+})
 
 skinTypeClassic.addEventListener('click', () => {
   setClassicSlimModel('classic')
@@ -892,6 +845,13 @@ document.addEventListener('drop', (event: DragEvent) => {
   }
 })
 
+// TODO remove layer limit and add scrolling
+addLayerDiv.addEventListener('mousedown', () => {
+  if (layers.length >= 4) return
+
+  newCanvasState(undoStacks)
+  addLayer()
+})
 addLayerDiv.addEventListener('mouseleave', () => {
   ;(addLayerDiv.children[0] as HTMLImageElement).src = plusURL
 })
@@ -899,6 +859,15 @@ addLayerDiv.addEventListener('mouseenter', () => {
   ;(addLayerDiv.children[0] as HTMLImageElement).src = plusSelectedURL
 })
 
+removeLayerDiv.addEventListener('mousedown', () => {
+  if (layers.length <= 1) {
+    // TODO display message that you can't remove the last layer
+    return
+  }
+
+  newCanvasState(undoStacks)
+  removeLayer(layers[layer])
+})
 removeLayerDiv.addEventListener('mouseleave', () => {
   ;(removeLayerDiv.children[0] as HTMLImageElement).src = minusURL
 })
@@ -906,6 +875,7 @@ removeLayerDiv.addEventListener('mouseenter', () => {
   ;(removeLayerDiv.children[0] as HTMLImageElement).src = minusSelectedURL
 })
 
+undoButton.addEventListener('click', undo)
 undoButton.addEventListener('mouseleave', () => {
   ;(undoButton.children[0] as HTMLImageElement).src = undoURL
 })
@@ -913,11 +883,72 @@ undoButton.addEventListener('mouseenter', () => {
   ;(undoButton.children[0] as HTMLImageElement).src = undoSelectedURL
 })
 
+redoButton.addEventListener('click', redo)
 redoButton.addEventListener('mouseleave', () => {
   ;(redoButton.children[0] as HTMLImageElement).src = redoURL
 })
 redoButton.addEventListener('mouseenter', () => {
   ;(redoButton.children[0] as HTMLImageElement).src = redoSelectedURL
+})
+
+let toggleOuterButtonHover = false
+toggleOuterButton.addEventListener('click', () => {
+  toggleOuterLayer(toggleOuterButtonHover)
+})
+toggleOuterButton.addEventListener('mouseleave', () => {
+  toggleOuterButtonHover = false
+
+  if (outerLayerVisible) {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2URL
+  } else {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
+  }
+})
+toggleOuterButton.addEventListener('mouseenter', () => {
+  toggleOuterButtonHover = true
+
+  if (outerLayerVisible) {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
+  } else {
+    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerBlueURL
+  }
+})
+
+toggleAnimateButton.addEventListener('click', () => {
+  setPlayPlayerModelAnimation(!playPlayerModelAnimation)
+
+  if (playPlayerModelAnimation) {
+    toggleAnimateButton.innerText = 'Stop'
+  } else {
+    toggleAnimateButton.innerText = 'Play'
+  }
+})
+
+saveButton.addEventListener('click', download)
+saveButton.addEventListener('mouseleave', () => {
+  ;(saveButton.children[0] as HTMLImageElement).src = saveButtonURL
+})
+saveButton.addEventListener('mouseenter', () => {
+  ;(saveButton.children[0] as HTMLImageElement).src = saveButtonSelectedURL
+})
+
+toggleHeadButton.addEventListener('click', () => {
+  togglePart(0)
+})
+toggleBodyButton.addEventListener('click', () => {
+  togglePart(1)
+})
+toggleRightArmButton.addEventListener('click', () => {
+  togglePart(2)
+})
+toggleLeftArmButton.addEventListener('click', () => {
+  togglePart(3)
+})
+toggleRightLegButton.addEventListener('click', () => {
+  togglePart(4)
+})
+toggleLeftLegButton.addEventListener('click', () => {
+  togglePart(5)
 })
 
 const imgs = document.getElementsByTagName('img')

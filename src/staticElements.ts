@@ -25,7 +25,8 @@ export const textureImage = <HTMLImageElement>document.getElementById('texture-i
 export const showCanvas2d = <HTMLCanvasElement>document.getElementById('show-canvas')
 export const hotbarCanvas = <HTMLCanvasElement>document.getElementById('hotbar')
 export const textureArea = <HTMLImageElement>document.getElementById('texture-area')
-export const toggleSkinType = <HTMLImageElement>document.getElementById('toggle-skin-type')
+export const textureSkinTypeClassic = <HTMLImageElement>document.getElementById('texture-skin-type-classic')
+export const textureSkinTypeSlim = <HTMLImageElement>document.getElementById('texture-skin-type-slim')
 export const textureChecker = <HTMLImageElement>document.getElementById('texture-checker')
 
 export const skinTypeSelect = <HTMLDivElement>document.getElementById('skin-type-select')
@@ -40,6 +41,8 @@ export const removeLayerDiv = <HTMLDivElement>document.getElementById('remove-la
 export const undoButton = <HTMLDivElement>document.getElementById('top-bar-undo')
 export const redoButton = <HTMLDivElement>document.getElementById('top-bar-redo')
 export const toggleOuterButton = <HTMLDivElement>document.getElementById('top-bar-toggle-outer')
+export const toggleAnimateButton = <HTMLDivElement>document.getElementById('top-bar-toggle-animate')
+export const saveButton = <HTMLDivElement>document.getElementById('top-bar-save')
 
 export const toggleHeadButton = <HTMLDivElement>document.getElementById('toggle-part-head')
 export const toggleBodyButton = <HTMLDivElement>document.getElementById('toggle-part-body')
