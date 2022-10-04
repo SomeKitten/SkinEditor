@@ -35,19 +35,13 @@ import {
 import {
   camera,
   height,
-  hotbar,
-  hotbarColors,
-  hsl,
   layer,
   layers,
   mouseTexture,
   redoStacks,
   renderer,
-  rgb,
   scene,
-  setAlpha,
   setHeight,
-  setHotbar,
   setMouseTexture,
   setWidth,
   showZoom,
@@ -74,9 +68,6 @@ import {
   setLayer,
   togglePart,
   setClassicSlimModel,
-  updateColorRGB,
-  updateColorHSL,
-  updateColorHex,
   setUVFromRaycast,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
@@ -127,6 +118,17 @@ import {
   toggleRightLegButton,
   undoButton,
 } from './staticElements'
+import {
+  setAlpha,
+  updateColorRGB,
+  hotbarColors,
+  hotbar,
+  setHotbar,
+  updateColorHSL,
+  hsl,
+  rgb,
+  updateColorHex,
+} from './colorPicker'
 
 const prevDraw: { x: undefined | number; y: undefined | number } = { x: undefined, y: undefined }
 
@@ -557,9 +559,6 @@ hotbarCanvas.addEventListener('mousedown', hotbarClick)
 function hotbarClick(event: MouseEvent) {
   const clientWidth = hotbarCanvas.clientWidth - 35 // padding
   const offsetX = event.offsetX - 35 // padding
-
-  console.log(clientWidth)
-  console.log(offsetX)
 
   const border = clientWidth * (2 / 184)
   const innerWidth = clientWidth - border * 2
