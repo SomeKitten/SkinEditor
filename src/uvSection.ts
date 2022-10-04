@@ -32,6 +32,8 @@ export class UVSection {
   }
 
   highlight(ctx: CanvasRenderingContext2D, x: number, y: number, scale: number) {
+    y = 63 - y
+
     let highlight = false
     ctx.strokeStyle = 'rgba(200, 200, 200, 0.9)'
     for (const rectangle of this.uvs) {

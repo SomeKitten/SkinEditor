@@ -53,12 +53,10 @@ import {
   showZoom,
   textureCTX,
   undoStacks,
-  updateTexture3D,
   width,
   zoom,
   zoomPos,
   outerLayerVisible,
-  outerSkinLayer,
   toggleOuterLayer,
   togglePartAlt,
   enableAltMode,
@@ -79,6 +77,7 @@ import {
   updateColorRGB,
   updateColorHSL,
   updateColorHex,
+  setUVFromRaycast,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 
@@ -175,7 +174,7 @@ function onMouseMove(event: MouseEvent) {
       default:
         if (painting) {
           if (mouseButton === 0 || mouseButton === 2) {
-            paint()
+            draw(mouseTexture.x, mouseTexture.y)
           } else {
             eyeDropper3D()
           }
@@ -185,31 +184,6 @@ function onMouseMove(event: MouseEvent) {
 
   if (cameraMove && mouseButton === 0) {
     cameraControls(event.movementX, event.movementY)
-  }
-}
-
-function paint() {
-  raycaster.setFromCamera(mouse, camera)
-  const intersects = raycaster.intersectObjects(scene.children)
-
-  if (intersects.length > 0) {
-    let intersect
-    if (shift && outerLayerVisible) {
-      intersect = intersects[1]
-
-      if (outerSkinLayer.includes(intersect.object as Mesh)) {
-        return
-      }
-    } else {
-      intersect = intersects[0]
-    }
-
-    const x = Math.floor(intersect.uv!.x * 64)
-    const y = 64 - Math.floor(intersect.uv!.y * 64) - 1
-
-    draw(x, y)
-
-    updateTexture3D()
   }
 }
 
@@ -262,6 +236,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     prevDraw.x = x
     prevDraw.y = y
 
+    // TODO add "undoableAction" function
     newCanvasState(undoStacks)
     redoStacks.length = 0
   }
@@ -285,7 +260,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
   prevDraw.x = x
   prevDraw.y = y
 
-  updateTexture(x, 63 - y, '3d')
+  updateTexture()
 }
 
 function eyeDropper2D(x: number, y: number) {
@@ -347,13 +322,13 @@ function drawFromOffset(x: number, y: number) {
 
   if (drawing) {
     if (mouseButton === 1) {
-      eyeDropper2D(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y))
+      eyeDropper2D(mouseTexture.x, mouseTexture.y)
     } else {
-      draw(Math.floor(mouseTexture.x), Math.floor(mouseTexture.y), true)
+      draw(mouseTexture.x, mouseTexture.y, true)
     }
-  } else {
-    updateTexture(mouseTexture.x, 63 - mouseTexture.y, '3d')
   }
+
+  updateTexture()
 }
 
 document.addEventListener('wheel', (event: WheelEvent) => {
@@ -385,7 +360,9 @@ function onZoom(this: HTMLElement, event: WheelEvent) {
 }
 
 renderer.domElement.addEventListener('mousemove', (_event: MouseEvent) => {
-  updateTexture3D()
+  setUVFromRaycast()
+
+  updateTexture()
 })
 
 renderer.domElement.addEventListener('mousedown', onSceneMouseDown)
@@ -404,9 +381,11 @@ function onSceneMouseDown(event: MouseEvent) {
       togglePartAlt(index)
     } else {
       setPainting(true)
-      if (event.button === 0 || event.button === 2) {
-        paint()
-      } else if (event.button === 1) {
+
+      if (mouseButton === 0 || mouseButton === 2) {
+        draw(mouseTexture.x, mouseTexture.y)
+        updateTexture()
+      } else if (mouseButton === 1) {
         eyeDropper3D()
       }
     }

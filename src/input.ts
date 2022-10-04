@@ -1,5 +1,5 @@
 import { Vector2 } from 'three'
-import { camera } from './render'
+import { camera, mouseTexture, setUVFromRaycast } from './render'
 import { camOrbit, lookAt, rotateSpherical, targetS } from './util'
 
 export const mouse = new Vector2()
@@ -33,6 +33,7 @@ export function setMouseButton(value: number) {
 }
 export function setShift(value: boolean) {
   shift = value
+  setUVFromRaycast(mouseTexture.x, mouseTexture.y)
 }
 
 export function cameraControls(movementX: number, movementY: number) {

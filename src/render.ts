@@ -411,6 +411,9 @@ export function toggleOuterLayer(blue?: boolean) {
       ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
     }
   }
+
+  setUVFromRaycast(mouseTexture.x, mouseTexture.y)
+  updateTexture()
 }
 
 export function enableAltMode() {
@@ -659,6 +662,32 @@ export function setHotbar(value: number) {
 export function setMouseTexture(x: number, y: number) {
   mouseTexture.x = Math.floor(x)
   mouseTexture.y = Math.floor(y)
+
+  console.log(mouseTexture)
+}
+
+export function setUVFromRaycast(defaultX = -1, defaultY = -1) {
+  raycaster.setFromCamera(mouse, camera)
+  const intersects = raycaster.intersectObjects(scene.children)
+
+  let intersect
+  if (shift && outerLayerVisible) {
+    intersect = intersects[1]
+
+    if (outerSkinLayer.includes(intersect.object as Mesh)) {
+      setMouseTexture(defaultX, defaultY)
+      return
+    }
+  } else {
+    intersect = intersects[0]
+  }
+
+  if (!intersect) {
+    setMouseTexture(defaultX, defaultY)
+    return
+  }
+
+  setMouseTexture(intersect.uv!.x * 64, 64 - intersect.uv!.y * 64)
 }
 
 export function zoom(value: number) {
@@ -726,28 +755,12 @@ export function setAlpha(value: number) {
   hotbarColors[hotbar].alpha = value
 }
 
-export function updateTexture3D() {
-  raycaster.setFromCamera(mouse, camera)
-  const intersects = raycaster.intersectObjects(scene.children)
-
-  if (intersects.length > 0) {
-    if (shift && outerLayerVisible) {
-      if (innerSkinLayer.includes(intersects[1].object as Mesh)) {
-        const uv = intersects[1].uv!
-        updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64), '2d')
-      }
-    } else {
-      const uv = intersects[0].uv!
-      updateTexture(Math.floor(uv.x * 64), Math.floor(uv.y * 64), '2d')
-    }
-  } else {
-    updateTexture()
-  }
-}
-
 // TODO make outlines have a set thickness regardless of zoom
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
-export function updateTexture(u?: number, v?: number, highlight?: string) {
+export function updateTexture() {
+  const u = mouseTexture.x
+  const v = mouseTexture.y
+
   const size = processingTextureSize
 
   layer1Mat.map!.needsUpdate = true
@@ -768,24 +781,21 @@ export function updateTexture(u?: number, v?: number, highlight?: string) {
   compileLayers(textureCTX, layers)
   zoomBorder()
 
-  if (highlight) {
-    u = u!
-    v = v!
-
+  if (u !== undefined && v !== undefined) {
     const scale = size / 64
 
     bufferCTX2d.lineWidth = 1
     bufferCTX3d.lineWidth = 1
 
     for (const section of highlightSections) {
-      section.highlight(bufferCTX2d, u!, v!, scale)
-      section.highlight(bufferCTX3d, u!, v!, scale)
+      section.highlight(bufferCTX2d, u, v, scale)
+      section.highlight(bufferCTX3d, u, v, scale)
     }
 
     bufferCTX2d.fillStyle = 'rgb(200, 200, 200)'
     bufferCTX3d.fillStyle = 'rgb(200, 200, 200)'
-    strokeRect(bufferCTX2d, (u! * size) / 64, ((63 - v)! * size) / 64, scale, scale)
-    strokeRect(bufferCTX3d, (u! * size) / 64, ((63 - v)! * size) / 64, scale, scale)
+    strokeRect(bufferCTX2d, (u * size) / 64, (v * size) / 64, scale, scale)
+    strokeRect(bufferCTX3d, (u * size) / 64, (v * size) / 64, scale, scale)
 
     bufferCTX2d.globalCompositeOperation = 'difference'
     bufferCTX3d.globalCompositeOperation = 'difference'
