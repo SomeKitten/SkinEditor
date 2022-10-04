@@ -14,7 +14,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { compileLayers, genBlockUVs, raycaster, strokeRect } from './util'
+import { genBlockUVs, raycaster } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
 import hotbarImgURL from '../res/hotbar.png'
@@ -67,7 +67,7 @@ let layerCount = 0
 export const undoStacks: { [key: string]: HTMLCanvasElement }[] = []
 export const redoStacks: { [key: string]: HTMLCanvasElement }[] = []
 
-const skinTextureSize = 1024
+const processingTextureSize = 256
 
 export const textureCanvas = document.createElement('canvas')
 textureCanvas.width = 64
@@ -75,15 +75,19 @@ textureCanvas.height = 64
 export const textureCTX = textureCanvas.getContext('2d')!
 
 export const showCanvas3d = document.createElement('canvas')
-showCanvas3d.width = skinTextureSize
-showCanvas3d.height = skinTextureSize
+showCanvas3d.width = processingTextureSize
+showCanvas3d.height = processingTextureSize
 export const showCTX3d = showCanvas3d.getContext('2d')!
 
-export const highlightCanvas = document.createElement('canvas')
-highlightCanvas.width = 64
-highlightCanvas.height = 64
+export const bufferCanvas2d = document.createElement('canvas')
+bufferCanvas2d.width = processingTextureSize
+bufferCanvas2d.height = processingTextureSize
+export const bufferCTX2d = bufferCanvas2d.getContext('2d')!
 
-export const highlightCTX = highlightCanvas.getContext('2d')!
+export const bufferCanvas3d = document.createElement('canvas')
+bufferCanvas3d.width = processingTextureSize
+bufferCanvas3d.height = processingTextureSize
+export const bufferCTX3d = bufferCanvas3d.getContext('2d')!
 
 export const showCTX2d = showCanvas2d.getContext('2d')!
 export let showZoom = 8 / 10
@@ -91,11 +95,11 @@ export let zoomPos = { x: -8, y: -8 }
 export const mouseTexture = { x: 0, y: 0 }
 
 const maskCanvas = document.createElement('canvas')
-maskCanvas.width = 64
-maskCanvas.height = 64
+maskCanvas.width = processingTextureSize
+maskCanvas.height = processingTextureSize
 const maskCTX = maskCanvas.getContext('2d')!
 maskCTX.fillStyle = 'black'
-maskCTX.fillRect(0, 0, 64, 64)
+maskCTX.fillRect(0, 0, processingTextureSize, processingTextureSize)
 
 const texture = new CanvasTexture(showCanvas3d)
 texture.minFilter = NearestFilter
@@ -741,108 +745,98 @@ export function updateTexture3D() {
   }
 }
 
-// TODO make outlines have a set thickness irrelevant of zoom
-// TODO experiment with synced outlines in 2D and 3D
-// TODO part outline needs to be dynamic colour
-// TODO face outline in 3D view when hovering over face
+// TODO make outlines have a set thickness regardless of zoom
 // TODO outlines on transparent pixels should be based off of the colour of the pixel behind them
 export function updateTexture(u?: number, v?: number, highlight?: string) {
-  textureCTX.imageSmoothingEnabled = false
-  showCTX2d.imageSmoothingEnabled = false
-  showCTX3d.imageSmoothingEnabled = false
-  highlightCTX.imageSmoothingEnabled = false
+  const size = processingTextureSize
 
   layer1Mat.map!.needsUpdate = true
   layer2Mat.map!.needsUpdate = true
 
+  textureCTX.imageSmoothingEnabled = false
+  showCTX2d.imageSmoothingEnabled = false
+  showCTX3d.imageSmoothingEnabled = false
+  bufferCTX2d.imageSmoothingEnabled = false
+  bufferCTX3d.imageSmoothingEnabled = false
+
   textureCTX.clearRect(0, 0, textureCanvas.width, textureCanvas.width)
-  showCTX3d.clearRect(0, 0, showCanvas3d.width, showCanvas3d.width)
+  showCTX2d.clearRect(0, 0, showCanvas2d.width, showCanvas2d.width)
+  showCTX3d.clearRect(0, 0, size, size)
+  bufferCTX2d.clearRect(0, 0, size, size)
+  bufferCTX3d.clearRect(0, 0, size, size)
 
   compileLayers(textureCTX, layers)
-  compileLayers(showCTX3d, layers)
+  zoomBorder()
 
+  if (highlight) {
+    u = u!
+    v = v!
+
+    const scale = size / 64
+
+    bufferCTX2d.lineWidth = 1
+    bufferCTX3d.lineWidth = 1
+
+    for (const section of highlightSections) {
+      section.highlight(bufferCTX2d, u!, v!, scale)
+      section.highlight(bufferCTX3d, u!, v!, scale)
+    }
+
+    bufferCTX2d.fillStyle = 'rgb(200, 200, 200)'
+    bufferCTX3d.fillStyle = 'rgb(200, 200, 200)'
+    strokeRect(bufferCTX2d, (u! * size) / 64, ((63 - v)! * size) / 64, scale, scale)
+    strokeRect(bufferCTX3d, (u! * size) / 64, ((63 - v)! * size) / 64, scale, scale)
+
+    bufferCTX2d.globalCompositeOperation = 'difference'
+    bufferCTX3d.globalCompositeOperation = 'difference'
+  }
+
+  bufferCTX2d.drawImage(textureCanvas, 0, 0, size, size)
+  bufferCTX3d.drawImage(textureCanvas, 0, 0, size, size)
+
+  bufferCTX2d.globalCompositeOperation = 'source-over'
+  bufferCTX3d.globalCompositeOperation = 'source-over'
+
+  drawZoomed(showCTX2d, bufferCanvas2d)
+  showCTX3d.drawImage(bufferCanvas3d, 0, 0, showCanvas3d.width, showCanvas3d.width)
+}
+
+export function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+  ctx.fillRect(x, y, w, 1)
+  ctx.fillRect(x, y + h - 1, w, 1)
+  ctx.fillRect(x, y, 1, h)
+  ctx.fillRect(x + w - 1, y, 1, h)
+}
+
+function compileLayers(ctx: CanvasRenderingContext2D, layers: HTMLCanvasElement[]) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  for (const layer of layers) {
+    ctx.drawImage(layer, 0, 0, ctx.canvas.width, ctx.canvas.height)
+  }
+}
+
+function zoomBorder() {
   showCTX2d.fillStyle = 'rgb(30, 30, 30)'
   showCTX2d.fillRect(0, 0, showCanvas2d.width, showCanvas2d.width)
 
   showCTX2d.globalCompositeOperation = 'destination-out'
-  showCTX2d.drawImage(
-    maskCanvas,
-    zoomPos.x * (textureCanvas.width / 64),
-    zoomPos.y * (textureCanvas.width / 64),
-    textureCanvas.width / showZoom,
-    textureCanvas.width / showZoom,
-    0,
-    0,
-    showCanvas2d.width,
-    showCanvas2d.width,
-  )
+  drawZoomed(showCTX2d, maskCanvas)
   showCTX2d.globalCompositeOperation = 'source-over'
+}
 
-  showCTX2d.drawImage(
-    textureCanvas,
-    zoomPos.x * (textureCanvas.width / 64),
-    zoomPos.y * (textureCanvas.width / 64),
-    textureCanvas.width / showZoom,
-    textureCanvas.width / showZoom,
+function drawZoomed(dest: CanvasRenderingContext2D, src: HTMLCanvasElement) {
+  const srcSize = src.width
+  const destSize = dest.canvas.width
+  dest.drawImage(
+    src,
+    zoomPos.x * (srcSize / 64),
+    zoomPos.y * (srcSize / 64),
+    srcSize / showZoom,
+    srcSize / showZoom,
     0,
     0,
-    showCanvas2d.width,
-    showCanvas2d.width,
-  )
-
-  if (!highlight) return
-
-  const data = textureCTX.getImageData(0, 0, textureCanvas.width, textureCanvas.width).data
-  const index = (u! + (63 - v!) * 64) * 4
-  let colour = (255 - data[index] + (255 - data[index] + 1) + (255 - data[index] + 2)) / 3
-  if (colour <= 128 && colour > 64) colour = 64
-  if (colour < 192 && colour > 128) colour = 192
-
-  if (highlight === '2d') {
-    highlightCanvas.width = showCanvas2d.width * showZoom
-    highlightCanvas.height = showCanvas2d.width * showZoom
-
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
-
-    let scale = highlightCanvas.width / 64
-    highlightCTX.lineWidth = clamp(Math.floor((1 / 8) * scale), 2, 1000)
-    for (const section of highlightSections) {
-      section.highlight(highlightCTX, u!, v!, scale)
-    }
-
-    showCTX3d.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
-    scale = showCanvas3d.width / 64
-    strokeRect(showCTX3d, u! * scale, (63 - v!) * scale, 16, 16)
-  } else {
-    highlightCanvas.width = skinTextureSize
-    highlightCanvas.height = skinTextureSize
-
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
-
-    let scale = highlightCanvas.width / 64
-    highlightCTX.lineWidth = 2
-    for (const section of highlightSections) {
-      section.highlight(highlightCTX, u!, v!, scale)
-    }
-
-    showCTX3d.drawImage(highlightCanvas, 0, 0, showCanvas3d.width, showCanvas3d.width)
-
-    highlightCTX.clearRect(0, 0, highlightCanvas.width, highlightCanvas.width)
-    highlightCTX.fillStyle = `rgb(${colour}, ${colour}, ${colour})`
-    scale = highlightCanvas.width / 64
-    strokeRect(highlightCTX, u! * scale, (63 - v!) * scale, 16, 16)
-  }
-
-  showCTX2d.drawImage(
-    highlightCanvas,
-    zoomPos.x * (highlightCanvas.width / 64),
-    zoomPos.y * (highlightCanvas.width / 64),
-    highlightCanvas.width / showZoom,
-    highlightCanvas.width / showZoom,
-    0,
-    0,
-    showCanvas2d.width,
-    showCanvas2d.width,
+    destSize,
+    destSize,
   )
 }
 
