@@ -1,7 +1,7 @@
-import outerLayerURL from '../res/toggle_skin_outer.png'
-import outerLayer2URL from '../res/toggle_skin_outer2.png'
-import outerLayerBlueURL from '../res/toggle_skin_outer_blue.png'
-import outerLayer2BlueURL from '../res/toggle_skin_outer2_blue.png'
+import outerLayerURL from '../res/icons/toggle_skin_outer.png'
+import outerLayer2URL from '../res/icons/toggle_skin_outer2.png'
+import outerLayerBlueURL from '../res/icons/toggle_skin_outer_blue.png'
+import outerLayer2BlueURL from '../res/icons/toggle_skin_outer2_blue.png'
 import {
   CanvasTexture,
   Color,
