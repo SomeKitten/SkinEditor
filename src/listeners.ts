@@ -236,9 +236,7 @@ function draw(x: number, y: number, connectPrev: boolean = false) {
     prevDraw.x = x
     prevDraw.y = y
 
-    // TODO add "undoableAction" function
-    newCanvasState(undoStacks)
-    redoStacks.length = 0
+    undoableState()
   }
 
   if (mouseButton === 0) {
@@ -484,6 +482,11 @@ function redo() {
   }
 
   updateTexture()
+}
+
+function undoableState() {
+  newCanvasState(undoStacks)
+  redoStacks.length = 0
 }
 
 // TODO keep layer order when undoing/redoing
@@ -807,7 +810,7 @@ document.addEventListener('drop', (event: DragEvent) => {
 
   if (layers.length >= 4) return
 
-  newCanvasState(undoStacks)
+  undoableState()
 
   if (event.dataTransfer?.items) {
     if (event.dataTransfer.items[0].kind === 'file') {
@@ -828,7 +831,7 @@ document.addEventListener('drop', (event: DragEvent) => {
 addLayerDiv.addEventListener('mousedown', () => {
   if (layers.length >= 4) return
 
-  newCanvasState(undoStacks)
+  undoableState()
   addLayer()
 })
 addLayerDiv.addEventListener('mouseleave', () => {
@@ -844,7 +847,7 @@ removeLayerDiv.addEventListener('mousedown', () => {
     return
   }
 
-  newCanvasState(undoStacks)
+  undoableState()
   removeLayer(layers[layer])
 })
 removeLayerDiv.addEventListener('mouseleave', () => {
