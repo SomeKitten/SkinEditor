@@ -8,10 +8,6 @@ import undoURL from '../res/icons/undo.png'
 import redoURL from '../res/icons/redo.png'
 import undoSelectedURL from '../res/icons/undo_selected.png'
 import redoSelectedURL from '../res/icons/redo_selected.png'
-import outerLayerURL from '../res/icons/toggle_skin_outer.png'
-import outerLayer2URL from '../res/icons/toggle_skin_outer2.png'
-import outerLayerBlueURL from '../res/icons/toggle_skin_outer_blue.png'
-import outerLayer2BlueURL from '../res/icons/toggle_skin_outer2_blue.png'
 import saveButtonURL from '../res/icons/save.png'
 import saveButtonSelectedURL from '../res/icons/save_selected.png'
 import upURL from '../res/icons/up_arrow.png'
@@ -55,14 +51,11 @@ import {
   zoom,
   zoomPos,
   outerLayerVisible,
-  toggleOuterLayer,
   togglePartAlt,
   enableAltMode,
   disableAltMode,
   innerSkinLayer,
   updateTexture,
-  setPlayPlayerModelAnimation,
-  playPlayerModelAnimation,
   draggingLayerDiv,
   dragLayer,
   stopDragging,
@@ -73,6 +66,10 @@ import {
   togglePart,
   setClassicSlimModel,
   setUVFromRaycast,
+  toggleOuterLayer,
+  updateToggleOuterButton,
+  updateToggleAnimateButton,
+  togglePlayPlayerModelAnimation,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 import { clamp } from 'three/src/math/MathUtils'
@@ -460,7 +457,7 @@ function onKeyDown(event: KeyboardEvent) {
 
   // space key
   if (eventKey === ' ') {
-    setPlayPlayerModelAnimation(!playPlayerModelAnimation)
+    togglePlayPlayerModelAnimation(toggleAnimateButtonHover)
     event.preventDefault()
   }
 
@@ -878,30 +875,27 @@ toggleOuterButton.addEventListener('click', () => {
 toggleOuterButton.addEventListener('mouseleave', () => {
   toggleOuterButtonHover = false
 
-  if (outerLayerVisible) {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2URL
-  } else {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
-  }
+  updateToggleOuterButton(toggleOuterButtonHover)
 })
 toggleOuterButton.addEventListener('mouseenter', () => {
   toggleOuterButtonHover = true
 
-  if (outerLayerVisible) {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
-  } else {
-    ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerBlueURL
-  }
+  updateToggleOuterButton(toggleOuterButtonHover)
 })
 
+let toggleAnimateButtonHover = false
 toggleAnimateButton.addEventListener('click', () => {
-  setPlayPlayerModelAnimation(!playPlayerModelAnimation)
+  togglePlayPlayerModelAnimation(toggleAnimateButtonHover)
+})
+toggleAnimateButton.addEventListener('mouseleave', () => {
+  toggleAnimateButtonHover = false
 
-  if (playPlayerModelAnimation) {
-    toggleAnimateButton.innerText = 'Stop'
-  } else {
-    toggleAnimateButton.innerText = 'Play'
-  }
+  updateToggleAnimateButton(toggleAnimateButtonHover)
+})
+toggleAnimateButton.addEventListener('mouseenter', () => {
+  toggleAnimateButtonHover = true
+
+  updateToggleAnimateButton(toggleAnimateButtonHover)
 })
 
 saveButton.addEventListener('click', download)

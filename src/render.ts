@@ -2,6 +2,10 @@ import outerLayerURL from '../res/icons/toggle_skin_outer.png'
 import outerLayer2URL from '../res/icons/toggle_skin_outer2.png'
 import outerLayerBlueURL from '../res/icons/toggle_skin_outer_blue.png'
 import outerLayer2BlueURL from '../res/icons/toggle_skin_outer2_blue.png'
+import playURL from '../res/icons/play.png'
+import pauseURL from '../res/icons/pause.png'
+import playBlueURL from '../res/icons/play_blue.png'
+import pauseBlueURL from '../res/icons/pause_blue.png'
 import {
   CanvasTexture,
   Color,
@@ -20,7 +24,7 @@ import { clamp } from 'three/src/math/MathUtils'
 import { mouse, controlKeyDown } from './input'
 import { BodyPart } from './bodyPart'
 import { UVSection } from './uvSection'
-import { layersDiv, showCanvas2d, textureChecker, toggleOuterButton } from './staticElements'
+import { layersDiv, showCanvas2d, textureChecker, toggleAnimateButton, toggleOuterButton } from './staticElements'
 import { hotbar, setHotbar } from './colorPicker'
 
 export let width = window.innerWidth
@@ -269,11 +273,29 @@ document.body.appendChild(renderer.domElement)
 
 export let playPlayerModelAnimation = false
 export let playerModelAnimationTime = 0
-export function setPlayPlayerModelAnimation(value: boolean) {
-  playPlayerModelAnimation = value
+export function togglePlayPlayerModelAnimation(selected: boolean) {
+  playPlayerModelAnimation = !playPlayerModelAnimation
+
+  updateToggleAnimateButton(selected)
 
   playerModelAnimationTime = Date.now()
   animatePlayerModel()
+}
+
+export function updateToggleAnimateButton(selected?: boolean) {
+  if (selected) {
+    if (playPlayerModelAnimation) {
+      ;(toggleAnimateButton.children[0] as HTMLImageElement).src = pauseBlueURL
+    } else {
+      ;(toggleAnimateButton.children[0] as HTMLImageElement).src = playBlueURL
+    }
+  } else {
+    if (playPlayerModelAnimation) {
+      ;(toggleAnimateButton.children[0] as HTMLImageElement).src = pauseURL
+    } else {
+      ;(toggleAnimateButton.children[0] as HTMLImageElement).src = playURL
+    }
+  }
 }
 
 export function setClassicSlimModel(type: string) {
@@ -326,7 +348,7 @@ export function animatePlayerModel() {
   parts[5].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
 }
 
-export function toggleOuterLayer(blue?: boolean) {
+export function toggleOuterLayer(selected?: boolean) {
   outerLayerVisible = !outerLayerVisible
   for (const part of parts) {
     if (part.visible && outerLayerVisible) {
@@ -336,7 +358,14 @@ export function toggleOuterLayer(blue?: boolean) {
     }
   }
 
-  if (blue) {
+  updateToggleOuterButton(selected)
+
+  setUVFromRaycast(mouseTexture.x, mouseTexture.y)
+  updateTexture()
+}
+
+export function updateToggleOuterButton(selected?: boolean) {
+  if (selected) {
     if (outerLayerVisible) {
       ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
     } else {
@@ -349,9 +378,6 @@ export function toggleOuterLayer(blue?: boolean) {
       ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayerURL
     }
   }
-
-  setUVFromRaycast(mouseTexture.x, mouseTexture.y)
-  updateTexture()
 }
 
 export function enableAltMode() {
