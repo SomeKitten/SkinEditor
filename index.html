@@ -88,9 +88,10 @@
   </div>
   <!-- TODO icons instead of text -->
   <div id="top-bar">
-    <div id="top-bar-undo" class="top-bar-element"><img src="res/icons/undo.png" alt=""></div>
-    <div id="top-bar-redo" class="top-bar-element"><img src="res/icons/redo.png" alt=""></div>
-    <div id="top-bar-toggle-outer" class="top-bar-element"><img src="res/icons/toggle_skin_outer2.png" alt=""></div>
+    <div id="top-bar-undo" class="top-bar-element"><img class="icon" src="res/icons/undo.png" alt=""></div>
+    <div id="top-bar-redo" class="top-bar-element"><img class="icon" src="res/icons/redo.png" alt=""></div>
+    <div id="top-bar-toggle-outer" class="top-bar-element"><img class="icon" src="res/icons/toggle_skin_outer2.png"
+        alt=""></div>
     <div id="top-bar-toggle-parts" class="top-bar-element">
       <div id="toggle-parts-info">Toggle Body Parts</div>
       <div id="toggle-parts-container">
@@ -103,9 +104,9 @@
       </div>
     </div>
     <!-- TODO update text/icon when pressing space bar -->
-    <div id="top-bar-toggle-animate" class="top-bar-element"><img src="res/icons/play.png" alt=""></div>
+    <div id="top-bar-toggle-animate" class="top-bar-element"><img class="icon" src="res/icons/play.png" alt=""></div>
     <div class="top-bar-divider"></div>
-    <div id="top-bar-save" class="top-bar-element"><img src="res/icons/save.png" alt=""></div>
+    <div id="top-bar-save" class="top-bar-element"><img class="icon" src="res/icons/save.png" alt=""></div>
   </div>
   <div id="controls">
     <table>
@@ -179,18 +180,22 @@
   <img src="res/checkerboard.png" alt="" id="result-checker" />
   <div id="texture-area">
     <!-- TODO skin toggle hover will make outlines appear on 2D canvas -->
+    <!-- TODO don't allow show-canvas to be smaller than right side -->
 
     <div id="texture-skin-type-container">
-      <div id="texture-skin-type-classic" class="texture-skin-type">Skin Type Classic</div>
-      <div id="texture-skin-type-slim" class="texture-skin-type">Skin Type Slim</div>
+      <div id="texture-skin-type-classic" class="texture-skin-type"><img class="icon" src="res/icons/classic.png"
+          alt="">Classic Skin</div>
+      <div id="texture-skin-type-slim" class="texture-skin-type"><img class="icon" src="res/icons/slim.png" alt="">Slim
+        Skin
+      </div>
     </div>
 
     <img src="res/skin_checkerboard.png" alt="" id="texture-checker" />
     <canvas id="show-canvas"></canvas>
 
     <div id="layer-options">
-      <div id="add-layer" class="layer-option"><img src="res/icons/plus.png" alt=""></div>
-      <div id="remove-layer" class="layer-option"><img src="res/icons/minus.png" alt=""></div>
+      <div id="add-layer" class="layer-option"><img class="icon" src="res/icons/plus.png" alt=""></div>
+      <div id="remove-layer" class="layer-option"><img class="icon" src="res/icons/minus.png" alt=""></div>
     </div>
     <!-- TODO allow scrolling if layers go below screen -->
     <!-- TODO allow toggling layer visibility -->

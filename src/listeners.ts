@@ -14,6 +14,10 @@ import upURL from '../res/icons/up_arrow.png'
 import upSelectedURL from '../res/icons/up_arrow_selected.png'
 import downURL from '../res/icons/down_arrow.png'
 import downSelectedURL from '../res/icons/down_arrow_selected.png'
+import classicURL from '../res/icons/classic.png'
+import classicSelectedURL from '../res/icons/classic_blue.png'
+import slimURL from '../res/icons/slim.png'
+import slimSelectedURL from '../res/icons/slim_blue.png'
 import {
   cameraControls,
   cameraMove,
@@ -779,24 +783,6 @@ function setTexture(image: HTMLImageElement) {
   updateTexture()
 }
 
-textureSkinTypeClassic.addEventListener('click', () => {
-  setClassicSlimModel('classic')
-})
-textureSkinTypeSlim.addEventListener('click', () => {
-  setClassicSlimModel('slim')
-})
-
-skinTypeClassic.addEventListener('click', () => {
-  setClassicSlimModel('classic')
-  textureImage.src = defaultSkinURLClassic
-  skinTypeSelect.hidden = true
-})
-skinTypeSlim.addEventListener('click', () => {
-  setClassicSlimModel('slim')
-  textureImage.src = defaultSkinURLSlim
-  skinTypeSelect.hidden = true
-})
-
 document.addEventListener('drop', (event: DragEvent) => {
   dragOverlay.hidden = true
   disableAltMode()
@@ -820,6 +806,49 @@ document.addEventListener('drop', (event: DragEvent) => {
       fileReader.readAsDataURL(file)
     }
   }
+})
+
+textureSkinTypeClassic.addEventListener('click', () => {
+  textureSkinTypeClassic.classList.add('selected')
+  textureSkinTypeSlim.classList.remove('selected')
+
+  setClassicSlimModel('classic')
+})
+textureSkinTypeClassic.addEventListener('mouseleave', () => {
+  textureSkinTypeClassic.getElementsByTagName('img')[0].src = classicURL
+})
+textureSkinTypeClassic.addEventListener('mouseenter', () => {
+  textureSkinTypeClassic.getElementsByTagName('img')[0].src = classicSelectedURL
+})
+
+textureSkinTypeSlim.addEventListener('click', () => {
+  textureSkinTypeSlim.classList.add('selected')
+  textureSkinTypeClassic.classList.remove('selected')
+
+  setClassicSlimModel('slim')
+})
+textureSkinTypeSlim.addEventListener('mouseleave', () => {
+  textureSkinTypeSlim.getElementsByTagName('img')[0].src = slimURL
+})
+textureSkinTypeSlim.addEventListener('mouseenter', () => {
+  textureSkinTypeSlim.getElementsByTagName('img')[0].src = slimSelectedURL
+})
+
+skinTypeClassic.addEventListener('click', () => {
+  textureSkinTypeClassic.classList.add('selected')
+  textureSkinTypeSlim.classList.remove('selected')
+
+  setClassicSlimModel('classic')
+  textureImage.src = defaultSkinURLClassic
+  skinTypeSelect.hidden = true
+})
+skinTypeSlim.addEventListener('click', () => {
+  textureSkinTypeSlim.classList.add('selected')
+  textureSkinTypeClassic.classList.remove('selected')
+
+  setClassicSlimModel('slim')
+  textureImage.src = defaultSkinURLSlim
+  skinTypeSelect.hidden = true
 })
 
 // TODO remove layer limit and add scrolling

@@ -104,7 +104,7 @@ a:visited {
   gap: 3px;
 }
 
-#top-bar img {
+.icon {
   width: 30px;
   height: 30px;
   margin-top: -2px;
@@ -267,7 +267,7 @@ a:visited {
   cursor: pointer;
 }
 
-.texture-skin-type:active {
+.selected {
   background-color: rgb(10, 10, 10);
 }
 
