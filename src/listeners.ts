@@ -33,8 +33,8 @@ import {
   setPainting,
   setDrawing,
   setPicking,
-  setShift,
-  shift,
+  setControlKeyDown,
+  controlKeyDown,
 } from './input'
 import {
   camera,
@@ -138,7 +138,7 @@ window.addEventListener('blur', () => {
   setDrawing(false)
   setPainting(false)
   setMouseButton(-1)
-  setShift(false)
+  setControlKeyDown(false)
   disableAltMode()
 })
 
@@ -194,7 +194,7 @@ function eyeDropper3D() {
 
   if (intersects.length > 0) {
     let intersect
-    if (shift && outerLayerVisible) {
+    if (controlKeyDown && outerLayerVisible) {
       intersect = intersects[1]
       intersectDrop(intersect)
     } else {
@@ -331,7 +331,7 @@ function drawFromOffset(x: number, y: number) {
 }
 
 document.addEventListener('wheel', (event: WheelEvent) => {
-  if (!event.ctrlKey && !event.altKey) {
+  if (!event.shiftKey && !event.altKey) {
     setHotbar(wrap(hotbar + (event.deltaY > 0 ? 1 : -1), 0, 8))
   }
 })
@@ -339,7 +339,7 @@ document.addEventListener('wheel', (event: WheelEvent) => {
 renderer.domElement.addEventListener('wheel', onZoom3D)
 function onZoom3D(event: WheelEvent) {
   if (
-    (event.ctrlKey || event.altKey) &&
+    (event.shiftKey || event.altKey) &&
     !((camera.position.length() < 13 && event.deltaY < 0) || (camera.position.length() > 40 && event.deltaY > 0))
   ) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
@@ -350,7 +350,7 @@ function onZoom3D(event: WheelEvent) {
 
 showCanvas2d.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
-  if (event.ctrlKey) {
+  if (event.shiftKey) {
     zoom(event.deltaY / -100)
     updateTexture()
   }
@@ -371,7 +371,7 @@ function onSceneMouseDown(event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(scene.children)
 
-  if (!event.ctrlKey && intersects.length > 0) {
+  if (!event.shiftKey && intersects.length > 0) {
     if (event.altKey) {
       if (event.button !== 0) return
       let index = innerSkinLayer.indexOf(intersects[0].object as Mesh)
@@ -437,7 +437,7 @@ function onKeyDown(event: KeyboardEvent) {
       event.preventDefault()
     }
 
-    if (event.ctrlKey && eventKey === 'y') {
+    if (eventKey === 'y') {
       redo()
       event.preventDefault()
     }
@@ -448,8 +448,8 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
-  if (eventKey === 'shift') {
-    setShift(true)
+  if (eventKey === 'control') {
+    setControlKeyDown(true)
     event.preventDefault()
   }
 
@@ -528,8 +528,8 @@ document.addEventListener('keyup', onKeyUp)
 function onKeyUp(event: KeyboardEvent) {
   const eventKey = event.key.toLowerCase()
 
-  if (eventKey === 'shift') {
-    setShift(false)
+  if (eventKey === 'control') {
+    setControlKeyDown(false)
   }
 
   if (eventKey === 'alt') {

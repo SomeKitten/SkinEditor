@@ -17,7 +17,7 @@ import {
 import { genBlockUVs, raycaster } from './util'
 import { clamp } from 'three/src/math/MathUtils'
 
-import { mouse, shift } from './input'
+import { mouse, controlKeyDown } from './input'
 import { BodyPart } from './bodyPart'
 import { UVSection } from './uvSection'
 import { layersDiv, showCanvas2d, textureChecker, toggleOuterButton } from './staticElements'
@@ -585,7 +585,7 @@ export function setUVFromRaycast(defaultX = -1, defaultY = -1) {
   const intersects = raycaster.intersectObjects(scene.children)
 
   let intersect
-  if (shift && outerLayerVisible) {
+  if (controlKeyDown && outerLayerVisible) {
     intersect = intersects[1]
 
     if (!intersect || outerSkinLayer.includes(intersect.object as Mesh)) {

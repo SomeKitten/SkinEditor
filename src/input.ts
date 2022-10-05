@@ -11,7 +11,7 @@ export let picking = ''
 export let mouseButton = -1
 export const sensitivity = 0.007
 
-export let shift = false
+export let controlKeyDown = false
 
 export function setCameraMove(value: boolean) {
   cameraMove = value
@@ -31,8 +31,8 @@ export function setPicking(value: string) {
 export function setMouseButton(value: number) {
   mouseButton = value
 }
-export function setShift(value: boolean) {
-  shift = value
+export function setControlKeyDown(value: boolean) {
+  controlKeyDown = value
   setUVFromRaycast(mouseTexture.x, mouseTexture.y)
 }
 
