@@ -468,6 +468,10 @@ function onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
   }
 
+  if (eventKey === 'shift') {
+    renderer.domElement.classList.add('cursor-grab')
+  }
+
   if (eventKey === 'alt') {
     enableAltMode()
     event.preventDefault()
@@ -545,6 +549,10 @@ function onKeyUp(event: KeyboardEvent) {
 
   if (eventKey === 'control') {
     setControlKeyDown(false)
+  }
+
+  if (eventKey === 'shift') {
+    renderer.domElement.classList.remove('cursor-grab')
   }
 
   if (eventKey === 'alt') {

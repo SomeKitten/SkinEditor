@@ -149,6 +149,10 @@ a:visited {
   z-index: -1;
 }
 
+.cursor-grab {
+  cursor: grab;
+}
+
 #controls {
   position: absolute;
   bottom: -550px;
