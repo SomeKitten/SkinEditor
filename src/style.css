@@ -105,6 +105,7 @@ a:visited {
 }
 
 .icon {
+  border-radius: 0;
   width: 30px;
   height: 30px;
   margin-top: -2px;
@@ -112,6 +113,7 @@ a:visited {
 }
 
 .top-bar-icon {
+  border-radius: 0;
   width: 40px;
   height: 40px;
   margin-bottom: -7px;
@@ -155,13 +157,13 @@ a:visited {
 
 #controls {
   position: absolute;
-  bottom: -550px;
+  bottom: -575px;
   transition-property: transform;
   transition-duration: 0.2s;
 }
 
 #controls:hover {
-  transform: translateY(-88.23%);
+  transform: translateY(-575px);
   z-index: 2;
 }
 

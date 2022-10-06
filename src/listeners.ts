@@ -346,7 +346,7 @@ function drawFromOffset(x: number, y: number) {
 }
 
 document.addEventListener('wheel', (event: WheelEvent) => {
-  if (!event.shiftKey && !event.altKey) {
+  if (!event.ctrlKey && !event.shiftKey && !event.altKey) {
     setHotbar(wrap(hotbar + (event.deltaY > 0 ? 1 : -1), 0, 8))
   }
 })
@@ -354,7 +354,7 @@ document.addEventListener('wheel', (event: WheelEvent) => {
 renderer.domElement.addEventListener('wheel', onZoom3D)
 function onZoom3D(event: WheelEvent) {
   if (
-    (event.shiftKey || event.altKey) &&
+    (event.ctrlKey || event.shiftKey || event.altKey) &&
     !((camera.position.length() < 13 && event.deltaY < 0) || (camera.position.length() > 40 && event.deltaY > 0))
   ) {
     camera.position.multiplyScalar(Math.pow(Math.pow(2, 1 / 4), event.deltaY / 100))
@@ -365,7 +365,7 @@ function onZoom3D(event: WheelEvent) {
 
 showCanvas2d.addEventListener('wheel', onZoom)
 function onZoom(this: HTMLElement, event: WheelEvent) {
-  if (event.shiftKey) {
+  if (event.ctrlKey || event.shiftKey) {
     zoom(event.deltaY / -100)
     updateTexture()
   }
@@ -510,6 +510,7 @@ function undoableState() {
 }
 
 // TODO keep layer order when undoing/redoing
+// TODO stop making new states when exiting/entering canvas/model
 export function newCanvasState(
   stack: { [key: string]: HTMLCanvasElement }[],
   newLayers?: { [key: string]: HTMLCanvasElement },
