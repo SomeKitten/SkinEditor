@@ -701,7 +701,7 @@ function inputA(this: HTMLInputElement, _event: Event) {
 
 const ups = document.getElementsByClassName('up')
 for (const up of ups) {
-  up.addEventListener('mousedown', upMouseDown)
+  up.addEventListener('click', upMouseDown)
   up.addEventListener('mouseenter', function (this: HTMLImageElement, _event: Event) {
     this.src = upSelectedURL
   })
@@ -711,7 +711,7 @@ for (const up of ups) {
 }
 const downs = document.getElementsByClassName('down')
 for (const down of downs) {
-  down.addEventListener('mousedown', downMouseDown)
+  down.addEventListener('click', downMouseDown)
   down.addEventListener('mouseenter', function (this: HTMLImageElement, _event: Event) {
     this.src = downSelectedURL
   })
@@ -875,7 +875,7 @@ skinTypeSlim.addEventListener('click', () => {
 })
 
 // TODO remove layer limit and add scrolling
-addLayerDiv.addEventListener('mousedown', () => {
+addLayerDiv.addEventListener('click', () => {
   if (layers.length >= 4) return
 
   undoableState()
@@ -888,7 +888,7 @@ addLayerDiv.addEventListener('mouseenter', () => {
   ;(addLayerDiv.children[0] as HTMLImageElement).src = plusSelectedURL
 })
 
-removeLayerDiv.addEventListener('mousedown', () => {
+removeLayerDiv.addEventListener('click', () => {
   if (layers.length <= 1) {
     // TODO display message that you can't remove the last layer
     return
@@ -953,7 +953,7 @@ saveButton.addEventListener('mouseenter', () => {
   ;(saveButton.children[0] as HTMLImageElement).src = saveButtonSelectedURL
 })
 
-toggleHeadButton.addEventListener('click', () => {
+toggleHeadButton.addEventListener('mousedown', () => {
   togglePart(0)
 })
 toggleHeadButton.addEventListener('mouseleave', () => {
@@ -963,7 +963,7 @@ toggleHeadButton.addEventListener('mouseenter', () => {
   toggleHeadButton.src = headSelectedURL
 })
 
-toggleBodyButton.addEventListener('click', () => {
+toggleBodyButton.addEventListener('mousedown', () => {
   togglePart(1)
 })
 toggleBodyButton.addEventListener('mouseleave', () => {
@@ -973,7 +973,7 @@ toggleBodyButton.addEventListener('mouseenter', () => {
   toggleBodyButton.src = bodySelectedURL
 })
 
-toggleRightArmButton.addEventListener('click', () => {
+toggleRightArmButton.addEventListener('mousedown', () => {
   togglePart(2)
 })
 toggleRightArmButton.addEventListener('mouseleave', () => {
@@ -983,7 +983,7 @@ toggleRightArmButton.addEventListener('mouseenter', () => {
   toggleRightArmButton.src = rightArmSelectedURL
 })
 
-toggleLeftArmButton.addEventListener('click', () => {
+toggleLeftArmButton.addEventListener('mousedown', () => {
   togglePart(3)
 })
 toggleLeftArmButton.addEventListener('mouseleave', () => {
@@ -993,7 +993,7 @@ toggleLeftArmButton.addEventListener('mouseenter', () => {
   toggleLeftArmButton.src = leftArmSelectedURL
 })
 
-toggleRightLegButton.addEventListener('click', () => {
+toggleRightLegButton.addEventListener('mousedown', () => {
   togglePart(4)
 })
 toggleRightLegButton.addEventListener('mouseleave', () => {
@@ -1003,7 +1003,7 @@ toggleRightLegButton.addEventListener('mouseenter', () => {
   toggleRightLegButton.src = rightLegSelectedURL
 })
 
-toggleLeftLegButton.addEventListener('click', () => {
+toggleLeftLegButton.addEventListener('mousedown', () => {
   togglePart(5)
 })
 toggleLeftLegButton.addEventListener('mouseleave', () => {
