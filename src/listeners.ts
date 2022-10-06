@@ -85,9 +85,9 @@ import {
   setClassicSlimModel,
   setUVFromRaycast,
   toggleOuterLayer,
-  updateToggleOuterButton,
   updateToggleAnimateButton,
   togglePlayPlayerModelAnimation,
+  setToggleOuterButtonHover,
 } from './render'
 import { download, raycaster, rgb2hex, wrap } from './util'
 import { clamp } from 'three/src/math/MathUtils'
@@ -459,7 +459,7 @@ function onKeyDown(event: KeyboardEvent) {
   }
 
   if (eventKey === 'tab') {
-    toggleOuterLayer(toggleOuterButtonHover)
+    toggleOuterLayer()
     event.preventDefault()
   }
 
@@ -911,19 +911,14 @@ redoButton.addEventListener('mouseenter', () => {
   ;(redoButton.children[0] as HTMLImageElement).src = redoSelectedURL
 })
 
-let toggleOuterButtonHover = false
 toggleOuterButton.addEventListener('click', () => {
-  toggleOuterLayer(toggleOuterButtonHover)
+  toggleOuterLayer()
 })
 toggleOuterButton.addEventListener('mouseleave', () => {
-  toggleOuterButtonHover = false
-
-  updateToggleOuterButton(toggleOuterButtonHover)
+  setToggleOuterButtonHover(false)
 })
 toggleOuterButton.addEventListener('mouseenter', () => {
-  toggleOuterButtonHover = true
-
-  updateToggleOuterButton(toggleOuterButtonHover)
+  setToggleOuterButtonHover(true)
 })
 
 let toggleAnimateButtonHover = false

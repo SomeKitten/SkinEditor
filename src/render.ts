@@ -240,6 +240,7 @@ for (const part of parts) {
   part.addToSceneAlt()
 }
 
+export let toggleOuterButtonHover = false
 disableAltMode()
 
 const classicSections = [
@@ -330,6 +331,11 @@ export function setClassicSlimModel(type: string) {
     part.addToSceneAlt()
   }
 
+  if (!outerLayerVisible) {
+    toggleOuterLayer()
+    toggleOuterLayer()
+  }
+
   disableAltMode()
 }
 
@@ -360,7 +366,7 @@ export function animatePlayerModel() {
   parts[5].outerLayer.setRotationFromAxisAngle(new Vector3(1, 0, 0), Math.sin(now / 300) / 4)
 }
 
-export function toggleOuterLayer(selected?: boolean) {
+export function toggleOuterLayer() {
   outerLayerVisible = !outerLayerVisible
   for (const part of parts) {
     if (part.visible && outerLayerVisible) {
@@ -370,14 +376,19 @@ export function toggleOuterLayer(selected?: boolean) {
     }
   }
 
-  updateToggleOuterButton(selected)
+  updateToggleOuterButton()
 
   setUVFromRaycast(mouseTexture.x, mouseTexture.y)
   updateTexture()
 }
 
-export function updateToggleOuterButton(selected?: boolean) {
-  if (selected) {
+export function setToggleOuterButtonHover(hover: boolean) {
+  toggleOuterButtonHover = hover
+  updateToggleOuterButton()
+}
+
+export function updateToggleOuterButton() {
+  if (toggleOuterButtonHover) {
     if (outerLayerVisible) {
       ;(toggleOuterButton.children[0] as HTMLImageElement).src = outerLayer2BlueURL
     } else {
