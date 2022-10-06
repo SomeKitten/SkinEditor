@@ -24,7 +24,19 @@ import { clamp } from 'three/src/math/MathUtils'
 import { mouse, controlKeyDown } from './input'
 import { BodyPart } from './bodyPart'
 import { UVSection } from './uvSection'
-import { layersDiv, showCanvas2d, textureChecker, toggleAnimateButton, toggleOuterButton } from './staticElements'
+import {
+  layersDiv,
+  showCanvas2d,
+  textureChecker,
+  toggleAnimateButton,
+  toggleBodyButton,
+  toggleHeadButton,
+  toggleLeftArmButton,
+  toggleLeftLegButton,
+  toggleOuterButton,
+  toggleRightArmButton,
+  toggleRightLegButton,
+} from './staticElements'
 import { hotbar, setHotbar } from './colorPicker'
 
 export let width = window.innerWidth
@@ -412,6 +424,28 @@ export function centerModel() {
   }
 }
 
+function updateToggleButtons(index: number, visible: boolean) {
+  if (visible) {
+    ;[
+      toggleHeadButton,
+      toggleBodyButton,
+      toggleRightArmButton,
+      toggleLeftArmButton,
+      toggleRightLegButton,
+      toggleLeftLegButton,
+    ][index].classList.remove('opacity-30')
+  } else {
+    ;[
+      toggleHeadButton,
+      toggleBodyButton,
+      toggleRightArmButton,
+      toggleLeftArmButton,
+      toggleRightLegButton,
+      toggleLeftLegButton,
+    ][index].classList.add('opacity-30')
+  }
+}
+
 export function togglePartAlt(partIndex: number) {
   let visibleCount = 0
   for (const part of parts) {
@@ -424,9 +458,13 @@ export function togglePartAlt(partIndex: number) {
 
   const part = parts[partIndex]
   part.setVisible(!part.visible)
+
+  updateToggleButtons(partIndex, part.visible)
 }
 
 export function togglePart(partIndex: number) {
+  disableAltMode()
+
   let visibleCount = 0
   for (const part of parts) {
     if (part.visible) {
@@ -444,6 +482,8 @@ export function togglePart(partIndex: number) {
   } else {
     part.removeFromScene()
   }
+
+  updateToggleButtons(partIndex, part.visible)
 
   centerModel()
 }

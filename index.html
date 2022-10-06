@@ -86,24 +86,11 @@
       <input type="text" id="input-result" />
     </div>
   </div>
-  <!-- TODO icons instead of text -->
   <div id="top-bar">
     <div id="top-bar-undo" class="top-bar-element"><img class="icon" src="res/icons/undo.png" alt=""></div>
     <div id="top-bar-redo" class="top-bar-element"><img class="icon" src="res/icons/redo.png" alt=""></div>
     <div id="top-bar-toggle-outer" class="top-bar-element"><img class="icon" src="res/icons/toggle_skin_outer2.png"
         alt=""></div>
-    <div id="top-bar-toggle-parts" class="top-bar-element">
-      <div id="toggle-parts-info">Toggle Body Parts</div>
-      <div id="toggle-parts-container">
-        <div id="toggle-part-head" class="toggle-part">Head</div>
-        <div id="toggle-part-body" class="toggle-part">Body</div>
-        <div id="toggle-part-left-arm" class="toggle-part">Left Arm</div>
-        <div id="toggle-part-right-arm" class="toggle-part">Right Arm</div>
-        <div id="toggle-part-left-leg" class="toggle-part">Left Leg</div>
-        <div id="toggle-part-right-leg" class="toggle-part">Right Leg</div>
-      </div>
-    </div>
-    <!-- TODO update text/icon when pressing space bar -->
     <div id="top-bar-toggle-animate" class="top-bar-element"><img class="icon" src="res/icons/play.png" alt=""></div>
     <div class="top-bar-divider"></div>
     <div id="top-bar-save" class="top-bar-element"><img class="icon" src="res/icons/save.png" alt=""></div>
@@ -179,9 +166,17 @@
   <img src="res/checkerboard.png" alt="" id="alpha-checker" />
   <img src="res/checkerboard.png" alt="" id="result-checker" />
   <div id="texture-area">
+    <div id="toggle-parts-container">
+      <img id="toggle-part-head" class="toggle-part" src="res/icons/parts/head.png" alt="">
+      <img id="toggle-part-right-arm" class="toggle-part" src="res/icons/parts/right_arm.png" alt="">
+      <img id="toggle-part-body" class="toggle-part" src="res/icons/parts/body.png" alt="">
+      <img id="toggle-part-left-arm" class="toggle-part" src="res/icons/parts/left_arm.png" alt="">
+      <img id="toggle-part-right-leg" class="toggle-part" src="res/icons/parts/right_leg.png" alt="">
+      <img id="toggle-part-left-leg" class="toggle-part" src="res/icons/parts/left_leg.png" alt="">
+    </div>
+
     <!-- TODO skin toggle hover will make outlines appear on 2D canvas -->
     <!-- TODO don't allow show-canvas to be smaller than right side -->
-
     <div id="texture-skin-type-container">
       <div id="texture-skin-type-classic" class="texture-skin-type"><img class="icon" src="res/icons/classic.png"
           alt="">Classic Skin</div>

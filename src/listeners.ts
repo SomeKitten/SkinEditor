@@ -18,6 +18,20 @@ import classicURL from '../res/icons/classic.png'
 import classicSelectedURL from '../res/icons/classic_blue.png'
 import slimURL from '../res/icons/slim.png'
 import slimSelectedURL from '../res/icons/slim_blue.png'
+
+import headURL from '../res/icons/parts/head.png'
+import headSelectedURL from '../res/icons/parts/head_blue.png'
+import bodyURL from '../res/icons/parts/body.png'
+import bodySelectedURL from '../res/icons/parts/body_blue.png'
+import leftArmURL from '../res/icons/parts/left_arm.png'
+import leftArmSelectedURL from '../res/icons/parts/left_arm_blue.png'
+import rightArmURL from '../res/icons/parts/right_arm.png'
+import rightArmSelectedURL from '../res/icons/parts/right_arm_blue.png'
+import leftLegURL from '../res/icons/parts/left_leg.png'
+import leftLegSelectedURL from '../res/icons/parts/left_leg_blue.png'
+import rightLegURL from '../res/icons/parts/right_leg.png'
+import rightLegSelectedURL from '../res/icons/parts/right_leg_blue.png'
+
 import {
   cameraControls,
   cameraMove,
@@ -938,20 +952,61 @@ saveButton.addEventListener('mouseenter', () => {
 toggleHeadButton.addEventListener('click', () => {
   togglePart(0)
 })
+toggleHeadButton.addEventListener('mouseleave', () => {
+  toggleHeadButton.src = headURL
+})
+toggleHeadButton.addEventListener('mouseenter', () => {
+  toggleHeadButton.src = headSelectedURL
+})
+
 toggleBodyButton.addEventListener('click', () => {
   togglePart(1)
 })
+toggleBodyButton.addEventListener('mouseleave', () => {
+  toggleBodyButton.src = bodyURL
+})
+toggleBodyButton.addEventListener('mouseenter', () => {
+  toggleBodyButton.src = bodySelectedURL
+})
+
 toggleRightArmButton.addEventListener('click', () => {
   togglePart(2)
 })
+toggleRightArmButton.addEventListener('mouseleave', () => {
+  toggleRightArmButton.src = rightArmURL
+})
+toggleRightArmButton.addEventListener('mouseenter', () => {
+  toggleRightArmButton.src = rightArmSelectedURL
+})
+
 toggleLeftArmButton.addEventListener('click', () => {
   togglePart(3)
 })
+toggleLeftArmButton.addEventListener('mouseleave', () => {
+  toggleLeftArmButton.src = leftArmURL
+})
+toggleLeftArmButton.addEventListener('mouseenter', () => {
+  toggleLeftArmButton.src = leftArmSelectedURL
+})
+
 toggleRightLegButton.addEventListener('click', () => {
   togglePart(4)
 })
+toggleRightLegButton.addEventListener('mouseleave', () => {
+  toggleRightLegButton.src = rightLegURL
+})
+toggleRightLegButton.addEventListener('mouseenter', () => {
+  toggleRightLegButton.src = rightLegSelectedURL
+})
+
 toggleLeftLegButton.addEventListener('click', () => {
   togglePart(5)
+})
+toggleLeftLegButton.addEventListener('mouseleave', () => {
+  toggleLeftLegButton.src = leftLegURL
+})
+toggleLeftLegButton.addEventListener('mouseenter', () => {
+  toggleLeftLegButton.src = leftLegSelectedURL
 })
 
 const imgs = document.getElementsByTagName('img')
