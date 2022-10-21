@@ -158,13 +158,13 @@ a:visited {
 
 #controls {
   position: absolute;
-  bottom: -577px;
+  bottom: -363px;
   transition-property: transform;
   transition-duration: 0.2s;
 }
 
 #controls:hover {
-  transform: translateY(-577px);
+  transform: translateY(-363px);
   z-index: 2;
 }
 
@@ -513,4 +513,13 @@ input {
   font-size: 200%;
   font-weight: bold;
   padding-top: 20vh;
+}
+
+#tooltip {
+  position: absolute;
+  z-index: 200;
+  background-color: var(--background);
+  border-radius: 6px;
+  padding: 6px;
+  white-space: nowrap;
 }
