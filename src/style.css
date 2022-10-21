@@ -11,6 +11,7 @@ body {
   user-select: none;
   font-family: Tahoma, sans-serif;
   font-size: 24px;
+  line-height: 29px;
   color: white;
   overflow: hidden;
 
@@ -157,13 +158,13 @@ a:visited {
 
 #controls {
   position: absolute;
-  bottom: -575px;
+  bottom: -577px;
   transition-property: transform;
   transition-duration: 0.2s;
 }
 
 #controls:hover {
-  transform: translateY(-575px);
+  transform: translateY(-577px);
   z-index: 2;
 }
 
@@ -200,6 +201,12 @@ a:visited {
   right: 0;
   display: grid;
   margin: 3px;
+
+  pointer-events: none;
+}
+
+#texture-area > * {
+  pointer-events: all;
 }
 
 #texture-skin-type-container {
@@ -246,6 +253,8 @@ a:visited {
 }
 
 #toggle-parts-container {
+  margin-bottom: auto;
+
   grid-row: 2 / span 2;
   margin-right: 12px;
 
